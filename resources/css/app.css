@@ -34,10 +34,52 @@
 @layer base {
     html {
         scroll-behavior: smooth;
+        scroll-padding-top: 6rem;
     }
 
     body {
         @apply bg-elegant-bg text-white selection:bg-gold selection:text-black;
         font-family: var(--font-sans);
+    }
+}
+
+@layer utilities {
+    @keyframes marquee-track {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .marquee-track {
+        animation: marquee-track 70s linear infinite;
+    }
+
+    .marquee-track-reverse {
+        animation: marquee-track 70s linear infinite reverse;
+    }
+
+    .marquee-viewport:hover .marquee-track,
+    .marquee-viewport:hover .marquee-track-reverse {
+        animation-play-state: paused;
+    }
+
+    .marquee-fade {
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 8%,
+            black 92%,
+            transparent
+        );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .marquee-track,
+        .marquee-track-reverse {
+            animation: none;
+        }
     }
 }
