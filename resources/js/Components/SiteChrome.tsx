@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ChevronDown, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ChevronDown, MapPin, Menu, X } from 'lucide-react';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
 type SharedPageProps = {
@@ -11,11 +11,9 @@ type SharedPageProps = {
 };
 
 export const contactDetails = {
-    phone: '+1 (818) 208-0918',
-    phoneHref: 'tel:+18182080918',
     officeLine1: '21031 Ventura Blvd. Suite 200,',
     officeLine2: 'Woodland Hills, CA 91364',
-    email: 'support@northshore.com',
+    email: 'support@northshoreunlimited.com',
     hours: 'Mon – Fri, 9:00 AM – 5:00 PM PST',
 };
 
@@ -254,17 +252,6 @@ export function SiteNav({
                                     Contact Us
                                 </span>
                                 <div className="space-y-5 normal-case tracking-normal">
-                                    <a href={contactDetails.phoneHref} className="flex items-start gap-4">
-                                        <IconTile>
-                                            <Phone className="h-5 w-5" />
-                                        </IconTile>
-                                        <span className="pt-0.5">
-                                            <span className="block text-sm text-ink/62">Call us</span>
-                                            <span className="mt-0.5 block text-base font-medium text-ink">
-                                                {contactDetails.phone}
-                                            </span>
-                                        </span>
-                                    </a>
                                     <div className="flex items-start gap-4">
                                         <IconTile>
                                             <MapPin className="h-5 w-5" />
@@ -371,12 +358,6 @@ export function SiteFooter() {
                             >
                                 Book a Call
                             </Link>
-                            <a
-                                href={contactDetails.phoneHref}
-                                className="text-sm font-medium text-ink transition hover:text-gold-ink"
-                            >
-                                {contactDetails.phone}
-                            </a>
                         </div>
                     </div>
 

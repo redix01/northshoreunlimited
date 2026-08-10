@@ -81,7 +81,6 @@ const clientStories = [
 ];
 
 const contactRows = [
-    { label: 'Phone', value: contact.phone },
     { label: 'Email', value: contact.email },
     { label: 'Office', value: `${contact.officeLine1} ${contact.officeLine2}` },
     { label: 'Hours', value: contact.hours },

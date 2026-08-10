@@ -357,10 +357,10 @@ export default function GuidePage() {
                                     Book a Consultation
                                 </Link>
                                 <a
-                                    href={contactDetails.phoneHref}
+                                    href={`mailto:${contactDetails.email}`}
                                     className="rounded-sm border border-elegant-border px-8 py-4 text-xs font-bold uppercase tracking-widest text-ink transition hover:bg-ink/5"
                                 >
-                                    {contactDetails.phone}
+                                    Email the Desk
                                 </a>
                             </div>
                         </div>
