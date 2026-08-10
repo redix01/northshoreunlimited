@@ -22,7 +22,7 @@ export default function Login() {
         <div className="min-h-screen bg-[var(--color-dash-bg)] flex flex-col items-center justify-center px-4">
             {/* Background glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold/20 rounded-full blur-3xl" />
             </div>
 
             <div className="w-full max-w-md relative">
@@ -30,18 +30,18 @@ export default function Login() {
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-2 mb-6">
                         <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/30 flex items-center justify-center">
-                            <Shield size={20} className="text-gold" />
+                            <Shield size={20} className="text-gold-ink" />
                         </div>
-                        <span className="text-lg font-semibold text-white">Northshore Unlimited</span>
+                        <span className="text-lg font-semibold text-[var(--color-dash-text)]">Northshore Unlimited</span>
                     </Link>
-                    <h1 className="text-2xl font-semibold text-white mb-1">Sign in to your account</h1>
+                    <h1 className="text-2xl font-semibold text-[var(--color-dash-text)] mb-1">Sign in to your account</h1>
                     <p className="text-sm text-[var(--color-dash-muted)]">Enter your username and password to access the portal</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <div className="bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] rounded-2xl p-6 sm:p-8 shadow-xl shadow-black/5">
                     {flash.success && (
-                        <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-sm text-emerald-400">
+                        <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-sm text-emerald-700">
                             {flash.success}
                         </div>
                     )}
@@ -65,7 +65,7 @@ export default function Login() {
                                     }`}
                                 />
                             </div>
-                            {errors.username && <p className="mt-1 text-xs text-red-400">{errors.username}</p>}
+                            {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username}</p>}
                         </div>
 
                         {/* Password */}
@@ -93,7 +93,7 @@ export default function Login() {
                                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
-                            {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
+                            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                         </div>
 
                         {/* Remember me */}

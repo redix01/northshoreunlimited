@@ -47,7 +47,7 @@ export default function WithdrawPage() {
                             {/* Balance display */}
                             <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-[var(--color-dash-bg)] border border-[var(--color-dash-border)]">
                                 <span className="text-xs text-[var(--color-dash-muted)]">Available Balance</span>
-                                <span className="text-sm font-bold text-gold">{formatCurrency(balance)}</span>
+                                <span className="text-sm font-bold text-gold-ink">{formatCurrency(balance)}</span>
                             </div>
 
                             {/* Wallet */}
@@ -67,7 +67,7 @@ export default function WithdrawPage() {
                                         <option key={wallet.id} value={wallet.id}>{wallet.currency} · {wallet.network ?? wallet.name}</option>
                                     ))}
                                 </select>
-                                {errors.wallet_id && <p className="mt-1 text-xs text-red-400">{errors.wallet_id}</p>}
+                                {errors.wallet_id && <p className="mt-1 text-xs text-red-600">{errors.wallet_id}</p>}
                             </div>
 
                             {/* Wallet address */}
@@ -84,7 +84,7 @@ export default function WithdrawPage() {
                                         errors.wallet_address ? 'border-red-500/60' : 'border-[var(--color-dash-border)] focus:border-gold/50'
                                     }`}
                                 />
-                                {errors.wallet_address && <p className="mt-1 text-xs text-red-400">{errors.wallet_address}</p>}
+                                {errors.wallet_address && <p className="mt-1 text-xs text-red-600">{errors.wallet_address}</p>}
                             </div>
 
                             {/* Amount */}
@@ -109,19 +109,19 @@ export default function WithdrawPage() {
                                     <button
                                         type="button"
                                         onClick={() => setData('amount', String(balance))}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gold bg-gold/10 hover:bg-gold/20 px-1.5 py-0.5 rounded transition-all"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gold-ink bg-gold/10 hover:bg-gold/20 px-1.5 py-0.5 rounded transition-all"
                                     >
                                         MAX
                                     </button>
                                 </div>
                                 {insufficientBalance && (
-                                    <p className="mt-1 text-xs text-red-400">Exceeds available balance</p>
+                                    <p className="mt-1 text-xs text-red-600">Exceeds available balance</p>
                                 )}
-                                {errors.amount && <p className="mt-1 text-xs text-red-400">{errors.amount}</p>}
+                                {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount}</p>}
                             </div>
 
                             {/* Warning */}
-                            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+                            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800">
                                 <AlertCircle size={13} className="mt-0.5 shrink-0" />
                                 <span>Double-check your wallet address and network. Incorrect submissions cannot be reversed.</span>
                             </div>

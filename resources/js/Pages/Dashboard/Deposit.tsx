@@ -122,7 +122,7 @@ export default function DepositPage() {
                                                     onClick={() => setData('wallet_id', String(wallet.id))}
                                                     className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
                                                         data.wallet_id === String(wallet.id)
-                                                            ? 'border-gold/60 bg-gold/10 text-gold'
+                                                            ? 'border-gold/60 bg-gold/10 text-gold-ink'
                                                             : 'border-[var(--color-dash-border)] text-[var(--color-dash-muted)] hover:border-[var(--color-dash-border)]/80 hover:text-[var(--color-dash-text)]'
                                                     }`}
                                                 >
@@ -134,8 +134,8 @@ export default function DepositPage() {
                                                 </button>
                                             ))}
                                         </div>
-                                        {errors.wallet_id && <p className="mt-1 text-xs text-red-400">{errors.wallet_id}</p>}
-                                        {!wallets.length && <p className="mt-2 text-xs text-amber-400">No deposit wallets are available. Please contact support.</p>}
+                                        {errors.wallet_id && <p className="mt-1 text-xs text-red-600">{errors.wallet_id}</p>}
+                                        {!wallets.length && <p className="mt-2 text-xs text-amber-700">No deposit wallets are available. Please contact support.</p>}
                                     </div>
 
                                     <div>
@@ -156,7 +156,7 @@ export default function DepositPage() {
                                                 }`}
                                             />
                                         </div>
-                                        {errors.amount && <p className="mt-1 text-xs text-red-400">{errors.amount}</p>}
+                                        {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount}</p>}
                                         <p className="mt-1 text-[10px] text-[var(--color-dash-muted)]">Minimum deposit: $10.00</p>
                                     </div>
 
@@ -193,24 +193,24 @@ export default function DepositPage() {
                                             <button
                                                 type="button"
                                                 onClick={copyAddress}
-                                                className="shrink-0 p-1.5 rounded bg-gold/10 hover:bg-gold/20 text-gold transition-all"
+                                                className="shrink-0 p-1.5 rounded bg-gold/10 hover:bg-gold/20 text-gold-ink transition-all"
                                             >
                                                 {copied ? <CheckCircle size={14} /> : <Copy size={14} />}
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+                                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800">
                                         <AlertCircle size={14} className="mt-0.5 shrink-0" />
                                         <span>Only send {selectedWallet?.currency} on the selected network. Sending other coins may result in permanent loss.</span>
                                     </div>
 
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-[var(--color-dash-muted)]">Amount to send</span>
-                                        <span className="font-semibold text-gold">${parseFloat(data.amount).toLocaleString()}</span>
+                                        <span className="font-semibold text-gold-ink">${parseFloat(data.amount).toLocaleString()}</span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-sm rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-amber-300">
+                                    <div className="flex items-center justify-between text-sm rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-amber-800">
                                         <span>Deposit window</span>
                                         <span className="font-semibold">{Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')}</span>
                                     </div>
@@ -285,7 +285,7 @@ export default function DepositPage() {
                                             onChange={handleFileChange}
                                             className="hidden"
                                         />
-                                        {errors.proof && <p className="mt-1 text-xs text-red-400">{errors.proof}</p>}
+                                        {errors.proof && <p className="mt-1 text-xs text-red-600">{errors.proof}</p>}
                                     </div>
 
                                     <div className="flex gap-2">

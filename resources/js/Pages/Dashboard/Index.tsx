@@ -69,41 +69,41 @@ function PortfolioChart({ data }: { data: Snapshot[] }) {
         <div>
             <div className="flex items-center justify-between mb-3">
                 <p className="text-xs text-[var(--color-dash-muted)]">Portfolio Performance</p>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded ${positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded ${positive ? 'bg-emerald-500/15 text-emerald-700' : 'bg-red-500/15 text-red-600'}`}>
                     {positive ? '+' : ''}{changePct}%
                 </span>
             </div>
             <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height: 160 }}>
                 <defs>
                     <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#d4af37" stopOpacity="0.18" />
-                        <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#c9a227" stopOpacity="0.35" />
+                        <stop offset="100%" stopColor="#c9a227" stopOpacity="0" />
                     </linearGradient>
                 </defs>
                 {/* Grid */}
                 {yTicks.map(t => (
                     <line key={t.v} x1={pad.left} y1={t.y} x2={w - pad.right} y2={t.y}
-                        stroke="rgba(255,255,255,0.05)" strokeDasharray="3 5" />
+                        stroke="rgba(20,17,11,0.10)" strokeDasharray="3 5" />
                 ))}
                 {/* Area */}
                 <polygon points={areaPts} fill="url(#chartGrad)" />
                 {/* Line */}
-                <polyline points={linePts} fill="none" stroke="#d4af37" strokeWidth="1.8"
+                <polyline points={linePts} fill="none" stroke="#8a6712" strokeWidth="1.8"
                     strokeLinejoin="round" strokeLinecap="round" />
                 {/* Last point dot */}
                 <circle cx={xs(data.length - 1)} cy={ys(data[data.length - 1].balance)}
-                    r="3.5" fill="#d4af37" />
+                    r="3.5" fill="#8a6712" />
                 {/* Y labels */}
                 {yTicks.map(t => (
                     <text key={t.v} x={pad.left - 6} y={t.y + 4} textAnchor="end"
-                        fontSize="10" fill="#6b7a99">
+                        fontSize="10" fill="#6f6757">
                         {t.v >= 1000 ? `$${(t.v / 1000).toFixed(0)}k` : `$${t.v.toFixed(0)}`}
                     </text>
                 ))}
                 {/* X labels */}
                 {xLabels.map(i => (
                     <text key={i} x={xs(i)} y={h - pad.bottom + 14} textAnchor="middle"
-                        fontSize="10" fill="#6b7a99">
+                        fontSize="10" fill="#6f6757">
                         {data[i].date}
                     </text>
                 ))}
@@ -118,7 +118,7 @@ function BitcoinTradingViewChart() {
         symbol: 'BITSTAMP:BTCUSD',
         interval: '60',
         timezone: 'Etc/UTC',
-        theme: 'dark',
+        theme: 'light',
         style: '1',
         locale: 'en',
         hide_top_toolbar: true,
@@ -133,7 +133,7 @@ function BitcoinTradingViewChart() {
         <div className="h-full min-h-[220px] overflow-hidden rounded-2xl border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)]">
             <iframe
                 title="Bitcoin price chart"
-                src={`https://s.tradingview.com/widgetembed/?frameElementId=btc-chart&symbol=BITSTAMP%3ABTCUSD&interval=60&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0f1624&studies=[]&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&widgetbar=%7B%22details%22%3Afalse%2C%22watchlist%22%3Afalse%2C%22news%22%3Afalse%2C%22datawindow%22%3Afalse%2C%22watchlist_settings%22%3A%7B%22default_symbols%22%3A[]%7D%7D&overrides=%7B%7D&studies_overrides=%7B%7D&settings=${widgetConfig}`}
+                src={`https://s.tradingview.com/widgetembed/?frameElementId=btc-chart&symbol=BITSTAMP%3ABTCUSD&interval=60&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=ffffff&studies=[]&theme=light&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&widgetbar=%7B%22details%22%3Afalse%2C%22watchlist%22%3Afalse%2C%22news%22%3Afalse%2C%22datawindow%22%3Afalse%2C%22watchlist_settings%22%3A%7B%22default_symbols%22%3A[]%7D%7D&overrides=%7B%7D&studies_overrides=%7B%7D&settings=${widgetConfig}`}
                 className="h-full min-h-[220px] w-full border-0"
                 loading="lazy"
             />
@@ -208,27 +208,27 @@ export default function DashboardIndex() {
             {/* Welcome + Balance hero */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 {/* Balance card */}
-                <div className="lg:col-span-1 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1c2e] to-[#111827] border border-gold/20 p-6">
-                    <div className="absolute inset-0 opacity-30">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/20 rounded-full blur-2xl" />
+                <div className="lg:col-span-1 relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-[#f6eecd] border border-gold/30 p-6">
+                    <div className="absolute inset-0 opacity-60">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/30 rounded-full blur-2xl" />
                     </div>
                     <div className="relative">
                         <p className="text-xs text-[var(--color-dash-muted)] uppercase tracking-wider mb-1">Total Portfolio Value</p>
-                        <p className="text-3xl font-bold text-white mb-1 tabular-nums">
+                        <p className="text-3xl font-bold text-[var(--color-dash-text)] mb-1 tabular-nums">
                             {formatCurrency(liveBalance)}
                         </p>
                         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                            <span className={liveTrendPositive ? 'text-emerald-400' : 'text-red-400'}>
+                            <span className={liveTrendPositive ? 'text-emerald-700' : 'text-red-600'}>
                                 {formatSignedCurrency(liveChange)} ({liveTrendPositive ? '+' : ''}{liveChangePct.toFixed(2)}%)
                             </span>
                             <span className="text-[var(--color-dash-muted)]">live</span>
-                            <span className={`h-1.5 w-1.5 rounded-full ${lastMove >= 0 ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                            <span className={`h-1.5 w-1.5 rounded-full ${lastMove >= 0 ? 'bg-emerald-600' : 'bg-red-600'}`} />
                         </div>
-                        <div className="mb-3 space-y-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                        <div className="mb-3 space-y-1.5 rounded-lg border border-gold/25 bg-white/70 px-3 py-2">
                             {liveMetrics.map(metric => (
                                 <div key={metric.label} className="flex items-center justify-between gap-3 text-[11px]">
                                     <span className="text-[var(--color-dash-muted)]">{metric.label}</span>
-                                    <span className={metric.value >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                                    <span className={metric.value >= 0 ? 'text-emerald-700' : 'text-red-600'}>
                                         {formatSignedCurrency(metric.value)} ({metric.value >= 0 ? '+' : ''}{metric.pct.toFixed(2)}%)
                                     </span>
                                 </div>
@@ -236,13 +236,13 @@ export default function DashboardIndex() {
                         </div>
                         <p className="text-xs text-[var(--color-dash-muted)]">
                             {dashUser.is_verified ? (
-                                <span className="text-emerald-400">● Verified Account</span>
+                                <span className="text-emerald-700">● Verified Account</span>
                             ) : (
-                                <span className="text-amber-400">● Pending Verification</span>
+                                <span className="text-amber-700">● Pending Verification</span>
                             )}
                         </p>
                         {dashUser.member_id && (
-                            <p className="mt-3 text-[10px] font-mono text-[var(--color-dash-muted)] bg-white/5 px-2 py-1 rounded w-fit">
+                            <p className="mt-3 text-[10px] font-mono text-[var(--color-dash-muted)] bg-white/70 px-2 py-1 rounded w-fit">
                                 {dashUser.member_id}
                             </p>
                         )}
@@ -256,7 +256,7 @@ export default function DashboardIndex() {
                             </Link>
                             <Link
                                 href="/user/withdrawals"
-                                className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/10 text-white text-xs font-medium hover:bg-white/15 border border-white/10 transition-all"
+                                className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white text-[var(--color-dash-text)] text-xs font-medium hover:bg-white/70 border border-gold/30 transition-all"
                             >
                                 <ArrowUpCircle size={14} />
                                 Withdraw
@@ -276,30 +276,30 @@ export default function DashboardIndex() {
                         {
                             label: 'Total Deposited',
                             value: formatCurrency(stats.total_deposited),
-                            icon: <ArrowDownCircle size={18} className="text-emerald-400" />,
+                            icon: <ArrowDownCircle size={18} className="text-emerald-700" />,
                             sub: stats.pending_deposits > 0 ? `${stats.pending_deposits} pending` : 'All confirmed',
-                            color: 'text-emerald-400',
+                            color: 'text-emerald-700',
                         },
                         {
                             label: 'Total Withdrawn',
                             value: formatCurrency(stats.total_withdrawn),
-                            icon: <ArrowUpCircle size={18} className="text-blue-400" />,
+                            icon: <ArrowUpCircle size={18} className="text-blue-700" />,
                             sub: stats.pending_withdrawals > 0 ? `${stats.pending_withdrawals} pending` : 'All processed',
-                            color: 'text-blue-400',
+                            color: 'text-blue-700',
                         },
                         {
                             label: 'Pending Deposits',
                             value: stats.pending_deposits,
-                            icon: <Clock size={18} className="text-amber-400" />,
+                            icon: <Clock size={18} className="text-amber-700" />,
                             sub: 'Awaiting review',
-                            color: 'text-amber-400',
+                            color: 'text-amber-700',
                         },
                         {
                             label: 'Pending Withdrawals',
                             value: stats.pending_withdrawals,
-                            icon: <Clock size={18} className="text-purple-400" />,
+                            icon: <Clock size={18} className="text-purple-700" />,
                             sub: 'Awaiting processing',
-                            color: 'text-purple-400',
+                            color: 'text-purple-700',
                         },
                     ].map(stat => (
                         <div
@@ -326,7 +326,7 @@ export default function DashboardIndex() {
             <div className="rounded-2xl bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)]">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-dash-border)]">
                     <h2 className="text-sm font-semibold text-[var(--color-dash-text)]">Recent Activity</h2>
-                    <Link href="/user/wallet" className="text-xs text-gold hover:text-gold/80 transition-colors">
+                    <Link href="/user/wallet" className="text-xs text-gold-ink hover:text-gold-ink/80 transition-colors">
                         View all
                     </Link>
                 </div>
@@ -346,8 +346,8 @@ export default function DashboardIndex() {
                                         : 'bg-blue-500/15'
                                 }`}>
                                     {item.type === 'deposit'
-                                        ? <ArrowDownCircle size={15} className="text-emerald-400" />
-                                        : <ArrowUpCircle size={15} className="text-blue-400" />
+                                        ? <ArrowDownCircle size={15} className="text-emerald-700" />
+                                        : <ArrowUpCircle size={15} className="text-blue-700" />
                                     }
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -357,7 +357,7 @@ export default function DashboardIndex() {
                                     <p className="text-xs text-[var(--color-dash-muted)]">{formatDate(item.created_at)}</p>
                                 </div>
                                 <div className="text-right shrink-0">
-                                    <p className={`text-sm font-semibold ${item.type === 'deposit' ? 'text-emerald-400' : 'text-blue-400'}`}>
+                                    <p className={`text-sm font-semibold ${item.type === 'deposit' ? 'text-emerald-700' : 'text-blue-700'}`}>
                                         {item.type === 'deposit' ? '+' : '-'}{formatCurrency(item.amount)}
                                     </p>
                                     <StatusBadge status={item.status} />

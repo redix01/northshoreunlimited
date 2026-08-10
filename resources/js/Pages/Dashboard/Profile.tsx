@@ -88,17 +88,17 @@ export default function ProfilePage() {
                 {/* Profile Header */}
                 <div className="rounded-2xl bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] p-5">
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold/30 flex items-center justify-center text-gold text-2xl font-bold shrink-0">
+                        <div className="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold/30 flex items-center justify-center text-gold-ink text-2xl font-bold shrink-0">
                             {profileUser.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                                 <h1 className="text-lg font-semibold text-[var(--color-dash-text)]">{profileUser.name}</h1>
-                                <span className="px-2 py-0.5 rounded text-[10px] bg-gold/15 text-gold border border-gold/25 font-medium uppercase tracking-wide">
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-gold/15 text-gold-ink border border-gold/25 font-medium uppercase tracking-wide">
                                     VIP
                                 </span>
                                 {profileUser.is_verified && (
-                                    <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-medium">
+                                    <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 font-medium">
                                         <CheckCircle size={10} />
                                         Verified
                                     </span>
@@ -106,7 +106,7 @@ export default function ProfilePage() {
                             </div>
                             <p className="text-sm text-[var(--color-dash-muted)] mt-0.5">{profileUser.email}</p>
                             {profileUser.member_id && (
-                                <p className="text-xs font-mono text-[var(--color-dash-muted)] mt-1 bg-white/5 px-2 py-0.5 rounded w-fit">
+                                <p className="text-xs font-mono text-[var(--color-dash-muted)] mt-1 bg-[var(--color-dash-surface-2)] px-2 py-0.5 rounded w-fit">
                                     {profileUser.member_id}
                                 </p>
                             )}
@@ -119,7 +119,7 @@ export default function ProfilePage() {
 
                     {/* Verification status */}
                     {profileUser.is_verified && (
-                        <div className="mt-4 flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+                        <div className="mt-4 flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-700">
                             <Shield size={14} className="shrink-0" />
                             <span>Your identity has been verified — deposits and withdrawals are enabled.</span>
                         </div>
@@ -160,7 +160,7 @@ export default function ProfilePage() {
                                         className="w-full px-3 py-2.5 rounded-lg bg-[var(--color-dash-bg)] border border-[var(--color-dash-border)] text-sm text-[var(--color-dash-text)] placeholder-[var(--color-dash-muted)] focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all"
                                     />
                                     {(profileForm.errors as Record<string, string>)[field.key] && (
-                                        <p className="mt-1 text-xs text-red-400">{(profileForm.errors as Record<string, string>)[field.key]}</p>
+                                        <p className="mt-1 text-xs text-red-600">{(profileForm.errors as Record<string, string>)[field.key]}</p>
                                     )}
                                 </div>
                             ))}
@@ -243,7 +243,7 @@ export default function ProfilePage() {
                                         </button>
                                     </div>
                                     {(pwForm.errors as Record<string, string>)[field.key] && (
-                                        <p className="mt-1 text-xs text-red-400">{(pwForm.errors as Record<string, string>)[field.key]}</p>
+                                        <p className="mt-1 text-xs text-red-600">{(pwForm.errors as Record<string, string>)[field.key]}</p>
                                     )}
                                 </div>
                             ))}

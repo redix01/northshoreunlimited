@@ -31,16 +31,16 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-    pending:    'bg-amber-500/15 text-amber-400 border border-amber-500/25',
-    approved:   'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25',
-    rejected:   'bg-red-500/15 text-red-400 border border-red-500/25',
-    processing: 'bg-blue-500/15 text-blue-400 border border-blue-500/25',
-    completed:  'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25',
+    pending:    'bg-amber-500/15 text-amber-700 border border-amber-500/25',
+    approved:   'bg-emerald-500/15 text-emerald-700 border border-emerald-500/25',
+    rejected:   'bg-red-500/15 text-red-600 border border-red-500/25',
+    processing: 'bg-blue-500/15 text-blue-700 border border-blue-500/25',
+    completed:  'bg-emerald-500/15 text-emerald-700 border border-emerald-500/25',
 };
 
 export function StatusBadge({ status }: { status: string }) {
     return (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${statusColors[status] ?? 'bg-gray-500/15 text-gray-400 border border-gray-500/25'}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${statusColors[status] ?? 'bg-gray-500/15 text-gray-600 border border-gray-500/25'}`}>
             {status}
         </span>
     );
@@ -61,7 +61,7 @@ function FlashMessages() {
     return (
         <>
             {flash.success && !dismissed.success && (
-                <div className="fixed top-4 right-4 z-50 flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 backdrop-blur px-4 py-3 text-sm text-emerald-300 max-w-sm shadow-lg">
+                <div className="fixed top-4 right-4 z-50 flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 backdrop-blur px-4 py-3 text-sm text-emerald-700 max-w-sm shadow-lg">
                     <span className="flex-1">{flash.success}</span>
                     <button onClick={() => setDismissed(d => ({ ...d, success: true }))} className="shrink-0 opacity-60 hover:opacity-100">
                         <X size={14} />
@@ -69,7 +69,7 @@ function FlashMessages() {
                 </div>
             )}
             {flash.error && !dismissed.error && (
-                <div className="fixed top-4 right-4 z-50 flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 backdrop-blur px-4 py-3 text-sm text-red-300 max-w-sm shadow-lg">
+                <div className="fixed top-4 right-4 z-50 flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 backdrop-blur px-4 py-3 text-sm text-red-700 max-w-sm shadow-lg">
                     <span className="flex-1">{flash.error}</span>
                     <button onClick={() => setDismissed(d => ({ ...d, error: true }))} className="shrink-0 opacity-60 hover:opacity-100">
                         <X size={14} />
@@ -115,7 +115,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
             <div className="px-5 pt-6 pb-4 border-b border-[var(--color-dash-border)]">
                 <Link href="/" className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center">
-                        <BarChart3 size={16} className="text-gold" />
+                        <BarChart3 size={16} className="text-gold-ink" />
                     </div>
                     <div>
                         <p className="text-xs font-semibold text-[var(--color-dash-text)] leading-none">Northshore</p>
@@ -138,7 +138,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                         onClick={() => setSidebarOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                             isActive(item)
-                                ? 'bg-gold/10 text-gold border border-gold/20'
+                                ? 'bg-gold/10 text-gold-ink border border-gold/20'
                                 : 'text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] hover:bg-[var(--color-dash-surface-2)]'
                         }`}
                     >
@@ -172,7 +172,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                     href="/logout"
                     method="post"
                     as="button"
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--color-dash-muted)] hover:text-red-400 hover:bg-red-500/10 transition-all mt-0.5"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--color-dash-muted)] hover:text-red-600 hover:bg-red-500/10 transition-all mt-0.5"
                 >
                     <LogOut size={18} />
                     Sign Out
@@ -181,7 +181,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                 {/* User info */}
                 <div className="mt-3 px-3 py-2 rounded-lg bg-[var(--color-dash-surface-2)] border border-[var(--color-dash-border)]">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold font-semibold text-sm shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold-ink font-semibold text-sm shrink-0">
                             {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -207,13 +207,13 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
             {sidebarOpen && (
                 <div className="lg:hidden fixed inset-0 z-40 flex">
                     <div
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 bg-ink/40 backdrop-blur-sm"
                         onClick={() => setSidebarOpen(false)}
                     />
                     <aside className="relative flex flex-col w-64 bg-[var(--color-dash-sidebar)] border-r border-[var(--color-dash-border)] z-50">
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="absolute top-4 right-4 text-[var(--color-dash-muted)] hover:text-white"
+                            className="absolute top-4 right-4 text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]"
                         >
                             <X size={20} />
                         </button>
@@ -228,7 +228,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                 <header className="sticky top-0 z-30 flex items-center gap-4 px-4 sm:px-6 h-14 bg-[var(--color-dash-sidebar)]/80 backdrop-blur border-b border-[var(--color-dash-border)]">
                     <button
                         onClick={() => setSidebarOpen(true)}
-                        className="lg:hidden text-[var(--color-dash-muted)] hover:text-white p-1"
+                        className="lg:hidden text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] p-1"
                     >
                         <Menu size={20} />
                     </button>
@@ -239,7 +239,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                             <div key={i} className="flex items-center gap-1.5">
                                 {i > 0 && <ChevronRight size={14} className="text-[var(--color-dash-muted)] shrink-0" />}
                                 {crumb.href ? (
-                                    <Link href={crumb.href} className="text-[var(--color-dash-muted)] hover:text-white transition-colors truncate">
+                                    <Link href={crumb.href} className="text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] transition-colors truncate">
                                         {crumb.label}
                                     </Link>
                                 ) : (
@@ -254,15 +254,15 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                         {!isAdminSection && (
                             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-dash-surface-2)] border border-[var(--color-dash-border)] text-xs">
                                 <span className="text-[var(--color-dash-muted)]">Balance</span>
-                                <span className="text-gold font-semibold">{formatCurrency(user.balance)}</span>
+                                <span className="text-gold-ink font-semibold">{formatCurrency(user.balance)}</span>
                             </div>
                         )}
                         {isAdminSection && (
-                            <span className="px-2 py-0.5 rounded text-xs bg-gold/15 text-gold border border-gold/25 font-medium">
+                            <span className="px-2 py-0.5 rounded text-xs bg-gold/15 text-gold-ink border border-gold/25 font-medium">
                                 Admin
                             </span>
                         )}
-                        <div className="w-7 h-7 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold font-semibold text-xs">
+                        <div className="w-7 h-7 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold-ink font-semibold text-xs">
                             {user.name.charAt(0).toUpperCase()}
                         </div>
                     </div>
@@ -281,7 +281,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                         key={item.href}
                         href={item.href}
                         className={`flex-1 flex flex-col items-center gap-1 py-2 text-[10px] font-medium transition-colors ${
-                            isActive(item) ? 'text-gold' : 'text-[var(--color-dash-muted)]'
+                            isActive(item) ? 'text-gold-ink' : 'text-[var(--color-dash-muted)]'
                         }`}
                     >
                         {item.icon}

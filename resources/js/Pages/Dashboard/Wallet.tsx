@@ -24,14 +24,14 @@ export default function WalletPage() {
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-[minmax(220px,320px)_1fr]">
-                    <div className="relative overflow-hidden rounded-xl border border-gold/20 bg-gradient-to-br from-[#1a1c2e] to-[#101522] p-5">
-                        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gold/10 blur-2xl" />
+                    <div className="relative overflow-hidden rounded-xl border border-gold/30 bg-gradient-to-br from-white to-[#f6eecd] p-5">
+                        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gold/25 blur-2xl" />
                         <div className="relative flex items-start justify-between gap-4">
                             <div>
                                 <p className="text-xs uppercase tracking-wide text-[var(--color-dash-muted)]">Available Balance</p>
-                                <p className="mt-2 text-2xl font-bold text-white">{formatCurrency(balance)}</p>
+                                <p className="mt-2 text-2xl font-bold text-[var(--color-dash-text)]">{formatCurrency(balance)}</p>
                             </div>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-ink">
                                 <WalletCards size={18} />
                             </div>
                         </div>
@@ -52,7 +52,7 @@ export default function WalletPage() {
                                 <span className="block text-sm font-bold">New Withdrawal</span>
                                 <span className="mt-1 block text-xs font-medium text-[var(--color-dash-muted)]">Request a payout</span>
                             </span>
-                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-gold transition group-hover:bg-gold/15">
+                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-gold-ink transition group-hover:bg-gold/15">
                                 <ArrowUpCircle size={18} />
                             </span>
                         </Link>
