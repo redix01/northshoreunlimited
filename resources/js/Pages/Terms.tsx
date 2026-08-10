@@ -475,12 +475,12 @@ export default function TermsPage() {
                             >
                                 View Compliance
                             </Link>
-                            <a
-                                href="/#contact"
+                            <Link
+                                href="/schedule"
                                 className="rounded-sm bg-gold px-8 py-4 text-xs font-bold uppercase tracking-widest text-ink transition hover:bg-gold-dark"
                             >
                                 Talk to an Advisor
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>

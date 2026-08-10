@@ -39,6 +39,7 @@ const primaryNav = [
 ];
 
 const learnMenu = [
+    { label: 'Guide', description: 'Bitcoin and retirement accounts', href: '/guide' },
     { label: 'Compliance', description: 'Licensing & certifications', href: '/compliance' },
     { label: 'Terms of Service', description: 'Usage terms and conditions', href: '/terms' },
 ];
@@ -144,49 +145,6 @@ function LearnMenu({ onNavigate }: { onNavigate?: () => void }) {
     );
 }
 
-function ContactCard() {
-    return (
-        <div className="w-[380px] rounded-2xl border border-elegant-border bg-elegant-card p-7 shadow-xl shadow-black/10">
-            <div className="flex items-center gap-4">
-                <IconTile>
-                    <Mail className="h-5 w-5" />
-                </IconTile>
-                <h3 className="text-lg font-medium text-ink">Contact Us</h3>
-            </div>
-
-            <div className="my-6 h-px bg-elegant-border" />
-
-            <div className="space-y-6">
-                <a href={contactDetails.phoneHref} className="group flex items-start gap-4">
-                    <IconTile>
-                        <Phone className="h-5 w-5" />
-                    </IconTile>
-                    <span className="pt-0.5">
-                        <span className="block text-sm text-ink/62">Call us</span>
-                        <span className="mt-0.5 block text-base font-medium text-ink transition group-hover:text-gold-ink">
-                            {contactDetails.phone}
-                        </span>
-                    </span>
-                </a>
-
-                <div className="flex items-start gap-4">
-                    <IconTile>
-                        <MapPin className="h-5 w-5" />
-                    </IconTile>
-                    <span className="pt-0.5">
-                        <span className="block text-sm text-ink/62">Office</span>
-                        <span className="mt-0.5 block text-base font-medium leading-relaxed text-ink">
-                            {contactDetails.officeLine1}
-                            <br />
-                            {contactDetails.officeLine2}
-                        </span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export function SiteNav({
     isMenuOpen,
     setIsMenuOpen,
@@ -200,13 +158,14 @@ export function SiteNav({
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-elegant-border bg-elegant-bg/95 backdrop-blur-md xl:h-24">
             <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-5 sm:px-6 lg:gap-5 lg:px-8 xl:gap-6 xl:px-12 2xl:gap-10">
-                <Link href="/" className="flex min-w-0 shrink-0 flex-col gap-1">
-                    <h1 className="whitespace-nowrap text-[13px] font-bold tracking-[0.14em] text-ink sm:text-base sm:tracking-[0.22em] xl:text-lg xl:tracking-[0.28em]">
-                        NORTHSHORE UNLIMITED
-                    </h1>
-                    <span className="whitespace-nowrap text-[8px] font-medium uppercase tracking-[0.18em] text-ink/60 sm:text-[9px] sm:tracking-[0.2em]">
-                        Personalized Bitcoin Brokerage
-                    </span>
+                <Link href="/" className="flex min-w-0 shrink-0 items-center" aria-label="Northshore Unlimited Capital — home">
+                    <img
+                        src="/img/logo.png"
+                        alt="Northshore Unlimited Capital"
+                        width={800}
+                        height={211}
+                        className="h-9 w-auto sm:h-10 xl:h-12"
+                    />
                 </Link>
 
                 {!isPortal && (
@@ -219,9 +178,6 @@ export function SiteNav({
                             ))}
                             <NavDropdown label="Learn">
                                 <LearnMenu />
-                            </NavDropdown>
-                            <NavDropdown label="Support">
-                                <ContactCard />
                             </NavDropdown>
                         </nav>
 
@@ -237,12 +193,12 @@ export function SiteNav({
                             >
                                 Sign Up
                             </Link>
-                            <a
-                                href="/#contact"
+                            <Link
+                                href="/schedule"
                                 className="whitespace-nowrap rounded-sm bg-gold px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-gold-dark xl:px-5 xl:py-3 xl:text-[10px]"
                             >
                                 Book a Call
-                            </a>
+                            </Link>
                         </div>
                     </>
                 )}
@@ -340,13 +296,13 @@ export function SiteNav({
                                 >
                                     Sign Up
                                 </Link>
-                                <a
-                                    href="/#contact"
+                                <Link
+                                    href="/schedule"
                                     onClick={() => setIsMenuOpen(false)}
                                     className="w-fit rounded-sm bg-gold px-6 py-3 text-[10px] font-bold tracking-[0.2em] text-ink"
                                 >
                                     Book a Call
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </motion.div>
@@ -356,45 +312,9 @@ export function SiteNav({
     );
 }
 
-const footerColumns = [
-    {
-        title: 'Platform',
-        links: [
-            { label: 'About', href: '/company' },
-            { label: 'Proof of Reserves', href: '/#proof-of-reserves' },
-            { label: 'Sign Up', href: '/portal' },
-            { label: 'Login', href: '/portal' },
-        ],
-    },
-    {
-        title: 'Services',
-        links: [
-            { label: 'Crypto Trading', href: '/#contact' },
-            { label: 'SMSF Solutions', href: '/#contact' },
-            { label: 'Corporate Accounts', href: '/#contact' },
-            { label: 'Become an Affiliate', href: '/#affiliates' },
-        ],
-    },
-    {
-        title: 'Company',
-        links: [
-            { label: 'About', href: '/company' },
-            { label: 'Contact Us', href: '/#contact' },
-            { label: 'Compliance', href: '/compliance' },
-            { label: 'Schedule a Call', href: '/#contact' },
-            { label: 'Proof of Reserves', href: '/#proof-of-reserves' },
-        ],
-    },
-    {
-        title: 'Legal',
-        links: [
-            { label: 'Privacy Policy', href: '/compliance#data-protection' },
-            { label: 'Terms of Service', href: '/terms' },
-            { label: 'Compliance', href: '/compliance' },
-            { label: 'Trust Center', href: '/compliance' },
-            { label: 'Proof of Reserves', href: '/#proof-of-reserves' },
-        ],
-    },
+const footerLinks = [
+    { label: 'Compliance', href: '/compliance' },
+    { label: 'Terms of Service', href: '/terms' },
 ];
 
 export function SiteFooter() {
@@ -426,31 +346,69 @@ export function SiteFooter() {
                     </form>
                 </div>
 
-                <div className="grid gap-12 py-14 md:grid-cols-[1.4fr_repeat(4,1fr)]">
-                    <div>
-                        <h4 className="mb-4 text-sm font-bold tracking-[0.2em] text-ink">NORTHSHORE UNLIMITED</h4>
-                        <p className="max-w-xs text-sm leading-relaxed text-ink/62">
-                            Your personalized bitcoin brokerage. Invest, earn, and withdraw bitcoin with expert
-                            guidance.
+                <div className="grid gap-12 py-16 md:grid-cols-[1.5fr_1fr] md:gap-20">
+                    <div className="max-w-xl">
+                        <img
+                            src="/img/logo.png"
+                            alt="Northshore Unlimited Capital"
+                            width={800}
+                            height={211}
+                            className="mb-7 h-11 w-auto"
+                        />
+                        <p className="mb-8 font-serif text-2xl italic leading-snug text-ink">
+                            Your personalized bitcoin brokerage.
                         </p>
+                        <p className="mb-10 text-sm leading-relaxed text-ink/65">
+                            Invest, earn, and withdraw bitcoin with a named broker who knows your account — not a
+                            ticket queue. Client assets sit with a qualified custodian in cold storage, segregated
+                            from company funds, and every fee is disclosed in writing before you fund anything.
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-4">
+                            <Link
+                                href="/schedule"
+                                className="rounded-sm bg-gold px-7 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ink transition hover:bg-gold-dark"
+                            >
+                                Book a Call
+                            </Link>
+                            <a
+                                href={contactDetails.phoneHref}
+                                className="text-sm font-medium text-ink transition hover:text-gold-ink"
+                            >
+                                {contactDetails.phone}
+                            </a>
+                        </div>
                     </div>
 
-                    {footerColumns.map((column) => (
-                        <div key={column.title}>
-                            <h4 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/60">
-                                {column.title}
-                            </h4>
-                            <ul className="space-y-3 text-sm text-ink/65">
-                                {column.links.map((link) => (
-                                    <li key={`${column.title}-${link.label}`}>
-                                        <Link href={link.href} className="transition hover:text-gold-ink">
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                    <div className="md:justify-self-end">
+                        <h4 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/60">
+                            Contact
+                        </h4>
+                        <address className="mb-8 space-y-1 text-sm not-italic leading-relaxed text-ink/65">
+                            <span className="block">{contactDetails.officeLine1}</span>
+                            <span className="block">{contactDetails.officeLine2}</span>
+                        </address>
+                        <a
+                            href={`mailto:${contactDetails.email}`}
+                            className="mb-2 block text-sm text-ink/65 transition hover:text-gold-ink"
+                        >
+                            {contactDetails.email}
+                        </a>
+                        <p className="mb-10 text-sm text-ink/62">{contactDetails.hours}</p>
+
+                        <h4 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/60">
+                            Legal
+                        </h4>
+                        <ul className="space-y-3 text-sm text-ink/65">
+                            {footerLinks.map((link) => (
+                                <li key={link.href}>
+                                    <Link href={link.href} className="transition hover:text-gold-ink">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
 
                 <div className="flex flex-col items-center justify-between gap-4 border-t border-elegant-border py-8 text-[10px] uppercase tracking-[0.2em] text-ink/55 md:flex-row">

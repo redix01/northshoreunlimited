@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ConsultationBookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ProfileController;
@@ -13,8 +14,11 @@ use Illuminate\Support\Facades\Route;
 // ─── Public / Marketing ────────────────────────────────────────────────────
 Route::inertia('/', 'Home')->name('home');
 Route::inertia('/company', 'Company')->name('company');
+Route::inertia('/guide', 'Guide')->name('guide');
 Route::inertia('/compliance', 'Compliance')->name('compliance');
 Route::inertia('/terms', 'Terms')->name('terms');
+Route::get('/schedule', [ConsultationBookingController::class, 'show'])->name('schedule');
+Route::post('/schedule', [ConsultationBookingController::class, 'store'])->name('schedule.store');
 Route::post('/trade-request', [TradeRequestController::class, 'store'])->name('trade-requests.store');
 
 // ─── Authentication ────────────────────────────────────────────────────────

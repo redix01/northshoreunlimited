@@ -28,11 +28,14 @@ export default function Login() {
             <div className="w-full max-w-md relative">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/30 flex items-center justify-center">
-                            <Shield size={20} className="text-gold-ink" />
-                        </div>
-                        <span className="text-lg font-semibold text-[var(--color-dash-text)]">Northshore Unlimited</span>
+                    <Link href="/" className="inline-block mb-6">
+                        <img
+                            src="/img/logo.png"
+                            alt="Northshore Unlimited Capital"
+                            width={800}
+                            height={211}
+                            className="h-11 w-auto"
+                        />
                     </Link>
                     <h1 className="text-2xl font-semibold text-[var(--color-dash-text)] mb-1">Sign in to your account</h1>
                     <p className="text-sm text-[var(--color-dash-muted)]">Enter your username and password to access the portal</p>

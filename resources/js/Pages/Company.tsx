@@ -256,7 +256,7 @@ export default function CompanyPage() {
                                 </p>
                                 <div className="flex flex-wrap gap-5">
                                     <Link
-                                        href="/#contact"
+                                        href="/schedule"
                                         className="rounded-sm bg-gold px-8 py-4 text-xs font-bold uppercase tracking-widest text-ink transition hover:bg-gold-dark"
                                     >
                                         Schedule a Consultation

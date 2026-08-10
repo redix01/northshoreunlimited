@@ -2,7 +2,6 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowDownCircle,
     ArrowUpCircle,
-    BarChart3,
     ChevronRight,
     LayoutDashboard,
     LogOut,
@@ -113,16 +112,17 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
         <nav className={`flex flex-col h-full ${mobile ? '' : ''}`}>
             {/* Logo */}
             <div className="px-5 pt-6 pb-4 border-b border-[var(--color-dash-border)]">
-                <Link href="/" className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center">
-                        <BarChart3 size={16} className="text-gold-ink" />
-                    </div>
-                    <div>
-                        <p className="text-xs font-semibold text-[var(--color-dash-text)] leading-none">Northshore</p>
-                        <p className="text-[10px] text-[var(--color-dash-muted)] leading-none mt-0.5">
-                            {isAdminSection ? 'Admin Panel' : 'Client Portal'}
-                        </p>
-                    </div>
+                <Link href="/" className="block">
+                    <img
+                        src="/img/logo.png"
+                        alt="Northshore Unlimited Capital"
+                        width={800}
+                        height={211}
+                        className="h-8 w-auto"
+                    />
+                    <p className="mt-1.5 text-[10px] text-[var(--color-dash-muted)] leading-none">
+                        {isAdminSection ? 'Admin Panel' : 'Client Portal'}
+                    </p>
                 </Link>
             </div>
 
