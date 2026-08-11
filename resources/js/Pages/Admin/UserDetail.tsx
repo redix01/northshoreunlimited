@@ -55,7 +55,7 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, st
                         <h1 className="text-xl font-semibold text-[var(--color-dash-text)]">{profileUser.name}</h1>
                         <p className="mt-1 text-sm text-[var(--color-dash-muted)]">@{profileUser.username ?? 'no-username'} · {profileUser.email}</p>
                     </div>
-                    <Link href="/admin/users" className="text-sm font-medium text-gold hover:text-gold/80">Back to users</Link>
+                    <Link href="/admin/users" className="text-sm font-medium text-gold-ink hover:text-gold-ink/80">Back to users</Link>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -125,7 +125,7 @@ function Input({ label, value, onChange, error, type = 'text' }: { label: string
         <label className="block">
             <span className="mb-1.5 block text-xs font-medium text-[var(--color-dash-muted)]">{label}</span>
             <input type={type} value={value} onChange={event => onChange(event.target.value)} className={`h-10 w-full rounded-lg border bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50 ${error ? 'border-red-500/60' : 'border-[var(--color-dash-border)]'}`} />
-            {error && <span className="mt-1 block text-xs text-red-400">{error}</span>}
+            {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
         </label>
     );
 }

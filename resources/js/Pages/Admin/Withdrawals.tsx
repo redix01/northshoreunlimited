@@ -48,7 +48,7 @@ export default function AdminWithdrawals({ withdrawals, filters }: Props) {
                                             <p className="font-medium text-[var(--color-dash-text)]">{withdrawal.user?.name ?? 'Unknown user'}</p>
                                             <p className="text-xs text-[var(--color-dash-muted)]">{withdrawal.user?.email ?? '-'}</p>
                                         </td>
-                                        <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(withdrawal.amount)}</td>
+                                        <td className="px-4 py-3 font-semibold text-gold-ink">{formatCurrency(withdrawal.amount)}</td>
                                         <td className="max-w-[260px] px-4 py-3 text-xs text-[var(--color-dash-muted)]">
                                             <p className="truncate">{withdrawal.wallet_address}</p>
                                             <p className="mt-1">{withdrawal.network ?? withdrawal.currency}</p>
@@ -82,10 +82,10 @@ function DecisionActions({ approveUrl, rejectUrl }: { approveUrl: string; reject
 
     return (
         <div className="flex flex-wrap gap-2">
-            <button onClick={() => router.post(approveUrl, {}, { preserveScroll: true })} className="rounded bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-500/25">
+            <button onClick={() => router.post(approveUrl, {}, { preserveScroll: true })} className="rounded bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-500/25">
                 Approve
             </button>
-            <button onClick={reject} className="rounded bg-red-500/15 px-3 py-1 text-xs font-medium text-red-400 hover:bg-red-500/25">
+            <button onClick={reject} className="rounded bg-red-500/15 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-500/25">
                 Reject
             </button>
         </div>
