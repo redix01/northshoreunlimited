@@ -263,14 +263,14 @@ export default function Register() {
             {/* justify-between rather than an absolutely-placed logo: the panel
                 is only ~230px tall on a phone, where the two would collide. */}
             <aside
-                className="flex min-h-[240px] flex-col justify-between gap-10 overflow-hidden bg-[#14110b] p-8 lg:sticky lg:top-0 lg:min-h-screen lg:p-12"
+                className="flex min-h-[240px] flex-col overflow-hidden bg-[#14110b] p-8 lg:sticky lg:top-0 lg:h-screen lg:min-h-screen lg:p-12"
                 style={{
                     backgroundImage: `linear-gradient(to top, rgba(10,8,5,0.92), rgba(10,8,5,0.35)), url('${hero.image}')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}
             >
-                <Link href="/" className="w-fit">
+                <Link href="/" className="w-fit shrink-0">
                     <img
                         src="/img/logo.png"
                         alt="Northshore Unlimited Capital"
@@ -278,12 +278,14 @@ export default function Register() {
                     />
                 </Link>
 
-                <div>
-                    <h2 className="font-serif text-[1.75rem] leading-tight text-white sm:text-3xl lg:text-[2.75rem]">
+                {/* Centred in the space below the logo rather than pinned to the
+                    bottom, which pushed the copy under the fold on tall screens. */}
+                <div className="flex flex-1 flex-col justify-center py-8">
+                    <h2 className="max-w-sm font-serif text-[1.75rem] leading-tight text-white sm:text-3xl lg:text-[2.5rem]">
                         {hero.headline}
                         <span className="block text-gold">{hero.accent}</span>
                     </h2>
-                    <p className="mt-3 max-w-md text-sm text-white/70">{hero.subtext}</p>
+                    <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">{hero.subtext}</p>
                 </div>
             </aside>
 
