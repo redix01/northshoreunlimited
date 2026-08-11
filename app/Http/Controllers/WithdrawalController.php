@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Withdrawal;
 use App\Models\Wallet;
+use App\Services\AccountSummary;
+use App\Services\MarketData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class WithdrawalController extends Controller
 {
-    public function index()
+    public function index(MarketData $market)
     {
         $user = Auth::user();
 
@@ -20,7 +22,9 @@ class WithdrawalController extends Controller
 
         return Inertia::render('Dashboard/Withdraw', [
             'withdrawals' => $withdrawals,
+            'wallet'      => (new AccountSummary($user, $market))->wallet(),
             'wallets'     => Wallet::where('is_active', true)
+                ->orderByRaw('CASE WHEN currency = ? THEN 0 ELSE 1 END', [config('markets.base', 'BTC')])
                 ->orderBy('currency')
                 ->orderBy('network')
                 ->get(),
@@ -58,7 +62,8 @@ class WithdrawalController extends Controller
             'status'         => 'pending',
         ]);
 
-        return redirect()->route('withdrawals.index')
-            ->with('success', 'Withdrawal request submitted. It will be reviewed from transaction history.');
+        // back(), not a fixed route: the form is also submitted from the
+        // withdraw modal on the dashboard.
+        return back()->with('success', 'Withdrawal request submitted. It will be reviewed from transaction history.');
     }
 }

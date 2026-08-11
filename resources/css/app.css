@@ -31,6 +31,52 @@
     --color-dash-indigo: #6366f1;
 }
 
+/* ─── Client portal ────────────────────────────────────────────────────────
+   Light by default, dark when <html data-theme="dark">. Every portal surface
+   reads these tokens so the theme toggle needs no per-component branching. */
+
+:root {
+    --portal-bg: #faf8f2;
+    --portal-bg-2: #f3efe4;
+    --portal-surface: #ffffff;
+    --portal-surface-2: #f6f3ea;
+    --portal-border: #e6e0d1;
+    --portal-border-strong: #d6cdb6;
+    --portal-text: #1c1a15;
+    --portal-text-soft: #4a463c;
+    --portal-muted: #8b8474;
+    --portal-accent: #8a7318;
+    --portal-accent-hover: #756114;
+    --portal-accent-soft: rgba(138, 115, 24, 0.1);
+    --portal-accent-on: #ffffff;
+    --portal-pos: #15803d;
+    --portal-pos-soft: rgba(21, 128, 61, 0.1);
+    --portal-neg: #b91c1c;
+    --portal-neg-soft: rgba(185, 28, 28, 0.1);
+    --portal-shadow: 0 1px 2px rgba(28, 26, 21, 0.04), 0 8px 24px -12px rgba(28, 26, 21, 0.12);
+}
+
+[data-theme='dark'] {
+    --portal-bg: #0d0f13;
+    --portal-bg-2: #12151b;
+    --portal-surface: #161a21;
+    --portal-surface-2: #1d222b;
+    --portal-border: rgba(255, 255, 255, 0.09);
+    --portal-border-strong: rgba(255, 255, 255, 0.18);
+    --portal-text: #eceae4;
+    --portal-text-soft: #c3bfb5;
+    --portal-muted: #857f72;
+    --portal-accent: #d4af37;
+    --portal-accent-hover: #e0bf52;
+    --portal-accent-soft: rgba(212, 175, 55, 0.14);
+    --portal-accent-on: #17150f;
+    --portal-pos: #34d399;
+    --portal-pos-soft: rgba(52, 211, 153, 0.12);
+    --portal-neg: #f87171;
+    --portal-neg-soft: rgba(248, 113, 113, 0.12);
+    --portal-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+}
+
 @layer base {
     html {
         scroll-behavior: smooth;
@@ -39,5 +85,32 @@
     body {
         @apply bg-elegant-bg text-white selection:bg-gold selection:text-black;
         font-family: var(--font-sans);
+    }
+
+    /* The portal owns the page background while it is mounted. */
+    body:has([data-portal]) {
+        background-color: var(--portal-bg);
+        color: var(--portal-text);
+    }
+}
+
+@layer utilities {
+    @keyframes portal-marquee {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+    }
+
+    .animate-marquee {
+        animation: portal-marquee 45s linear infinite;
+    }
+
+    .animate-marquee:hover {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .animate-marquee {
+            animation: none;
+        }
     }
 }
