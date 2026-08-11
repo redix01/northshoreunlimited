@@ -1,15 +1,22 @@
-import { Link, useForm } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import { Plus, Search } from 'lucide-react';
-import DashboardLayout, { formatCurrency } from '../../Components/DashboardLayout';
+import DashboardLayout, { StatusBadge, formatCurrency } from '../../Components/DashboardLayout';
 import type { AuthUser, PaginatedData } from '../../types';
 
 interface Props {
     users: PaginatedData<AuthUser & { deposits_count: number; withdrawals_count: number }>;
-    filters: { search?: string };
+    filters: { search?: string; status: string };
+    defaults: { daily_topup_percent: number };
 }
 
-export default function AdminUsers({ users, filters }: Props) {
-    const searchForm = useForm({ search: filters.search ?? '' });
+const statusFilters = [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'suspended', label: 'Suspended' },
+];
+
+export default function AdminUsers({ users, filters, defaults }: Props) {
+    const searchForm = useForm({ search: filters.search ?? '', status: filters.status ?? 'all' });
     const createForm = useForm({ name: '', username: '', email: '', password: '' });
 
     function search(event: React.FormEvent) {
@@ -47,8 +54,8 @@ export default function AdminUsers({ users, filters }: Props) {
                 </section>
 
                 <section className="rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)]">
-                    <div className="border-b border-[var(--color-dash-border)] p-4">
-                        <form onSubmit={search} className="relative max-w-sm">
+                    <div className="flex flex-col gap-3 border-b border-[var(--color-dash-border)] p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <form onSubmit={search} className="relative w-full max-w-sm">
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-dash-muted)]" />
                             <input
                                 value={searchForm.data.search}
@@ -57,6 +64,22 @@ export default function AdminUsers({ users, filters }: Props) {
                                 className="w-full rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] py-2 pl-9 pr-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50"
                             />
                         </form>
+
+                        <div className="flex flex-wrap gap-2">
+                            {statusFilters.map(filter => (
+                                <button
+                                    key={filter.value}
+                                    onClick={() => router.get('/admin/users', { search: searchForm.data.search, status: filter.value }, { preserveState: true, replace: true })}
+                                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                                        (filters.status ?? 'all') === filter.value
+                                            ? 'bg-gold/15 text-gold border border-gold/25'
+                                            : 'border border-[var(--color-dash-border)] text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]'
+                                    }`}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -64,8 +87,9 @@ export default function AdminUsers({ users, filters }: Props) {
                             <thead className="border-b border-[var(--color-dash-border)] text-xs uppercase tracking-wide text-[var(--color-dash-muted)]">
                                 <tr>
                                     <th className="px-4 py-3">Client</th>
-                                    <th className="px-4 py-3">Member ID</th>
+                                    <th className="px-4 py-3">Status</th>
                                     <th className="px-4 py-3">Balance</th>
+                                    <th className="px-4 py-3">Daily rate</th>
                                     <th className="px-4 py-3">Deposits</th>
                                     <th className="px-4 py-3">Withdrawals</th>
                                     <th className="px-4 py-3"></th>
@@ -78,8 +102,19 @@ export default function AdminUsers({ users, filters }: Props) {
                                             <p className="font-medium text-[var(--color-dash-text)]">{user.name}</p>
                                             <p className="text-xs text-[var(--color-dash-muted)]">@{user.username ?? 'no-username'} · {user.email}</p>
                                         </td>
-                                        <td className="px-4 py-3 text-[var(--color-dash-muted)]">{user.member_id ?? '-'}</td>
+                                        <td className="px-4 py-3">
+                                            <StatusBadge status={user.status ?? 'active'} />
+                                        </td>
                                         <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(user.balance)}</td>
+                                        <td className="px-4 py-3 text-[var(--color-dash-muted)]">
+                                            {user.topup_enabled === false ? (
+                                                <span className="text-[var(--color-dash-muted)]">Off</span>
+                                            ) : user.daily_topup_percent != null ? (
+                                                <span className="text-[var(--color-dash-text)]">{Number(user.daily_topup_percent)}%</span>
+                                            ) : (
+                                                <span>{defaults.daily_topup_percent}% <span className="text-[10px]">default</span></span>
+                                            )}
+                                        </td>
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">{user.deposits_count}</td>
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">{user.withdrawals_count}</td>
                                         <td className="px-4 py-3 text-right">

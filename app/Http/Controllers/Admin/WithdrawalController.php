@@ -37,7 +37,9 @@ class WithdrawalController extends Controller
             'notes' => ['nullable', 'string', 'max:255'],
         ]);
 
-        if ((float) $withdrawal->user->balance < (float) $withdrawal->amount) {
+        $debit = $withdrawal->totalDebit();
+
+        if ((float) $withdrawal->user->balance < $debit) {
             return back()->withErrors(['error' => 'User has insufficient balance to process this withdrawal.']);
         }
 
@@ -48,14 +50,16 @@ class WithdrawalController extends Controller
             'approved_at' => now(),
         ]);
 
-        $withdrawal->user->decrement('balance', $withdrawal->amount);
+        $withdrawal->user->decrement('balance', $debit);
 
         PortfolioSnapshot::create([
             'user_id' => $withdrawal->user_id,
             'balance' => $withdrawal->user->fresh()->balance,
         ]);
 
-        return back()->with('success', 'Withdrawal approved and balance deducted.');
+        return back()->with('success', (float) $withdrawal->fee > 0
+            ? 'Withdrawal approved. $' . number_format($debit, 2) . ' deducted including a $' . number_format((float) $withdrawal->fee, 2) . ' fee.'
+            : 'Withdrawal approved and balance deducted.');
     }
 
     public function reject(Request $request, Withdrawal $withdrawal)

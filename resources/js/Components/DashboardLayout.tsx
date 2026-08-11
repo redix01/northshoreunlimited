@@ -9,6 +9,7 @@ import {
     Menu,
     Settings,
     Shield,
+    TrendingUp,
     User,
     Users,
     Wallet,
@@ -36,6 +37,8 @@ const statusColors: Record<string, string> = {
     rejected:   'bg-red-500/15 text-red-400 border border-red-500/25',
     processing: 'bg-blue-500/15 text-blue-400 border border-blue-500/25',
     completed:  'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25',
+    active:     'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25',
+    suspended:  'bg-red-500/15 text-red-400 border border-red-500/25',
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -52,6 +55,91 @@ export function formatCurrency(amount: number | string): string {
 
 export function formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+export function formatDateTime(dateStr: string | null): string {
+    if (!dateStr) return 'Never';
+
+    return new Date(dateStr).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+    });
+}
+
+/** Shared form controls, so the admin screens stay visually consistent. */
+export function Input({
+    label, value, onChange, error, type = 'text', hint, placeholder, step, min,
+}: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    error?: string;
+    type?: string;
+    hint?: string;
+    placeholder?: string;
+    step?: string;
+    min?: string;
+}) {
+    return (
+        <label className="block">
+            <span className="mb-1.5 block text-xs font-medium text-[var(--color-dash-muted)]">{label}</span>
+            <input
+                type={type}
+                value={value}
+                step={step}
+                min={min}
+                placeholder={placeholder}
+                onChange={event => onChange(event.target.value)}
+                className={`h-10 w-full rounded-lg border bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50 ${error ? 'border-red-500/60' : 'border-[var(--color-dash-border)]'}`}
+            />
+            {hint && !error && <span className="mt-1 block text-xs text-[var(--color-dash-muted)]">{hint}</span>}
+            {error && <span className="mt-1 block text-xs text-red-400">{error}</span>}
+        </label>
+    );
+}
+
+export function Toggle({
+    label, checked, onChange, hint,
+}: {
+    label: string;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+    hint?: string;
+}) {
+    return (
+        <label className="flex cursor-pointer items-start justify-between gap-4 rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] px-3 py-2.5">
+            <span className="min-w-0">
+                <span className="block text-sm text-[var(--color-dash-text)]">{label}</span>
+                {hint && <span className="mt-0.5 block text-xs text-[var(--color-dash-muted)]">{hint}</span>}
+            </span>
+            <span className="relative mt-0.5 inline-flex shrink-0">
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={event => onChange(event.target.checked)}
+                    className="peer sr-only"
+                />
+                <span className="h-5 w-9 rounded-full bg-[var(--color-dash-surface-2)] border border-[var(--color-dash-border)] transition peer-checked:bg-gold/80 peer-checked:border-gold" />
+                <span className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-[var(--color-dash-muted)] transition peer-checked:translate-x-4 peer-checked:bg-black" />
+            </span>
+        </label>
+    );
+}
+
+export function Pagination({ links }: { links: { url: string | null; label: string; active: boolean }[] }) {
+    return (
+        <div className="flex flex-wrap gap-2 border-t border-[var(--color-dash-border)] p-4">
+            {links.map((link, index) => link.url ? (
+                <Link
+                    key={`${link.label}-${index}`}
+                    href={link.url}
+                    className={`rounded px-3 py-1 text-xs ${link.active ? 'bg-gold text-black' : 'bg-[var(--color-dash-surface-2)] text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]'}`}
+                    dangerouslySetInnerHTML={{ __html: link.label }}
+                />
+            ) : (
+                <span key={`${link.label}-${index}`} className="rounded bg-[var(--color-dash-bg)] px-3 py-1 text-xs text-[var(--color-dash-muted)] opacity-50" dangerouslySetInnerHTML={{ __html: link.label }} />
+            ))}
+        </div>
+    );
 }
 
 function FlashMessages() {
@@ -98,10 +186,11 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
     const adminNav: NavItem[] = [
         { label: 'Dashboard',   href: '/admin/dashboard',    icon: <LayoutDashboard size={18} />, exact: true },
         { label: 'Users',       href: '/admin/users',        icon: <Users size={18} /> },
-        { label: 'Wallets',     href: '/admin/wallets',      icon: <Wallet size={18} /> },
         { label: 'Deposits',    href: '/admin/deposits',     icon: <ArrowDownCircle size={18} /> },
         { label: 'Withdrawals', href: '/admin/withdrawals',  icon: <ArrowUpCircle size={18} /> },
-        { label: 'User Dashboard', href: '/user/dashboard',  icon: <User size={18} /> },
+        { label: 'Earnings',    href: '/admin/earnings',     icon: <TrendingUp size={18} /> },
+        { label: 'Wallets',     href: '/admin/wallets',      icon: <Wallet size={18} /> },
+        { label: 'Settings',    href: '/admin/settings',     icon: <Settings size={18} /> },
     ];
 
     const nav = isAdminSection ? adminNav : userNav;
@@ -276,7 +365,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
 
             {/* Mobile bottom nav */}
             <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[var(--color-dash-sidebar)] border-t border-[var(--color-dash-border)] flex">
-                {nav.map(item => (
+                {nav.slice(0, 5).map(item => (
                     <Link
                         key={item.href}
                         href={item.href}

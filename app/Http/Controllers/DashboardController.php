@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Deposit;
+use App\Models\Earning;
 use App\Models\PortfolioSnapshot;
 use App\Models\Withdrawal;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +43,7 @@ class DashboardController extends Controller
         $stats = [
             'total_deposited'     => (float) Deposit::where('user_id', $user->id)->where('status', 'approved')->sum('amount'),
             'total_withdrawn'     => (float) Withdrawal::where('user_id', $user->id)->whereIn('status', ['approved', 'completed'])->sum('amount'),
+            'total_earned'        => (float) Earning::where('user_id', $user->id)->where('type', 'daily_topup')->sum('amount'),
             'pending_deposits'    => Deposit::where('user_id', $user->id)->where('status', 'pending')->count(),
             'pending_withdrawals' => Withdrawal::where('user_id', $user->id)->where('status', 'pending')->count(),
         ];

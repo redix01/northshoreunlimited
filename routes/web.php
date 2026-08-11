@@ -54,7 +54,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/users', [Admin\UserController::class, 'store'])->name('admin.users.store');
     Route::get('/users/{user}', [Admin\UserController::class, 'show'])->name('admin.users.show');
     Route::put('/users/{user}', [Admin\UserController::class, 'update'])->name('admin.users.update');
-    Route::post('/users/{user}/add-funds', [Admin\UserController::class, 'addFunds'])->name('admin.users.add-funds');
+    Route::put('/users/{user}/settings', [Admin\UserController::class, 'updateSettings'])->name('admin.users.settings');
+    Route::post('/users/{user}/adjust-balance', [Admin\UserController::class, 'adjustBalance'])->name('admin.users.adjust-balance');
+    Route::post('/users/{user}/topup', [Admin\UserController::class, 'runTopup'])->name('admin.users.topup');
+    Route::put('/users/{user}/password', [Admin\UserController::class, 'resetPassword'])->name('admin.users.password');
 
     Route::get('/wallets', [Admin\WalletController::class, 'index'])->name('admin.wallets');
     Route::post('/wallets', [Admin\WalletController::class, 'store'])->name('admin.wallets.store');
@@ -67,4 +70,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/withdrawals', [Admin\WithdrawalController::class, 'index'])->name('admin.withdrawals');
     Route::post('/withdrawals/{withdrawal}/approve', [Admin\WithdrawalController::class, 'approve'])->name('admin.withdrawals.approve');
     Route::post('/withdrawals/{withdrawal}/reject', [Admin\WithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');
+
+    Route::get('/earnings', [Admin\EarningController::class, 'index'])->name('admin.earnings');
+    Route::post('/earnings/run', [Admin\EarningController::class, 'run'])->name('admin.earnings.run');
+
+    Route::get('/settings', [Admin\SettingController::class, 'index'])->name('admin.settings');
+    Route::put('/settings', [Admin\SettingController::class, 'update'])->name('admin.settings.update');
 });

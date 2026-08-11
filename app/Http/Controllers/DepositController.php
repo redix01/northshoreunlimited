@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Deposit;
+use App\Models\PortfolioSnapshot;
+use App\Models\Setting;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,16 +26,28 @@ class DepositController extends Controller
                 ->orderBy('currency')
                 ->orderBy('network')
                 ->get(),
+            'limits'   => [
+                'enabled' => (bool) Setting::get('deposits_enabled'),
+                'min'     => (float) Setting::get('deposit_min'),
+                'max'     => (float) Setting::get('deposit_max'),
+            ],
         ]);
     }
 
     public function store(Request $request)
     {
+        if (!Setting::get('deposits_enabled')) {
+            return back()->withErrors(['amount' => 'Deposits are temporarily unavailable. Please try again later.']);
+        }
+
+        $min = (float) Setting::get('deposit_min');
+        $max = (float) Setting::get('deposit_max');
+
         $validated = $request->validate([
-            'amount'   => ['required', 'numeric', 'min:10', 'max:9999999'],
+            'amount'    => ['required', 'numeric', "min:{$min}", "max:{$max}"],
             'wallet_id' => ['required', 'exists:wallets,id'],
-            'tx_hash'  => ['nullable', 'string', 'max:255'],
-            'proof'    => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,webp', 'max:5120'],
+            'tx_hash'   => ['nullable', 'string', 'max:255'],
+            'proof'     => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,webp', 'max:5120'],
         ]);
 
         $wallet = Wallet::where('is_active', true)->findOrFail($validated['wallet_id']);
@@ -43,15 +57,32 @@ class DepositController extends Controller
             $proofPath = $request->file('proof')->store('deposits/proofs', 'public');
         }
 
-        Deposit::create([
+        $autoApprove = (bool) Setting::get('deposit_auto_approve');
+
+        $deposit = Deposit::create([
             'user_id'        => Auth::id(),
             'amount'         => $validated['amount'],
             'currency'       => $wallet->currency,
             'wallet_address' => $wallet->address,
             'tx_hash'        => $validated['tx_hash'] ?? null,
             'proof_path'     => $proofPath,
-            'status'         => 'pending',
+            'status'         => $autoApprove ? 'approved' : 'pending',
+            'admin_notes'    => $autoApprove ? 'Auto-approved by platform settings.' : null,
+            'approved_at'    => $autoApprove ? now() : null,
         ]);
+
+        if ($autoApprove) {
+            $user = Auth::user();
+            $user->increment('balance', $deposit->amount);
+
+            PortfolioSnapshot::create([
+                'user_id' => $user->id,
+                'balance' => $user->fresh()->balance,
+            ]);
+
+            return redirect()->route('deposits.index')
+                ->with('success', 'Deposit credited to your account.');
+        }
 
         return redirect()->route('deposits.index')
             ->with('success', 'Deposit request submitted. It will be reviewed from transaction history.');

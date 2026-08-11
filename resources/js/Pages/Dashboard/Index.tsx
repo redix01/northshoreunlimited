@@ -12,6 +12,7 @@ interface Snapshot {
 interface Stats {
     total_deposited: number;
     total_withdrawn: number;
+    total_earned: number;
     pending_deposits: number;
     pending_withdrawals: number;
 }
@@ -288,11 +289,11 @@ export default function DashboardIndex() {
                             color: 'text-blue-400',
                         },
                         {
-                            label: 'Pending Deposits',
-                            value: stats.pending_deposits,
-                            icon: <Clock size={18} className="text-amber-400" />,
-                            sub: 'Awaiting review',
-                            color: 'text-amber-400',
+                            label: 'Earnings Credited',
+                            value: formatCurrency(stats.total_earned),
+                            icon: <TrendingUp size={18} className="text-gold" />,
+                            sub: 'Daily portfolio growth',
+                            color: 'text-gold',
                         },
                         {
                             label: 'Pending Withdrawals',

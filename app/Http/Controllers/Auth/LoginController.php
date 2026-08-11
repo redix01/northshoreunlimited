@@ -31,6 +31,14 @@ class LoginController extends Controller
             ])->onlyInput('username');
         }
 
+        if (Auth::user()->isSuspended()) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'username' => 'This account has been suspended. Please contact support.',
+            ])->onlyInput('username');
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(
