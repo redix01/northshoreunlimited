@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BrokerRequestController;
 use App\Http\Controllers\ConsultationBookingController;
 use App\Http\Controllers\DashboardController;
@@ -27,7 +28,12 @@ Route::post('/trade-request', [TradeRequestController::class, 'store'])->name('t
 Route::middleware('guest')->group(function () {
     Route::get('/portal', [LoginController::class, 'show'])->name('portal');
     Route::get('/login', [LoginController::class, 'show'])->name('login');
-    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store')
+        ->middleware('throttle:login');
+
+    Route::get('/register', [RegisterController::class, 'show'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store')
+        ->middleware('throttle:register');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');

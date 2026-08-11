@@ -3,8 +3,13 @@ import { Eye, EyeOff, Lock, Shield, User } from 'lucide-react';
 import { useState } from 'react';
 import type { PageProps } from '../../types';
 
+interface Props extends PageProps {
+    registrationOpen: boolean;
+    appName: string;
+}
+
 export default function Login() {
-    const { flash } = usePage<PageProps>().props;
+    const { flash, registrationOpen, appName } = usePage<Props>().props;
     const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -38,7 +43,7 @@ export default function Login() {
                         />
                     </Link>
                     <h1 className="text-2xl font-semibold text-[var(--color-dash-text)] mb-1">Sign in to your account</h1>
-                    <p className="text-sm text-[var(--color-dash-muted)]">Enter your username and password to access the portal</p>
+                    <p className="text-sm text-[var(--color-dash-muted)]">Enter your email or username and password to access the portal</p>
                 </div>
 
                 {/* Card */}
@@ -53,7 +58,7 @@ export default function Login() {
                         {/* Username */}
                         <div>
                             <label className="block text-sm font-medium text-[var(--color-dash-text)] mb-1.5">
-                                Username
+                                Email or username
                             </label>
                             <div className="relative">
                                 <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-dash-muted)]" />
@@ -61,7 +66,7 @@ export default function Login() {
                                     type="text"
                                     value={data.username}
                                     onChange={e => setData('username', e.target.value)}
-                                    placeholder="Enter username"
+                                    placeholder="Enter email or username"
                                     autoComplete="username"
                                     className={`w-full pl-9 pr-4 py-2.5 rounded-lg bg-[var(--color-dash-bg)] border text-sm text-[var(--color-dash-text)] placeholder-[var(--color-dash-muted)] focus:outline-none focus:ring-2 focus:ring-gold/40 transition-all ${
                                         errors.username ? 'border-red-500/60' : 'border-[var(--color-dash-border)] focus:border-gold/50'
@@ -124,7 +129,16 @@ export default function Login() {
                     </form>
                 </div>
 
-                <div className="mt-6 text-center">
+                {registrationOpen && (
+                    <p className="mt-6 text-center text-sm text-[var(--color-dash-muted)]">
+                        New to {appName}?{' '}
+                        <Link href="/register" className="font-medium text-[var(--color-gold-ink)] hover:underline">
+                            Create an account
+                        </Link>
+                    </p>
+                )}
+
+                <div className={`text-center ${registrationOpen ? 'mt-3' : 'mt-6'}`}>
                     <Link href="/" className="text-sm text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] transition-colors">
                         ← Return to homepage
                     </Link>

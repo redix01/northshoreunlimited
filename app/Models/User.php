@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -33,7 +34,7 @@ class User extends Authenticatable
         'country', 'date_of_birth', 'employment_status', 'occupation',
         'source_of_funds', 'pep_status', 'tax_id', 'is_verified', 'avatar',
         'member_id', 'id_document_type', 'verified_at', 'name_match_confirmed',
-        'is_vip', 'notifications_enabled',
+        'is_vip', 'notifications_enabled', 'referred_by', 'terms_accepted_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -51,6 +52,7 @@ class User extends Authenticatable
             'balance'               => 'decimal:2',
             'date_of_birth'         => 'date',
             'verified_at'           => 'datetime',
+            'terms_accepted_at'     => 'datetime',
         ];
     }
 
@@ -119,5 +121,16 @@ class User extends Authenticatable
     public function documents(): HasMany
     {
         return $this->hasMany(UserDocument::class);
+    }
+
+    /** The client whose member ID was entered as a referral code at sign-up. */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'referred_by');
     }
 }
