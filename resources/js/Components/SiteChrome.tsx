@@ -8,11 +8,12 @@ type SharedPageProps = {
         success?: string;
         error?: string;
     };
+    registrationOpen?: boolean;
 };
 
 export const contactDetails = {
-    officeLine1: '21031 Ventura Blvd. Suite 200,',
-    officeLine2: 'Woodland Hills, CA 91364',
+    officeLine1: 'Jefferson Mill Rd,',
+    officeLine2: 'Scottville, VA 24590',
     email: 'support@northshoreunlimited.com',
     hours: 'Mon – Fri, 9:00 AM – 5:00 PM PST',
 };
@@ -150,8 +151,10 @@ export function SiteNav({
     isMenuOpen: boolean;
     setIsMenuOpen: (value: boolean) => void;
 }) {
-    const { url } = usePage<SharedPageProps>();
+    const { url, props } = usePage<SharedPageProps>();
     const isPortal = url.split('?')[0] === '/portal';
+    // Defaults to open: only an explicit false means /register is closed.
+    const registrationOpen = props.registrationOpen !== false;
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-elegant-border bg-elegant-bg/95 backdrop-blur-md xl:h-24">
@@ -180,17 +183,24 @@ export function SiteNav({
                         </nav>
 
                         <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-5 2xl:gap-6">
-                            {/* Below xl the row is tight; Sign Up already lands on the portal. */}
-                            <Link href="/portal" className={`${navLinkClass} hidden xl:inline`}>
-                                Log In
-                            </Link>
-                            <span className="hidden h-6 w-px bg-elegant-border xl:block" aria-hidden="true" />
+                            {/* Below xl the row is tight; the sign-up page carries its own sign-in link. */}
                             <Link
                                 href="/portal"
-                                className="whitespace-nowrap rounded-sm border border-elegant-border px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-ink/5 xl:px-5 xl:py-3 xl:text-[10px]"
+                                className={`${navLinkClass} ${registrationOpen ? 'hidden xl:inline' : ''}`}
                             >
-                                Sign Up
+                                Log In
                             </Link>
+                            {registrationOpen && (
+                                <>
+                                    <span className="hidden h-6 w-px bg-elegant-border xl:block" aria-hidden="true" />
+                                    <Link
+                                        href="/register"
+                                        className="whitespace-nowrap rounded-sm border border-elegant-border px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-ink/5 xl:px-5 xl:py-3 xl:text-[10px]"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </>
+                            )}
                             <Link
                                 href="/schedule"
                                 className="whitespace-nowrap rounded-sm bg-gold px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-gold-dark xl:px-5 xl:py-3 xl:text-[10px]"
@@ -276,13 +286,15 @@ export function SiteNav({
                                 >
                                     Log In
                                 </Link>
-                                <Link
-                                    href="/portal"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="transition hover:text-gold-ink"
-                                >
-                                    Sign Up
-                                </Link>
+                                {registrationOpen && (
+                                    <Link
+                                        href="/register"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="transition hover:text-gold-ink"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                )}
                                 <Link
                                     href="/schedule"
                                     onClick={() => setIsMenuOpen(false)}

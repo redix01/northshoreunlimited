@@ -20,6 +20,8 @@ export interface AuthUser {
 export interface PageProps {
   auth: { user: AuthUser | null };
   flash: { success?: string; error?: string };
+  /** False when self-service sign-up is switched off and /register 404s. */
+  registrationOpen: boolean;
 }
 
 export interface Deposit {

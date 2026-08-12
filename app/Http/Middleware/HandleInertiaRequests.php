@@ -20,6 +20,8 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
 
         return array_merge(parent::share($request), [
+            // Lets the marketing header hide Sign Up when /register would 404.
+            'registrationOpen' => (bool) config('registration.enabled'),
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error'   => $request->session()->get('error'),
