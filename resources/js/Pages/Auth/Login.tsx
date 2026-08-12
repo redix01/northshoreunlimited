@@ -3,8 +3,13 @@ import { Eye, EyeOff, Lock, Shield, User } from 'lucide-react';
 import { useState } from 'react';
 import type { PageProps } from '../../types';
 
+interface Props extends PageProps {
+    registrationOpen: boolean;
+    appName: string;
+}
+
 export default function Login() {
-    const { flash } = usePage<PageProps>().props;
+    const { flash, registrationOpen, appName } = usePage<Props>().props;
     const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -22,26 +27,29 @@ export default function Login() {
         <div className="min-h-screen bg-[var(--color-dash-bg)] flex flex-col items-center justify-center px-4">
             {/* Background glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold/20 rounded-full blur-3xl" />
             </div>
 
             <div className="w-full max-w-md relative">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/30 flex items-center justify-center">
-                            <Shield size={20} className="text-gold" />
-                        </div>
-                        <span className="text-lg font-semibold text-white">Northshore Unlimited</span>
+                    <Link href="/" className="inline-block mb-6">
+                        <img
+                            src="/img/logo.png"
+                            alt="Northshore Unlimited Capital"
+                            width={800}
+                            height={211}
+                            className="h-11 w-auto"
+                        />
                     </Link>
-                    <h1 className="text-2xl font-semibold text-white mb-1">Sign in to your account</h1>
-                    <p className="text-sm text-[var(--color-dash-muted)]">Enter your username and password to access the portal</p>
+                    <h1 className="text-2xl font-semibold text-[var(--color-dash-text)] mb-1">Sign in to your account</h1>
+                    <p className="text-sm text-[var(--color-dash-muted)]">Enter your email or username and password to access the portal</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <div className="bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] rounded-2xl p-6 sm:p-8 shadow-xl shadow-black/5">
                     {flash.success && (
-                        <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-sm text-emerald-400">
+                        <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-sm text-emerald-700">
                             {flash.success}
                         </div>
                     )}
@@ -50,7 +58,7 @@ export default function Login() {
                         {/* Username */}
                         <div>
                             <label className="block text-sm font-medium text-[var(--color-dash-text)] mb-1.5">
-                                Username
+                                Email or username
                             </label>
                             <div className="relative">
                                 <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-dash-muted)]" />
@@ -58,14 +66,14 @@ export default function Login() {
                                     type="text"
                                     value={data.username}
                                     onChange={e => setData('username', e.target.value)}
-                                    placeholder="Enter username"
+                                    placeholder="Enter email or username"
                                     autoComplete="username"
                                     className={`w-full pl-9 pr-4 py-2.5 rounded-lg bg-[var(--color-dash-bg)] border text-sm text-[var(--color-dash-text)] placeholder-[var(--color-dash-muted)] focus:outline-none focus:ring-2 focus:ring-gold/40 transition-all ${
                                         errors.username ? 'border-red-500/60' : 'border-[var(--color-dash-border)] focus:border-gold/50'
                                     }`}
                                 />
                             </div>
-                            {errors.username && <p className="mt-1 text-xs text-red-400">{errors.username}</p>}
+                            {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username}</p>}
                         </div>
 
                         {/* Password */}
@@ -93,7 +101,7 @@ export default function Login() {
                                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
-                            {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
+                            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                         </div>
 
                         {/* Remember me */}
@@ -121,7 +129,16 @@ export default function Login() {
                     </form>
                 </div>
 
-                <div className="mt-6 text-center">
+                {registrationOpen && (
+                    <p className="mt-6 text-center text-sm text-[var(--color-dash-muted)]">
+                        New to {appName}?{' '}
+                        <Link href="/register" className="font-medium text-[var(--color-gold-ink)] hover:underline">
+                            Create an account
+                        </Link>
+                    </p>
+                )}
+
+                <div className={`text-center ${registrationOpen ? 'mt-3' : 'mt-6'}`}>
                     <Link href="/" className="text-sm text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] transition-colors">
                         ← Return to homepage
                     </Link>

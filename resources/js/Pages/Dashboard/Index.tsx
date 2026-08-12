@@ -1,373 +1,269 @@
-import { Link, usePage } from '@inertiajs/react';
-import { ArrowDownCircle, ArrowUpCircle, Clock, Plus, TrendingUp } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import DashboardLayout, { StatusBadge, formatCurrency, formatDate } from '../../Components/DashboardLayout';
-import type { Deposit, PageProps, Withdrawal } from '../../types';
-
-interface Snapshot {
-    date: string;
-    balance: number;
-}
-
-interface Stats {
-    total_deposited: number;
-    total_withdrawn: number;
-    total_earned: number;
-    pending_deposits: number;
-    pending_withdrawals: number;
-}
+import { Head, Link, usePage } from '@inertiajs/react';
+import { ArrowDownCircle, ArrowUpCircle, Inbox } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import PortalLayout from '../../Components/PortalLayout';
+import AssetsTable from '../../Components/portal/AssetsTable';
+import BalanceHero from '../../Components/portal/BalanceHero';
+import BalanceStrip from '../../Components/portal/BalanceStrip';
+import DepositModal from '../../Components/portal/DepositModal';
+import DepositPanel from '../../Components/portal/DepositPanel';
+import MarketTicker from '../../Components/portal/MarketTicker';
+import PortfolioChart from '../../Components/portal/PortfolioChart';
+import WithdrawModal from '../../Components/portal/WithdrawModal';
+import { money, num, shortDate } from '../../Components/portal/format';
+import type {
+    ChartRange,
+    DashboardUser,
+    Deposit,
+    HoldingAsset,
+    PageProps,
+    PortfolioHighlights,
+    PortfolioSeries,
+    PortfolioSummary,
+    Quote,
+    Wallet,
+    Withdrawal,
+} from '../../types';
 
 interface Props extends PageProps {
-    dashUser: {
-        name: string;
-        balance: number;
-        is_verified: boolean;
-        member_id: string | null;
-        created_at: string;
-    };
-    snapshots: Snapshot[];
+    dashUser: DashboardUser;
+    summary: PortfolioSummary;
+    highlights: PortfolioHighlights;
+    assets: HoldingAsset[];
+    series: PortfolioSeries;
+    ranges: ChartRange[];
+    quotes: Quote[];
+    wallets: Wallet[];
     recentDeposits: Deposit[];
     recentWithdrawals: Withdrawal[];
-    stats: Stats;
+    stats: {
+        total_deposited: number;
+        total_withdrawn: number;
+        pending_deposits: number;
+        pending_withdrawals: number;
+    };
 }
 
-function PortfolioChart({ data }: { data: Snapshot[] }) {
-    if (data.length < 2) {
-        return (
-            <div className="flex items-center justify-center h-40 text-[var(--color-dash-muted)] text-sm">
-                <TrendingUp size={16} className="mr-2" />
-                Chart will appear after first approved deposit
-            </div>
-        );
-    }
+/** How often the displayed balance advances along the accrual rate. */
+const TICK_MS = 2500;
 
-    const w = 600, h = 180;
-    const pad = { top: 16, right: 16, bottom: 32, left: 64 };
+const STATUS_TONE: Record<string, string> = {
+    pending:    'var(--portal-accent)',
+    processing: 'var(--portal-accent)',
+    approved:   'var(--portal-pos)',
+    completed:  'var(--portal-pos)',
+    rejected:   'var(--portal-neg)',
+};
 
-    const values = data.map(d => d.balance);
-    const minV = Math.min(...values);
-    const maxV = Math.max(...values);
-    const range = maxV - minV || 1;
-
-    const xs = (i: number) => pad.left + (i / (data.length - 1)) * (w - pad.left - pad.right);
-    const ys = (v: number) => pad.top + (1 - (v - minV) / range) * (h - pad.top - pad.bottom);
-
-    const linePts = data.map((d, i) => `${xs(i)},${ys(d.balance)}`).join(' ');
-    const areaPts = `${xs(0)},${h - pad.bottom} ${linePts} ${xs(data.length - 1)},${h - pad.bottom}`;
-
-    const yTicks = [0, 0.5, 1].map(p => ({
-        v: minV + p * range,
-        y: ys(minV + p * range),
-    }));
-
-    const xLabels = [0, Math.floor((data.length - 1) / 2), data.length - 1];
-
-    const change = data[data.length - 1].balance - data[0].balance;
-    const changePct = ((change / (data[0].balance || 1)) * 100).toFixed(2);
-    const positive = change >= 0;
+function StatusPill({ status }: { status: string }) {
+    const tone = STATUS_TONE[status] ?? 'var(--portal-muted)';
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-3">
-                <p className="text-xs text-[var(--color-dash-muted)]">Portfolio Performance</p>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded ${positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
-                    {positive ? '+' : ''}{changePct}%
-                </span>
-            </div>
-            <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height: 160 }}>
-                <defs>
-                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#d4af37" stopOpacity="0.18" />
-                        <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
-                    </linearGradient>
-                </defs>
-                {/* Grid */}
-                {yTicks.map(t => (
-                    <line key={t.v} x1={pad.left} y1={t.y} x2={w - pad.right} y2={t.y}
-                        stroke="rgba(255,255,255,0.05)" strokeDasharray="3 5" />
-                ))}
-                {/* Area */}
-                <polygon points={areaPts} fill="url(#chartGrad)" />
-                {/* Line */}
-                <polyline points={linePts} fill="none" stroke="#d4af37" strokeWidth="1.8"
-                    strokeLinejoin="round" strokeLinecap="round" />
-                {/* Last point dot */}
-                <circle cx={xs(data.length - 1)} cy={ys(data[data.length - 1].balance)}
-                    r="3.5" fill="#d4af37" />
-                {/* Y labels */}
-                {yTicks.map(t => (
-                    <text key={t.v} x={pad.left - 6} y={t.y + 4} textAnchor="end"
-                        fontSize="10" fill="#6b7a99">
-                        {t.v >= 1000 ? `$${(t.v / 1000).toFixed(0)}k` : `$${t.v.toFixed(0)}`}
-                    </text>
-                ))}
-                {/* X labels */}
-                {xLabels.map(i => (
-                    <text key={i} x={xs(i)} y={h - pad.bottom + 14} textAnchor="middle"
-                        fontSize="10" fill="#6b7a99">
-                        {data[i].date}
-                    </text>
-                ))}
-            </svg>
-        </div>
+        <span
+            className="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium capitalize"
+            style={{ color: tone, background: `color-mix(in srgb, ${tone} 12%, transparent)` }}
+        >
+            {status}
+        </span>
     );
-}
-
-function BitcoinTradingViewChart() {
-    const widgetConfig = encodeURIComponent(JSON.stringify({
-        autosize: true,
-        symbol: 'BITSTAMP:BTCUSD',
-        interval: '60',
-        timezone: 'Etc/UTC',
-        theme: 'dark',
-        style: '1',
-        locale: 'en',
-        hide_top_toolbar: true,
-        hide_legend: false,
-        allow_symbol_change: false,
-        save_image: false,
-        calendar: false,
-        support_host: 'https://www.tradingview.com',
-    }));
-
-    return (
-        <div className="h-full min-h-[220px] overflow-hidden rounded-2xl border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)]">
-            <iframe
-                title="Bitcoin price chart"
-                src={`https://s.tradingview.com/widgetembed/?frameElementId=btc-chart&symbol=BITSTAMP%3ABTCUSD&interval=60&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0f1624&studies=[]&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&widgetbar=%7B%22details%22%3Afalse%2C%22watchlist%22%3Afalse%2C%22news%22%3Afalse%2C%22datawindow%22%3Afalse%2C%22watchlist_settings%22%3A%7B%22default_symbols%22%3A[]%7D%7D&overrides=%7B%7D&studies_overrides=%7B%7D&settings=${widgetConfig}`}
-                className="h-full min-h-[220px] w-full border-0"
-                loading="lazy"
-            />
-        </div>
-    );
-}
-
-function formatSignedCurrency(amount: number) {
-    const safeAmount = Number.isFinite(amount) ? amount : 0;
-    const sign = safeAmount >= 0 ? '+' : '-';
-    return `${sign}${formatCurrency(Math.abs(safeAmount))}`;
-}
-
-function safeNumber(value: number | string | null | undefined) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : 0;
 }
 
 export default function DashboardIndex() {
-    const { dashUser, snapshots, recentDeposits, recentWithdrawals, stats } =
-        usePage<Props>().props;
-    const baseBalance = safeNumber(dashUser.balance);
-    const [liveBalance, setLiveBalance] = useState(baseBalance);
-    const [lastMove, setLastMove] = useState(0);
+    const {
+        dashUser,
+        summary,
+        highlights,
+        assets,
+        series,
+        ranges,
+        quotes,
+        wallets,
+        recentDeposits,
+        recentWithdrawals,
+        stats,
+    } = usePage<Props>().props;
 
+    const [depositOpen, setDepositOpen] = useState(false);
+    const [withdrawOpen, setWithdrawOpen] = useState(false);
+    const [depositCurrency, setDepositCurrency] = useState<string | null>(null);
+    const [liveValue, setLiveValue] = useState(() => num(summary.total_value));
+
+    // Reset whenever the server sends a new balance (deposit approved, etc.).
     useEffect(() => {
-        setLiveBalance(baseBalance);
-    }, [baseBalance]);
+        setLiveValue(num(summary.total_value));
+    }, [summary.total_value]);
 
+    /*
+     * The daily yield accrues continuously; between page loads we advance the
+     * displayed figure at that rate rather than inventing movement. The server
+     * value remains the source of truth on every refresh.
+     */
     useEffect(() => {
-        const interval = window.setInterval(() => {
-            setLiveBalance(current => {
-                const isUpMove = Math.random() < 0.72;
-                const movementRate = isUpMove
-                    ? 0.0006 + Math.random() * 0.0028
-                    : -(0.0004 + Math.random() * 0.0015);
-                const movement = Math.max(current, 1) * movementRate;
-                setLastMove(movement);
+        const perTick = (num(summary.daily.value) * (TICK_MS / 1000)) / 86400;
+        if (perTick <= 0) return;
 
-                return Math.max(current + movement, 0);
-            });
-        }, 2600);
+        const timer = window.setInterval(() => {
+            setLiveValue(current => current + perTick);
+        }, TICK_MS);
 
-        return () => window.clearInterval(interval);
+        return () => window.clearInterval(timer);
+    }, [summary.daily.value]);
+
+    const openDeposit = useCallback((currency?: string) => {
+        setDepositCurrency(currency ?? null);
+        setDepositOpen(true);
     }, []);
 
-    const liveChange = safeNumber(liveBalance) - baseBalance;
-    const liveChangePct = baseBalance > 0 ? (liveChange / baseBalance) * 100 : 0;
-    const liveTrendPositive = liveChange >= 0;
-    const liveMetrics = useMemo(() => {
-        const dayChange = liveChange;
-        const weekChange = liveBalance * 0.018 + liveChange * 0.35;
-        const allTimeChange = liveBalance * 0.64 + Math.max(liveChange, 0);
-
-        return [
-            { label: '24h', value: dayChange, pct: liveChangePct },
-            { label: 'Weekly', value: weekChange, pct: 1.8 + liveChangePct * 0.35 },
-            { label: 'All-time', value: allTimeChange, pct: 64 + Math.max(liveChangePct, 0) },
-        ];
-    }, [liveBalance, liveChange, liveChangePct]);
-
-    const allActivity = [
-        ...recentDeposits.map(d => ({ ...d, type: 'deposit' as const })),
-        ...recentWithdrawals.map(w => ({ ...w, type: 'withdrawal' as const })),
-    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 8);
+    const activity = useMemo(
+        () =>
+            [
+                ...recentDeposits.map(item => ({ ...item, kind: 'deposit' as const })),
+                ...recentWithdrawals.map(item => ({ ...item, kind: 'withdrawal' as const })),
+            ]
+                .sort(
+                    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                )
+                .slice(0, 8),
+        [recentDeposits, recentWithdrawals],
+    );
 
     return (
-        <DashboardLayout
-            title="Overview"
-            breadcrumb={[{ label: 'Dashboard', href: '/user/dashboard' }, { label: 'Overview' }]}
+        <PortalLayout
+            active="Dashboard"
+            notifications={stats.pending_deposits + stats.pending_withdrawals}
+            onTalkToAdvisor={() => openDeposit()}
         >
-            {/* Welcome + Balance hero */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-                {/* Balance card */}
-                <div className="lg:col-span-1 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1c2e] to-[#111827] border border-gold/20 p-6">
-                    <div className="absolute inset-0 opacity-30">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/20 rounded-full blur-2xl" />
-                    </div>
-                    <div className="relative">
-                        <p className="text-xs text-[var(--color-dash-muted)] uppercase tracking-wider mb-1">Total Portfolio Value</p>
-                        <p className="text-3xl font-bold text-white mb-1 tabular-nums">
-                            {formatCurrency(liveBalance)}
-                        </p>
-                        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                            <span className={liveTrendPositive ? 'text-emerald-400' : 'text-red-400'}>
-                                {formatSignedCurrency(liveChange)} ({liveTrendPositive ? '+' : ''}{liveChangePct.toFixed(2)}%)
-                            </span>
-                            <span className="text-[var(--color-dash-muted)]">live</span>
-                            <span className={`h-1.5 w-1.5 rounded-full ${lastMove >= 0 ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                        </div>
-                        <div className="mb-3 space-y-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                            {liveMetrics.map(metric => (
-                                <div key={metric.label} className="flex items-center justify-between gap-3 text-[11px]">
-                                    <span className="text-[var(--color-dash-muted)]">{metric.label}</span>
-                                    <span className={metric.value >= 0 ? 'text-emerald-400' : 'text-red-400'}>
-                                        {formatSignedCurrency(metric.value)} ({metric.value >= 0 ? '+' : ''}{metric.pct.toFixed(2)}%)
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                        <p className="text-xs text-[var(--color-dash-muted)]">
-                            {dashUser.is_verified ? (
-                                <span className="text-emerald-400">● Verified Account</span>
+            <Head title="Dashboard" />
+
+            <div className="space-y-5">
+                <BalanceHero
+                    summary={summary}
+                    highlights={highlights}
+                    liveValue={liveValue}
+                    isVerified={dashUser.is_verified}
+                    memberId={dashUser.member_id}
+                    onDeposit={() => openDeposit()}
+                    onWithdraw={() => setWithdrawOpen(true)}
+                />
+
+                <BalanceStrip
+                    summary={summary}
+                    liveValue={liveValue}
+                    onDeposit={() => openDeposit()}
+                    onWithdraw={() => setWithdrawOpen(true)}
+                />
+
+                <MarketTicker quotes={quotes} />
+
+                <PortfolioChart series={series} ranges={ranges} liveValue={liveValue} />
+
+                {/* min-w-0: without it the assets table's min-width pushes the
+                    whole grid past the viewport instead of scrolling in place. */}
+                <div className="grid gap-5 lg:grid-cols-3">
+                    <div className="min-w-0 space-y-5 lg:col-span-2">
+                        <AssetsTable
+                            assets={assets}
+                            liveValue={liveValue}
+                            onDeposit={symbol => openDeposit(symbol)}
+                        />
+
+                        <section className="rounded-2xl border border-[var(--portal-border)] bg-[var(--portal-surface)]">
+                            <header className="flex items-center justify-between border-b border-[var(--portal-border)] px-5 py-4">
+                                <h2 className="text-base font-semibold text-[var(--portal-text)]">
+                                    Recent Activity
+                                </h2>
+                                <Link
+                                    href="/user/wallet"
+                                    className="text-xs text-[var(--portal-accent)] hover:underline"
+                                >
+                                    View all
+                                </Link>
+                            </header>
+
+                            {activity.length === 0 ? (
+                                <p className="px-5 py-12 text-center text-sm text-[var(--portal-muted)]">
+                                    <Inbox size={20} className="mx-auto mb-2 opacity-50" />
+                                    No transactions yet. Make your first deposit to get started.
+                                </p>
                             ) : (
-                                <span className="text-amber-400">● Pending Verification</span>
+                                <ul className="divide-y divide-[var(--portal-border)]">
+                                    {activity.map(item => {
+                                        const isDeposit = item.kind === 'deposit';
+
+                                        return (
+                                            <li
+                                                key={`${item.kind}-${item.id}`}
+                                                className="flex items-center gap-3 px-5 py-3.5"
+                                            >
+                                                <span
+                                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                                                    style={{
+                                                        background: isDeposit
+                                                            ? 'var(--portal-pos-soft)'
+                                                            : 'var(--portal-accent-soft)',
+                                                        color: isDeposit
+                                                            ? 'var(--portal-pos)'
+                                                            : 'var(--portal-accent)',
+                                                    }}
+                                                >
+                                                    {isDeposit ? (
+                                                        <ArrowDownCircle size={15} />
+                                                    ) : (
+                                                        <ArrowUpCircle size={15} />
+                                                    )}
+                                                </span>
+
+                                                <span className="min-w-0 flex-1">
+                                                    <span className="block text-sm font-medium capitalize text-[var(--portal-text)]">
+                                                        {item.kind} · {item.currency}
+                                                    </span>
+                                                    <span className="block text-xs text-[var(--portal-muted)]">
+                                                        {shortDate(item.created_at)}
+                                                    </span>
+                                                </span>
+
+                                                <span className="shrink-0 text-right">
+                                                    <span
+                                                        className="block text-sm font-semibold tabular-nums"
+                                                        style={{
+                                                            color: isDeposit
+                                                                ? 'var(--portal-pos)'
+                                                                : 'var(--portal-accent)',
+                                                        }}
+                                                    >
+                                                        {isDeposit ? '+' : '-'}
+                                                        {money(item.amount)}
+                                                    </span>
+                                                    <StatusPill status={item.status} />
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                             )}
-                        </p>
-                        {dashUser.member_id && (
-                            <p className="mt-3 text-[10px] font-mono text-[var(--color-dash-muted)] bg-white/5 px-2 py-1 rounded w-fit">
-                                {dashUser.member_id}
-                            </p>
-                        )}
-                        <div className="mt-4 grid grid-cols-2 gap-2">
-                            <Link
-                                href="/user/deposits"
-                                className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gold text-black text-xs font-semibold hover:bg-gold/90 transition-all"
-                            >
-                                <ArrowDownCircle size={14} />
-                                Deposit
-                            </Link>
-                            <Link
-                                href="/user/withdrawals"
-                                className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/10 text-white text-xs font-medium hover:bg-white/15 border border-white/10 transition-all"
-                            >
-                                <ArrowUpCircle size={14} />
-                                Withdraw
-                            </Link>
-                        </div>
+                        </section>
                     </div>
-                </div>
 
-                <div className="lg:col-span-2">
-                    <BitcoinTradingViewChart />
+                    <DepositPanel wallets={wallets} />
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {[
-                        {
-                            label: 'Total Deposited',
-                            value: formatCurrency(stats.total_deposited),
-                            icon: <ArrowDownCircle size={18} className="text-emerald-400" />,
-                            sub: stats.pending_deposits > 0 ? `${stats.pending_deposits} pending` : 'All confirmed',
-                            color: 'text-emerald-400',
-                        },
-                        {
-                            label: 'Total Withdrawn',
-                            value: formatCurrency(stats.total_withdrawn),
-                            icon: <ArrowUpCircle size={18} className="text-blue-400" />,
-                            sub: stats.pending_withdrawals > 0 ? `${stats.pending_withdrawals} pending` : 'All processed',
-                            color: 'text-blue-400',
-                        },
-                        {
-                            label: 'Earnings Credited',
-                            value: formatCurrency(stats.total_earned),
-                            icon: <TrendingUp size={18} className="text-gold" />,
-                            sub: 'Daily portfolio growth',
-                            color: 'text-gold',
-                        },
-                        {
-                            label: 'Pending Withdrawals',
-                            value: stats.pending_withdrawals,
-                            icon: <Clock size={18} className="text-purple-400" />,
-                            sub: 'Awaiting processing',
-                            color: 'text-purple-400',
-                        },
-                    ].map(stat => (
-                        <div
-                            key={stat.label}
-                            className="rounded-2xl bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] p-4"
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <p className="text-xs text-[var(--color-dash-muted)]">{stat.label}</p>
-                                {stat.icon}
-                            </div>
-                            <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-                            <p className="text-[10px] text-[var(--color-dash-muted)] mt-1">{stat.sub}</p>
-                        </div>
-                    ))}
-            </div>
+            <DepositModal
+                open={depositOpen}
+                onClose={() => setDepositOpen(false)}
+                wallets={wallets}
+                basePrice={summary.base_price}
+                initialCurrency={depositCurrency}
+            />
 
-            {/* Portfolio Chart */}
-            <div className="rounded-2xl bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)] p-5 mb-6">
-                <h2 className="text-sm font-semibold text-[var(--color-dash-text)] mb-4">Portfolio Chart</h2>
-                <PortfolioChart data={snapshots} />
-            </div>
-
-            {/* Recent Activity */}
-            <div className="rounded-2xl bg-[var(--color-dash-surface)] border border-[var(--color-dash-border)]">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-dash-border)]">
-                    <h2 className="text-sm font-semibold text-[var(--color-dash-text)]">Recent Activity</h2>
-                    <Link href="/user/wallet" className="text-xs text-gold hover:text-gold/80 transition-colors">
-                        View all
-                    </Link>
-                </div>
-
-                {allActivity.length === 0 ? (
-                    <div className="px-5 py-10 text-center text-[var(--color-dash-muted)] text-sm">
-                        <Plus size={20} className="mx-auto mb-2 opacity-50" />
-                        No transactions yet. Make your first deposit to get started.
-                    </div>
-                ) : (
-                    <div className="divide-y divide-[var(--color-dash-border)]">
-                        {allActivity.map(item => (
-                            <div key={`${item.type}-${item.id}`} className="flex items-center gap-4 px-5 py-3.5">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                                    item.type === 'deposit'
-                                        ? 'bg-emerald-500/15'
-                                        : 'bg-blue-500/15'
-                                }`}>
-                                    {item.type === 'deposit'
-                                        ? <ArrowDownCircle size={15} className="text-emerald-400" />
-                                        : <ArrowUpCircle size={15} className="text-blue-400" />
-                                    }
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-[var(--color-dash-text)] font-medium capitalize">
-                                        {item.type} · {item.currency}
-                                    </p>
-                                    <p className="text-xs text-[var(--color-dash-muted)]">{formatDate(item.created_at)}</p>
-                                </div>
-                                <div className="text-right shrink-0">
-                                    <p className={`text-sm font-semibold ${item.type === 'deposit' ? 'text-emerald-400' : 'text-blue-400'}`}>
-                                        {item.type === 'deposit' ? '+' : '-'}{formatCurrency(item.amount)}
-                                    </p>
-                                    <StatusBadge status={item.status} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </DashboardLayout>
+            <WithdrawModal
+                open={withdrawOpen}
+                onClose={() => setWithdrawOpen(false)}
+                wallets={wallets}
+                balance={num(summary.available)}
+                basePrice={summary.base_price}
+                baseSymbol={summary.base_symbol}
+            />
+        </PortalLayout>
     );
 }

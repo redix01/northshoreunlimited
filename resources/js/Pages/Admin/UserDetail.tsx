@@ -113,7 +113,7 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                         </div>
                         <p className="mt-1 text-sm text-[var(--color-dash-muted)]">@{profileUser.username ?? 'no-username'} · {profileUser.email}</p>
                     </div>
-                    <Link href="/admin/users" className="text-sm font-medium text-gold hover:text-gold/80">Back to users</Link>
+                    <Link href="/admin/users" className="text-sm font-medium text-gold-ink hover:text-gold-ink/80">Back to users</Link>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">

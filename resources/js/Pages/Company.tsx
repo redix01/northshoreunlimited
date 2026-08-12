@@ -1,108 +1,273 @@
+import { Link } from '@inertiajs/react';
 import { motion } from 'motion/react';
 
-import { fadeIn, SiteChrome, SiteFooter, staggerContainer } from '../Components/SiteChrome';
+import { contactDetails as contact, fadeIn, SiteChrome, SiteFooter, staggerContainer } from '../Components/SiteChrome';
+
+const recognizedBy = [
+    'Yale University',
+    'Brown University',
+    'Forbes',
+    'J.P. Morgan',
+    'Bank of America',
+    'Harvard University',
+    'Bloomberg',
+    'Citadel',
+];
+
+const values = [
+    {
+        title: 'Patience Over Pressure',
+        description:
+            'Advisors never rush clients into decisions, explaining concepts clearly and repeatedly until comfort is achieved.',
+    },
+    {
+        title: 'People First, Always',
+        description:
+            'Every account represents a real person with genuine aspirations; clients are treated as family.',
+    },
+    {
+        title: 'Plain English, No Jargon',
+        description:
+            "Complex financial concepts are explained simply; if something can't be explained clearly, it won't be recommended.",
+    },
+    {
+        title: 'Your Safety Is Sacred',
+        description:
+            'Institutional-grade security protects assets; funds remain accessible with no withdrawal restrictions or hidden terms.',
+    },
+];
+
+const clientStories = [
+    {
+        quote: 'Having a personal advisor who actually picks up the phone changed everything. My portfolio has never been this well-managed.',
+        name: 'Margaret Chen',
+        role: 'Private Investor',
+    },
+    {
+        quote: 'Fast transactions, transparent fees, and a team that genuinely cares about my financial goals. Northshore is the real deal.',
+        name: 'Robert Okafor',
+        role: 'Business Owner',
+    },
+    {
+        quote: "As a retiree, security was my top concern. Northshore's fully audited approach gave me the confidence to invest in crypto.",
+        name: 'Patricia Williams',
+        role: 'Retiree',
+    },
+    {
+        quote: 'Switched from a major exchange to Northshore for the personal touch. The difference in support quality is night and day.',
+        name: 'James Nakamura',
+        role: 'Financial Advisor',
+    },
+    {
+        quote: 'Same-day transactions and zero hidden fees. Northshore makes crypto investing feel as simple as traditional banking.',
+        name: 'Dorothy Mensah',
+        role: 'Nurse Practitioner',
+    },
+    {
+        quote: "Our corporate treasury needed a reliable crypto partner. Northshore's compliance-first approach ticked every box.",
+        name: 'Harold Fischer',
+        role: 'Corporate Treasurer',
+    },
+    {
+        quote: "I was nervous about crypto until my Northshore advisor walked me through every step. Now I'm seeing real returns.",
+        name: 'Linda Gutierrez',
+        role: 'Librarian',
+    },
+    {
+        quote: 'Managing my SMSF crypto allocation used to be a headache. Northshore made it seamless with their dedicated support team.',
+        name: 'Thomas Adesanya',
+        role: 'School Principal',
+    },
+];
+
+const contactRows = [
+    { label: 'Email', value: contact.email },
+    { label: 'Office', value: `${contact.officeLine1} ${contact.officeLine2}` },
+    { label: 'Hours', value: contact.hours },
+];
 
 export default function CompanyPage() {
     return (
         <SiteChrome>
-            <main className="mx-auto min-h-[calc(100vh-60px)] max-w-7xl px-6 pt-32 md:px-12">
-                <section className="py-12 lg:py-20">
+            <main className="pt-20 xl:pt-24">
+                {/* Hero */}
+                <section className="mx-auto max-w-7xl px-6 pt-20 md:px-12 md:pt-28">
                     <motion.div initial="initial" animate="animate" variants={staggerContainer} className="max-w-4xl">
-                        <motion.p variants={fadeIn} className="mb-4 text-[11px] uppercase tracking-[0.3em] text-gold font-semibold">
-                            Institutional Heritage
+                        <motion.p
+                            variants={fadeIn}
+                            className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink"
+                        >
+                            About Us
                         </motion.p>
-                        <motion.h2 variants={fadeIn} className="mb-10 font-serif text-5xl font-normal leading-[1.1] italic text-white md:text-6xl">
-                            The Northshore standard of excellence.
+                        <motion.h2
+                            variants={fadeIn}
+                            className="mb-10 font-serif text-5xl font-normal leading-[1.1] italic text-ink md:text-6xl"
+                        >
+                            Built on Trust, Driven by Discipline.
                         </motion.h2>
-                        <motion.div variants={fadeIn} className="grid gap-12 text-lg leading-relaxed text-white/60 md:grid-cols-2">
-                            <p>
-                                Founded on the principles of absolute discretion and professional integrity, Northshore Unlimited Partners serves as a critical bridge between digital asset markets and institutional capital requirements. We specialize in non-custodial, high-volume settlement services tailored for private clients and global firms.
-                            </p>
-                            <p>
-                                Our approach combines proprietary compliance software with a dedicated human-led settlement desk, ensuring that every transaction meets the highest standards of regulatory governance and operational efficiency.
-                            </p>
-                        </motion.div>
+                        <motion.p variants={fadeIn} className="text-lg leading-relaxed text-ink/70">
+                            Northshore Unlimited was founded on a simple principle: every financial strategy needs a
+                            Bitcoin plan. Every Bitcoin strategy needs a financial plan.
+                        </motion.p>
                     </motion.div>
 
-                    <div className="mt-24 grid gap-8 sm:grid-cols-3">
-                        {[
-                            { detail: '$1.2T', title: 'Annual Trading Volume*' },
-                            { detail: '$376B', title: 'Assets on Platform*' },
-                            { detail: '100+', title: 'Countries' },
-                        ].map((item, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="group flex flex-col items-center rounded-xl border border-elegant-border bg-elegant-card p-12 text-center transition-colors hover:border-gold/20"
+                    <div className="mt-24">
+                        <p className="mb-8 text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/55">
+                            Recognized By
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+                            {recognizedBy.map((name) => (
+                                <span
+                                    key={name}
+                                    className="text-sm font-medium uppercase tracking-[0.15em] text-ink/55 transition hover:text-ink/65"
+                                >
+                                    {name}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Where it all began */}
+                <section className="mx-auto mt-24 max-w-7xl border-t border-elegant-border px-6 py-24 md:px-12">
+                    <div className="grid gap-16 lg:grid-cols-2">
+                        <div>
+                            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
+                                Where It All Began
+                            </p>
+                            <h3 className="mb-8 font-serif text-3xl italic leading-snug text-ink">
+                                A Small-Town Kid with a Big Dream
+                            </h3>
+                            <p className="text-base leading-relaxed text-ink/65">
+                                Northshore Unlimited emerged from observing how hardworking individuals&mdash;grandparents,
+                                neighbors, corner store owners&mdash;were excluded from wealth-building opportunities
+                                reserved for Wall Street insiders. When Bitcoin appeared as a new wealth preservation
+                                tool, the same gatekeeping pattern emerged, with complex jargon and intimidating
+                                interfaces designed for those already possessing wealth rather than first-time builders.
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
+                                Our Mission Today
+                            </p>
+                            <h3 className="mb-8 font-serif text-3xl italic leading-snug text-ink">
+                                Guiding Real People Through a Complex World
+                            </h3>
+                            <p className="mb-10 text-base leading-relaxed text-ink/65">
+                                Northshore Unlimited serves as the financial guide families wish they had, specializing
+                                in assisting everyday people&mdash;particularly seniors, retirees, and those without
+                                formal finance training&mdash;to navigate Bitcoin and digital assets confidently. With
+                                regulatory changes enabling Roth IRAs and retirement accounts to hold Bitcoin, the
+                                company ensures no one remains excluded.
+                            </p>
+                            <blockquote className="border-l border-gold/40 pl-8 font-serif text-xl italic leading-relaxed text-ink/85">
+                                &ldquo;We didn&rsquo;t start this company to impress Wall Street. We started it so our
+                                grandparents&rsquo; generation would finally have someone fighting for their
+                                future.&rdquo;
+                            </blockquote>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Values */}
+                <section className="border-y border-elegant-border bg-gold/[0.04]">
+                    <div className="mx-auto max-w-7xl px-6 py-24 md:px-12">
+                        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
+                            The Northshore Team
+                        </p>
+                        <h3 className="mb-4 font-serif text-4xl italic text-ink">What We Stand For</h3>
+                        <p className="mb-16 text-lg text-ink/62">Values that guide every conversation</p>
+
+                        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                            {values.map((value, index) => (
+                                <div
+                                    key={value.title}
+                                    className="rounded-xl border border-elegant-border bg-elegant-card p-10 transition-colors hover:border-gold/20"
+                                >
+                                    <span className="mb-8 flex h-10 w-10 items-center justify-center rounded-full border border-elegant-border font-serif text-lg italic text-gold-ink">
+                                        {index + 1}
+                                    </span>
+                                    <h4 className="mb-4 text-lg font-medium text-ink">{value.title}</h4>
+                                    <p className="text-sm leading-relaxed text-ink/65">{value.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Client stories */}
+                <section className="mx-auto max-w-7xl px-6 py-24 md:px-12">
+                    <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
+                        Client Stories
+                    </p>
+                    <h3 className="mb-16 font-serif text-4xl italic text-ink">Trusted by Real People</h3>
+
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        {clientStories.map((story) => (
+                            <figure
+                                key={story.name}
+                                className="flex flex-col justify-between rounded-xl border border-elegant-border bg-elegant-card p-8"
                             >
-                                <p className="mb-4 text-4xl font-serif italic tracking-tight text-white">{item.detail}</p>
-                                <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-semibold">{item.title}</h4>
-                            </motion.div>
+                                <blockquote className="text-sm leading-relaxed text-ink/70">
+                                    &ldquo;{story.quote}&rdquo;
+                                </blockquote>
+                                <figcaption className="mt-8">
+                                    <span className="block text-sm font-medium text-ink">{story.name}</span>
+                                    <span className="block text-[10px] uppercase tracking-[0.2em] text-ink/60">
+                                        {story.role}
+                                    </span>
+                                </figcaption>
+                            </figure>
                         ))}
                     </div>
+                </section>
 
-                    <div className="mt-6 text-right">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/10">* As of 12/31/25</p>
-                    </div>
-
-                    <div className="relative mt-24 overflow-hidden rounded-2xl border border-elegant-border bg-white/[0.02] p-12">
-                        <div className="relative z-10 max-w-2xl">
-                            <h3 className="mb-6 font-serif text-3xl italic text-white">Our Mission</h3>
-                            <p className="text-lg leading-relaxed text-white/50">
-                                To provide the most secure and private infrastructure for high-velocity capital movement in the digital age, without compromising on jurisdictional integrity or operational speed.
-                            </p>
-                        </div>
-                        <div className="pointer-events-none absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-gold/5 to-transparent" />
-                    </div>
-
-                    <div className="mt-12 grid gap-8 md:grid-cols-2">
-                        <div className="group rounded-2xl border border-elegant-border bg-elegant-card p-10 transition-colors hover:border-gold/20">
-                            <h3 className="mb-6 font-serif text-xl italic text-white">Full-reserve exchange and qualified custodian</h3>
-                            <p className="text-sm leading-relaxed text-white/50">
-                                At Northshore Unlimited, trust and security are our top priorities. Northshore Unlimited Trust Company (NSTC) is a full-reserve exchange and qualified custodian under the New York Banking Law and is licensed by the New York State Department of Financial Services. Northshore Unlimited, LLC utilizes the eOTC settlement and wallet infrastructure, which is managed by NSTC, which is SOC-2 Type II compliant.
-                            </p>
-                        </div>
-                        <div className="group rounded-2xl border border-elegant-border bg-elegant-card p-10 transition-colors hover:border-gold/20">
-                            <h3 className="mb-6 font-serif text-xl italic text-white">Our Commitment to Compliance</h3>
-                            <p className="text-sm leading-relaxed text-white/50">
-                                A strong compliance foundation is critical to Northshore Unlimited mission of being the most trusted crypto platform. To this end, we have developed a Compliance Program that is rooted in best practices from traditional financial services as well as innovative, sophisticated compliance technology to bring the Bitcoin industry forward. We hold a high standard for what assets we list, what services we provide, and who has access to our products.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="mt-24 border-t border-elegant-border py-24">
-                        <div className="max-w-3xl">
-                            <h3 className="mb-8 font-serif text-3xl italic text-white">Advancing Economic Freedom</h3>
-                            <div className="space-y-6 text-lg leading-relaxed text-white/60">
-                                <p>
-                                    Bitcoin creates economic freedom by ensuring that people can participate fairly in the economy, and Northshore Unlimited is on a mission to increase economic freedom for more than 1 billion people.
-                                </p>
-                                <p>
-                                    We’re updating the century-old financial system by providing a trusted platform that makes it easy for people and institutions to engage with Bitcoin assets, including trading, staking, safekeeping, spending, and fast, free global transfers.
-                                </p>
-                                <p>
-                                    We also provide critical infrastructure for onchain activity and support builders who share our vision that onchain is the new online. And together with the Bitcoin community, we advocate for responsible rules to make the benefits of Bitcoin available around the world.
-                                </p>
+                {/* Contact */}
+                <section className="border-t border-elegant-border">
+                    <div className="mx-auto max-w-7xl px-6 py-24 md:px-12">
+                        <div className="grid gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
+                            <div>
+                                <h3 className="mb-8 font-serif text-4xl italic text-ink">
+                                    We&rsquo;d Love to Hear From You
+                                </h3>
+                                <dl className="divide-y divide-elegant-border border-y border-elegant-border">
+                                    {contactRows.map((detail) => (
+                                        <div
+                                            key={detail.label}
+                                            className="flex items-center justify-between gap-6 py-5 text-sm"
+                                        >
+                                            <dt className="text-[10px] uppercase tracking-[0.3em] text-ink/60">
+                                                {detail.label}
+                                            </dt>
+                                            <dd className="text-right text-ink/85">{detail.value}</dd>
+                                        </div>
+                                    ))}
+                                </dl>
                             </div>
-                        </div>
-                    </div>
 
-                    <div className="mb-24 grid gap-8 md:grid-cols-2">
-                        <div className="rounded-2xl border border-elegant-border bg-white/[0.01] p-10">
-                            <h4 className="mb-6 text-[10px] uppercase tracking-[0.3em] text-gold font-semibold">Institutional Grade</h4>
-                            <h3 className="mb-6 text-2xl font-serif italic text-white">Tailor-made OTC Solutions</h3>
-                            <p className="text-sm leading-relaxed text-white/50">
-                                Our OTC solution is tailor-made for institutional traders and investors.¹ Execute trades by partnering with Northshore’s OTC trading desk or manage your own trading execution strategy through eOTC, Northshore’s automated trading platform.
-                            </p>
-                        </div>
-                        <div className="rounded-2xl border border-elegant-border bg-white/[0.01] p-10">
-                            <h4 className="mb-6 text-[10px] uppercase tracking-[0.3em] text-gold font-semibold">Governance</h4>
-                            <h3 className="mb-6 text-2xl font-serif italic text-white">Global Regulatory Engagement</h3>
-                            <p className="text-sm leading-relaxed text-white/50">
-                                We have worked with regulatory stakeholders and lawmakers around the world to help shape thoughtful regulation that fosters both consumer protection and innovation. We have spent considerable time applying for and becoming licensed and regulated in various jurisdictions across the world. This is not the easier path but we believe it is the right one.
-                            </p>
+                            <div className="rounded-2xl border border-elegant-border bg-elegant-card p-12">
+                                <h3 className="mb-6 font-serif text-3xl italic text-ink">Ready to Talk?</h3>
+                                <p className="mb-10 text-base leading-relaxed text-ink/65">
+                                    No pressure, no obligations. Whether you&rsquo;re curious about Bitcoin, interested
+                                    in a Roth IRA backed by digital assets, or just want to understand your retirement
+                                    options &mdash; our team is ready when you are.
+                                </p>
+                                <div className="flex flex-wrap gap-5">
+                                    <Link
+                                        href="/schedule"
+                                        className="rounded-sm bg-gold px-8 py-4 text-xs font-bold uppercase tracking-widest text-ink transition hover:bg-gold-dark"
+                                    >
+                                        Schedule a Consultation
+                                    </Link>
+                                    <Link
+                                        href="/portal"
+                                        className="rounded-sm border border-elegant-border px-8 py-4 text-xs font-bold uppercase tracking-widest text-ink transition hover:bg-ink/5"
+                                    >
+                                        Client Portal
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

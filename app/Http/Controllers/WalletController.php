@@ -2,30 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Deposit;
 use App\Models\Wallet;
-use App\Models\Withdrawal;
+use App\Services\AccountSummary;
+use App\Services\MarketData;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class WalletController extends Controller
 {
-    public function index()
+    public function index(MarketData $market)
     {
-        $user = Auth::user();
+        $user    = Auth::user();
+        $account = new AccountSummary($user, $market);
 
         return Inertia::render('Dashboard/Wallet', [
-            'wallets' => Wallet::where('is_active', true)
+            'wallet'       => $account->wallet(),
+            'transactions' => $account->transactions(30),
+            'quotes'       => $market->quotes(),
+            'wallets'      => Wallet::where('is_active', true)
+                ->orderByRaw('CASE WHEN currency = ? THEN 0 ELSE 1 END', [config('markets.base', 'BTC')])
                 ->orderBy('currency')
                 ->orderBy('network')
                 ->get(),
-            'deposits' => Deposit::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->paginate(8, ['*'], 'deposits_page'),
-            'withdrawals' => Withdrawal::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->paginate(8, ['*'], 'withdrawals_page'),
-            'balance' => (float) $user->balance,
         ]);
     }
 }

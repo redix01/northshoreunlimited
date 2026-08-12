@@ -105,7 +105,7 @@ export default function AdminUsers({ users, filters, defaults }: Props) {
                                         <td className="px-4 py-3">
                                             <StatusBadge status={user.status ?? 'active'} />
                                         </td>
-                                        <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(user.balance)}</td>
+                                        <td className="px-4 py-3 font-semibold text-gold-ink">{formatCurrency(user.balance)}</td>
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">
                                             {user.topup_enabled === false ? (
                                                 <span className="text-[var(--color-dash-muted)]">Off</span>
@@ -118,7 +118,7 @@ export default function AdminUsers({ users, filters, defaults }: Props) {
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">{user.deposits_count}</td>
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">{user.withdrawals_count}</td>
                                         <td className="px-4 py-3 text-right">
-                                            <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-gold hover:text-gold/80">Open</Link>
+                                            <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-gold-ink hover:text-gold-ink/80">Open</Link>
                                         </td>
                                     </tr>
                                 ))}
@@ -142,7 +142,7 @@ function Input({ label, value, onChange, error, type = 'text' }: { label: string
                 onChange={event => onChange(event.target.value)}
                 className={`h-10 w-full rounded-lg border bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50 ${error ? 'border-red-500/60' : 'border-[var(--color-dash-border)]'}`}
             />
-            {error && <span className="mt-1 block text-xs text-red-400">{error}</span>}
+            {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
         </label>
     );
 }

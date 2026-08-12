@@ -79,7 +79,7 @@ function WalletRow({ wallet }: { wallet: Wallet }) {
                 <input type="checkbox" checked={form.data.is_active} onChange={event => form.setData('is_active', event.target.checked)} className="accent-gold" />
                 Active
             </label>
-            <button disabled={form.processing} className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gold/30 bg-gold/10 px-4 text-sm font-semibold text-gold disabled:opacity-60">
+            <button disabled={form.processing} className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gold/30 bg-gold/10 px-4 text-sm font-semibold text-gold-ink disabled:opacity-60">
                 <Save size={16} />
                 Save
             </button>
@@ -96,7 +96,7 @@ function Input({ label, value, onChange, error }: { label: string; value: string
                 onChange={event => onChange(event.target.value)}
                 className={`h-10 w-full rounded-lg border bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50 ${error ? 'border-red-500/60' : 'border-[var(--color-dash-border)]'}`}
             />
-            {error && <span className="mt-1 block text-xs text-red-400">{error}</span>}
+            {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
         </label>
     );
 }

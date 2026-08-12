@@ -6,13 +6,15 @@ use App\Models\Deposit;
 use App\Models\PortfolioSnapshot;
 use App\Models\Setting;
 use App\Models\Wallet;
+use App\Services\AccountSummary;
+use App\Services\MarketData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DepositController extends Controller
 {
-    public function index()
+    public function index(MarketData $market)
     {
         $user = Auth::user();
 
@@ -22,7 +24,9 @@ class DepositController extends Controller
 
         return Inertia::render('Dashboard/Deposit', [
             'deposits' => $deposits,
+            'wallet'   => (new AccountSummary($user, $market))->wallet(),
             'wallets'  => Wallet::where('is_active', true)
+                ->orderByRaw('CASE WHEN currency = ? THEN 0 ELSE 1 END', [config('markets.base', 'BTC')])
                 ->orderBy('currency')
                 ->orderBy('network')
                 ->get(),
@@ -71,6 +75,8 @@ class DepositController extends Controller
             'approved_at'    => $autoApprove ? now() : null,
         ]);
 
+        // back(), not a fixed route: the form is also submitted from the
+        // deposit modal on the dashboard.
         if ($autoApprove) {
             $user = Auth::user();
             $user->increment('balance', $deposit->amount);
@@ -80,11 +86,9 @@ class DepositController extends Controller
                 'balance' => $user->fresh()->balance,
             ]);
 
-            return redirect()->route('deposits.index')
-                ->with('success', 'Deposit credited to your account.');
+            return back()->with('success', 'Deposit credited to your account.');
         }
 
-        return redirect()->route('deposits.index')
-            ->with('success', 'Deposit request submitted. It will be reviewed from transaction history.');
+        return back()->with('success', 'Deposit request submitted. It will be reviewed from transaction history.');
     }
 }

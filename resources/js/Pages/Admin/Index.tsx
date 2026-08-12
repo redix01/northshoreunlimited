@@ -133,7 +133,7 @@ export default function AdminIndex({ stats, pendingDeposits, pendingWithdrawals,
                                 <p className="truncate text-sm font-medium text-[var(--color-dash-text)]">{user.name}</p>
                                 <p className="truncate text-xs text-[var(--color-dash-muted)]">@{user.username ?? 'no-username'} · {user.email}</p>
                             </div>
-                            <span className="shrink-0 text-sm font-semibold text-gold">{formatCurrency(user.balance)}</span>
+                            <span className="shrink-0 text-sm font-semibold text-gold-ink">{formatCurrency(user.balance)}</span>
                         </Link>
                     )) : <EmptyState message="No users yet." />}
                 </ActivityPanel>
@@ -145,7 +145,7 @@ export default function AdminIndex({ stats, pendingDeposits, pendingWithdrawals,
 function StatCard({ label, value, icon, href, note }: { label: string; value: string; icon: React.ReactNode; href?: string; note?: string }) {
     const content = (
         <div className="h-full rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)] p-4 transition hover:border-gold/30">
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold">{icon}</div>
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-ink">{icon}</div>
             <p className="text-xs uppercase tracking-wide text-[var(--color-dash-muted)]">{label}</p>
             <p className="mt-1 text-2xl font-semibold text-[var(--color-dash-text)]">{value}</p>
             {note && <p className="mt-0.5 text-xs text-[var(--color-dash-muted)]">{note}</p>}
@@ -172,7 +172,7 @@ function ActivityPanel({ title, href, children }: { title: string; href: string;
         <section className="rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)] p-4">
             <div className="mb-4 flex items-center justify-between gap-4">
                 <h2 className="text-sm font-semibold text-[var(--color-dash-text)]">{title}</h2>
-                <Link href={href} className="text-xs font-medium text-gold hover:text-gold/80">View all</Link>
+                <Link href={href} className="text-xs font-medium text-gold-ink hover:text-gold-ink/80">View all</Link>
             </div>
             <div className="space-y-2">{children}</div>
         </section>

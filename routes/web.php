@@ -1,8 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BrokerRequestController;
+use App\Http\Controllers\ConsultationBookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TradeRequestController;
 use App\Http\Controllers\WalletController;
@@ -13,13 +17,23 @@ use Illuminate\Support\Facades\Route;
 // ─── Public / Marketing ────────────────────────────────────────────────────
 Route::inertia('/', 'Home')->name('home');
 Route::inertia('/company', 'Company')->name('company');
+Route::inertia('/guide', 'Guide')->name('guide');
+Route::inertia('/compliance', 'Compliance')->name('compliance');
+Route::inertia('/terms', 'Terms')->name('terms');
+Route::get('/schedule', [ConsultationBookingController::class, 'show'])->name('schedule');
+Route::post('/schedule', [ConsultationBookingController::class, 'store'])->name('schedule.store');
 Route::post('/trade-request', [TradeRequestController::class, 'store'])->name('trade-requests.store');
 
 // ─── Authentication ────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/portal', [LoginController::class, 'show'])->name('portal');
     Route::get('/login', [LoginController::class, 'show'])->name('login');
-    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store')
+        ->middleware('throttle:login');
+
+    Route::get('/register', [RegisterController::class, 'show'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store')
+        ->middleware('throttle:register');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
@@ -40,9 +54,18 @@ Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
     Route::get('/withdrawals', [WithdrawalController::class, 'index'])->name('withdrawals.index');
     Route::post('/withdrawals', [WithdrawalController::class, 'store'])->name('withdrawals.store');
 
+    Route::post('/broker-requests', [BrokerRequestController::class, 'store'])->name('broker-requests.store');
+
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // POST, not PUT: the profile form carries an avatar upload, and multipart
+    // bodies do not survive a method-spoofed PUT.
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    Route::get('/documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 });
 
 // ─── Admin Dashboard ───────────────────────────────────────────────────────

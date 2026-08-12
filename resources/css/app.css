@@ -11,33 +11,158 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-serif: 'DM Serif Display', serif;
 
-    --color-gold: #d4af37;
-    --color-elegant-bg: #050505;
-    --color-elegant-card: #111111;
-    --color-elegant-border: rgba(255, 255, 255, 0.1);
+    /* Gold scale.
+       `gold` is the brand fill (buttons, dots, tints, borders) — bright enough
+       to read as gold, dark enough to carry black text.
+       `gold-ink` is the text-safe gold: 5:1 on white.
+       `gold-dark` is the hover/pressed fill. */
+    --color-gold: #c9a227;
+    --color-gold-ink: #8a6712;
+    --color-gold-dark: #a9861a;
 
-    /* Dashboard semi-dark theme */
-    --color-dash-bg: #0d1117;
-    --color-dash-sidebar: #10141c;
-    --color-dash-surface: #161b27;
-    --color-dash-surface-2: #1e2435;
-    --color-dash-border: rgba(255, 255, 255, 0.07);
-    --color-dash-muted: #6b7a99;
-    --color-dash-text: #e2e8f0;
-    --color-dash-green: #10b981;
-    --color-dash-red: #ef4444;
-    --color-dash-amber: #f59e0b;
-    --color-dash-blue: #3b82f6;
-    --color-dash-indigo: #6366f1;
+    /* Marketing site — white & gold */
+    --color-ink: #14110b;
+    --color-elegant-bg: #ffffff;
+    --color-elegant-card: #fbf8f0;
+    --color-elegant-border: rgba(20, 17, 11, 0.12);
+
+    /* Dashboard light theme */
+    --color-dash-bg: #f7f5ef;
+    --color-dash-sidebar: #ffffff;
+    --color-dash-surface: #ffffff;
+    --color-dash-surface-2: #f2eee3;
+    --color-dash-border: rgba(20, 17, 11, 0.12);
+    --color-dash-muted: #6f6757;
+    --color-dash-text: #1a1710;
+    --color-dash-green: #047857;
+    --color-dash-red: #b91c1c;
+    --color-dash-amber: #b45309;
+    --color-dash-blue: #1d4ed8;
+    --color-dash-indigo: #4338ca;
+}
+
+/* ─── Client portal ────────────────────────────────────────────────────────
+   Light by default, dark when <html data-theme="dark">. Every portal surface
+   reads these tokens so the theme toggle needs no per-component branching. */
+
+:root {
+    --portal-bg: #faf8f2;
+    --portal-bg-2: #f3efe4;
+    --portal-surface: #ffffff;
+    --portal-surface-2: #f6f3ea;
+    --portal-border: #e6e0d1;
+    --portal-border-strong: #d6cdb6;
+    --portal-text: #1c1a15;
+    --portal-text-soft: #4a463c;
+    --portal-muted: #8b8474;
+    --portal-accent: #8a7318;
+    --portal-accent-hover: #756114;
+    --portal-accent-soft: rgba(138, 115, 24, 0.1);
+    --portal-accent-on: #ffffff;
+    --portal-pos: #15803d;
+    --portal-pos-soft: rgba(21, 128, 61, 0.1);
+    --portal-neg: #b91c1c;
+    --portal-neg-soft: rgba(185, 28, 28, 0.1);
+    --portal-shadow: 0 1px 2px rgba(28, 26, 21, 0.04), 0 8px 24px -12px rgba(28, 26, 21, 0.12);
+}
+
+[data-theme='dark'] {
+    --portal-bg: #0d0f13;
+    --portal-bg-2: #12151b;
+    --portal-surface: #161a21;
+    --portal-surface-2: #1d222b;
+    --portal-border: rgba(255, 255, 255, 0.09);
+    --portal-border-strong: rgba(255, 255, 255, 0.18);
+    --portal-text: #eceae4;
+    --portal-text-soft: #c3bfb5;
+    --portal-muted: #857f72;
+    --portal-accent: #d4af37;
+    --portal-accent-hover: #e0bf52;
+    --portal-accent-soft: rgba(212, 175, 55, 0.14);
+    --portal-accent-on: #17150f;
+    --portal-pos: #34d399;
+    --portal-pos-soft: rgba(52, 211, 153, 0.12);
+    --portal-neg: #f87171;
+    --portal-neg-soft: rgba(248, 113, 113, 0.12);
+    --portal-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
 }
 
 @layer base {
     html {
         scroll-behavior: smooth;
+        scroll-padding-top: 6rem;
     }
 
     body {
-        @apply bg-elegant-bg text-white selection:bg-gold selection:text-black;
+        @apply bg-elegant-bg text-ink selection:bg-gold/30 selection:text-ink;
         font-family: var(--font-sans);
+    }
+
+    /* The portal owns the page background while it is mounted. */
+    body:has([data-portal]) {
+        background-color: var(--portal-bg);
+        color: var(--portal-text);
+    }
+}
+
+@layer utilities {
+    @keyframes portal-marquee {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+    }
+
+    .animate-marquee {
+        animation: portal-marquee 45s linear infinite;
+    }
+
+    .animate-marquee:hover {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .animate-marquee {
+            animation: none;
+        }
+    }
+}
+
+@layer utilities {
+    @keyframes marquee-track {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .marquee-track {
+        animation: marquee-track 70s linear infinite;
+    }
+
+    .marquee-track-reverse {
+        animation: marquee-track 70s linear infinite reverse;
+    }
+
+    .marquee-viewport:hover .marquee-track,
+    .marquee-viewport:hover .marquee-track-reverse {
+        animation-play-state: paused;
+    }
+
+    .marquee-fade {
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 8%,
+            black 92%,
+            transparent
+        );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .marquee-track,
+        .marquee-track-reverse {
+            animation: none;
+        }
     }
 }

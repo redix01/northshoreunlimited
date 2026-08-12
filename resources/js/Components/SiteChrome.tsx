@@ -1,13 +1,20 @@
 import { Link, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Menu, X } from 'lucide-react';
-import React, { ReactNode, useState } from 'react';
+import { ChevronDown, MapPin, Menu, X } from 'lucide-react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 type SharedPageProps = {
     flash?: {
         success?: string;
         error?: string;
     };
+};
+
+export const contactDetails = {
+    officeLine1: '21031 Ventura Blvd. Suite 200,',
+    officeLine2: 'Woodland Hills, CA 91364',
+    email: 'support@northshoreunlimited.com',
+    hours: 'Mon – Fri, 9:00 AM – 5:00 PM PST',
 };
 
 export const fadeIn = {
@@ -24,6 +31,118 @@ export const staggerContainer = {
     },
 };
 
+const primaryNav = [
+    { label: 'About', href: '/company' },
+    { label: 'Proof of Reserves', href: '/#proof-of-reserves' },
+];
+
+const learnMenu = [
+    { label: 'Guide', description: 'Bitcoin and retirement accounts', href: '/guide' },
+    { label: 'Compliance', description: 'Licensing & certifications', href: '/compliance' },
+    { label: 'Terms of Service', description: 'Usage terms and conditions', href: '/terms' },
+];
+
+const navLinkClass =
+    'whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.1em] text-ink/70 transition hover:text-gold-ink xl:text-[12px]';
+
+/** Icon tile used by the contact card, matching the paired label/value rows. */
+function IconTile({ children }: { children: ReactNode }) {
+    return (
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold-ink">
+            {children}
+        </span>
+    );
+}
+
+function NavDropdown({ label, children }: { label: string; children: ReactNode }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapper = useRef<HTMLDivElement>(null);
+    const closeTimer = useRef<number | undefined>(undefined);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const onPointerDown = (event: PointerEvent) => {
+            if (!wrapper.current?.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsOpen(false);
+        };
+
+        document.addEventListener('pointerdown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            document.removeEventListener('pointerdown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isOpen]);
+
+    useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+
+    const open = () => {
+        window.clearTimeout(closeTimer.current);
+        setIsOpen(true);
+    };
+
+    // A short delay keeps the panel reachable while the pointer crosses the gap.
+    const scheduleClose = () => {
+        window.clearTimeout(closeTimer.current);
+        closeTimer.current = window.setTimeout(() => setIsOpen(false), 140);
+    };
+
+    return (
+        <div ref={wrapper} className="relative" onMouseEnter={open} onMouseLeave={scheduleClose}>
+            <button
+                type="button"
+                aria-expanded={isOpen}
+                aria-haspopup="true"
+                onClick={() => setIsOpen(!isOpen)}
+                className={`flex items-center gap-1.5 ${navLinkClass} ${isOpen ? 'text-gold-ink' : ''}`}
+            >
+                {label}
+                <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                />
+            </button>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.16, ease: 'easeOut' }}
+                        className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-4"
+                    >
+                        {children}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+function LearnMenu({ onNavigate }: { onNavigate?: () => void }) {
+    return (
+        <div className="w-[300px] overflow-hidden rounded-2xl border border-elegant-border bg-elegant-card p-2 shadow-xl shadow-black/10">
+            {learnMenu.map((item) => (
+                <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onNavigate}
+                    className="block rounded-xl px-4 py-3.5 transition hover:bg-ink/5"
+                >
+                    <span className="block text-sm font-medium text-ink">{item.label}</span>
+                    <span className="mt-0.5 block text-xs text-ink/62">{item.description}</span>
+                </Link>
+            ))}
+        </div>
+    );
+}
+
 export function SiteNav({
     isMenuOpen,
     setIsMenuOpen,
@@ -35,30 +154,55 @@ export function SiteNav({
     const isPortal = url.split('?')[0] === '/portal';
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-elegant-border bg-elegant-bg/95 backdrop-blur-md">
-            <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 md:px-12">
-                <Link href="/" className="flex flex-col">
-                    <h1 className="text-lg font-bold tracking-[0.4em] text-white">
-                        NORTHSHORE UNLIMITED
-                    </h1>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/30">
-                        Institutional Digital Liquidity
-                    </span>
+        <header className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-elegant-border bg-elegant-bg/95 backdrop-blur-md xl:h-24">
+            <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-5 sm:px-6 lg:gap-5 lg:px-8 xl:gap-6 xl:px-12 2xl:gap-10">
+                <Link href="/" className="flex min-w-0 shrink-0 items-center" aria-label="Northshore Unlimited Capital — home">
+                    <img
+                        src="/img/logo.png"
+                        alt="Northshore Unlimited Capital"
+                        width={800}
+                        height={211}
+                        className="h-9 w-auto sm:h-10 xl:h-12"
+                    />
                 </Link>
 
                 {!isPortal && (
-                    <nav className="hidden items-center gap-8 text-[12px] font-medium uppercase tracking-[0.1em] text-white/60 md:flex">
-                        <Link href="/company" className="transition hover:text-gold">
-                            Company
-                        </Link>
-                        <Link href="/portal" className="transition hover:text-gold">
-                            Portal
-                        </Link>
-                    </nav>
+                    <>
+                        <nav className="hidden flex-1 items-center justify-center gap-4 lg:flex xl:gap-7 2xl:gap-10">
+                            {primaryNav.map((item) => (
+                                <Link key={item.label} href={item.href} className={navLinkClass}>
+                                    {item.label}
+                                </Link>
+                            ))}
+                            <NavDropdown label="Learn">
+                                <LearnMenu />
+                            </NavDropdown>
+                        </nav>
+
+                        <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-5 2xl:gap-6">
+                            {/* Below xl the row is tight; Sign Up already lands on the portal. */}
+                            <Link href="/portal" className={`${navLinkClass} hidden xl:inline`}>
+                                Log In
+                            </Link>
+                            <span className="hidden h-6 w-px bg-elegant-border xl:block" aria-hidden="true" />
+                            <Link
+                                href="/portal"
+                                className="whitespace-nowrap rounded-sm border border-elegant-border px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-ink/5 xl:px-5 xl:py-3 xl:text-[10px]"
+                            >
+                                Sign Up
+                            </Link>
+                            <Link
+                                href="/schedule"
+                                className="whitespace-nowrap rounded-sm bg-gold px-3.5 py-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-ink transition hover:bg-gold-dark xl:px-5 xl:py-3 xl:text-[10px]"
+                            >
+                                Book a Call
+                            </Link>
+                        </div>
+                    </>
                 )}
 
-                <div className="md:hidden">
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white">
+                <div className="ml-auto lg:hidden">
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-ink" aria-label="Toggle menu">
                         {isMenuOpen ? <X /> : <Menu />}
                     </button>
                 </div>
@@ -70,23 +214,83 @@ export function SiteNav({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="border-t border-elegant-border bg-elegant-bg px-6 py-6 md:hidden"
+                        className="overflow-hidden border-t border-elegant-border bg-elegant-bg lg:hidden"
                     >
-                        <div className="flex flex-col gap-6 text-xs uppercase tracking-widest text-white/60">
-                            <Link
-                                href="/company"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="transition hover:text-gold"
-                            >
-                                Company
-                            </Link>
-                            <Link
-                                href="/portal"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="transition hover:text-gold"
-                            >
-                                Portal
-                            </Link>
+                        {/* The panel can outgrow a short viewport, so it scrolls on its own. */}
+                        <div className="flex max-h-[calc(100dvh-5rem)] flex-col gap-6 overflow-y-auto px-6 py-8 text-xs uppercase tracking-widest text-ink/70">
+                            {primaryNav.map((item) => (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="transition hover:text-gold-ink"
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+
+                            <div className="border-t border-elegant-border pt-6">
+                                <span className="mb-4 block text-[10px] font-semibold tracking-[0.3em] text-ink/55">
+                                    Learn
+                                </span>
+                                <div className="flex flex-col gap-4 pl-4">
+                                    {learnMenu.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="transition hover:text-gold-ink"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="border-t border-elegant-border pt-6">
+                                <span className="mb-5 block text-[10px] font-semibold tracking-[0.3em] text-ink/55">
+                                    Contact Us
+                                </span>
+                                <div className="space-y-5 normal-case tracking-normal">
+                                    <div className="flex items-start gap-4">
+                                        <IconTile>
+                                            <MapPin className="h-5 w-5" />
+                                        </IconTile>
+                                        <span className="pt-0.5">
+                                            <span className="block text-sm text-ink/62">Office</span>
+                                            <span className="mt-0.5 block text-base font-medium leading-relaxed text-ink">
+                                                {contactDetails.officeLine1}
+                                                <br />
+                                                {contactDetails.officeLine2}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-6 border-t border-elegant-border pt-6">
+                                <Link
+                                    href="/portal"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="transition hover:text-gold-ink"
+                                >
+                                    Log In
+                                </Link>
+                                <Link
+                                    href="/portal"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="transition hover:text-gold-ink"
+                                >
+                                    Sign Up
+                                </Link>
+                                <Link
+                                    href="/schedule"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="w-fit rounded-sm bg-gold px-6 py-3 text-[10px] font-bold tracking-[0.2em] text-ink"
+                                >
+                                    Book a Call
+                                </Link>
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -95,11 +299,106 @@ export function SiteNav({
     );
 }
 
+const footerLinks = [
+    { label: 'Compliance', href: '/compliance' },
+    { label: 'Terms of Service', href: '/terms' },
+];
+
 export function SiteFooter() {
     return (
-        <footer className="mx-auto flex h-auto max-w-7xl flex-col items-center justify-between gap-4 border-t border-elegant-border px-6 py-8 text-[10px] uppercase tracking-[0.2em] text-white/20 md:h-[80px] md:flex-row md:px-12 md:py-0">
-            <div className="text-center md:text-left">&copy; 2026 NORTHSHORE UNLIMITED PARTNERS.</div>
-            <div className="text-center md:block">PRIVATE ACCESS ONLY • JURISDICTIONAL RESTRICTIONS APPLY</div>
+        <footer className="border-t border-elegant-border">
+            <div className="mx-auto max-w-7xl px-6 md:px-12">
+                <div className="grid gap-10 border-b border-elegant-border py-14 md:grid-cols-[1fr_auto] md:items-center">
+                    <div>
+                        <h3 className="mb-3 font-serif text-2xl italic text-ink">Market Updates</h3>
+                        <p className="max-w-md text-sm leading-relaxed text-ink/62">
+                            Weekly market analysis and portfolio insights from our expert team.
+                        </p>
+                    </div>
+                    <form
+                        onSubmit={(event) => event.preventDefault()}
+                        className="flex w-full max-w-md items-center gap-4"
+                    >
+                        <input
+                            type="email"
+                            placeholder="Email address"
+                            className="w-full border-b border-elegant-border bg-transparent py-3 text-sm text-ink placeholder:text-ink/55 outline-none transition focus:border-gold"
+                        />
+                        <button
+                            type="submit"
+                            className="shrink-0 rounded-sm bg-gold px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink transition hover:bg-gold-dark"
+                        >
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+
+                <div className="grid gap-12 py-16 md:grid-cols-[1.5fr_1fr] md:gap-20">
+                    <div className="max-w-xl">
+                        <img
+                            src="/img/logo.png"
+                            alt="Northshore Unlimited Capital"
+                            width={800}
+                            height={211}
+                            className="mb-7 h-11 w-auto"
+                        />
+                        <p className="mb-8 font-serif text-2xl italic leading-snug text-ink">
+                            Your personalized bitcoin brokerage.
+                        </p>
+                        <p className="mb-10 text-sm leading-relaxed text-ink/65">
+                            Invest, earn, and withdraw bitcoin with a named broker who knows your account — not a
+                            ticket queue. Client assets sit with a qualified custodian in cold storage, segregated
+                            from company funds, and every fee is disclosed in writing before you fund anything.
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-4">
+                            <Link
+                                href="/schedule"
+                                className="rounded-sm bg-gold px-7 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ink transition hover:bg-gold-dark"
+                            >
+                                Book a Call
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="md:justify-self-end">
+                        <h4 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/60">
+                            Contact
+                        </h4>
+                        <address className="mb-8 space-y-1 text-sm not-italic leading-relaxed text-ink/65">
+                            <span className="block">{contactDetails.officeLine1}</span>
+                            <span className="block">{contactDetails.officeLine2}</span>
+                        </address>
+                        <a
+                            href={`mailto:${contactDetails.email}`}
+                            className="mb-2 block text-sm text-ink/65 transition hover:text-gold-ink"
+                        >
+                            {contactDetails.email}
+                        </a>
+                        <p className="mb-10 text-sm text-ink/62">{contactDetails.hours}</p>
+
+                        <h4 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink/60">
+                            Legal
+                        </h4>
+                        <ul className="space-y-3 text-sm text-ink/65">
+                            {footerLinks.map((link) => (
+                                <li key={link.href}>
+                                    <Link href={link.href} className="transition hover:text-gold-ink">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-between gap-4 border-t border-elegant-border py-8 text-[10px] uppercase tracking-[0.2em] text-ink/55 md:flex-row">
+                    <div className="text-center md:text-left">
+                        &copy; 2026 Northshore Unlimited. All rights reserved.
+                    </div>
+                    <div className="text-center md:text-right">Personalized crypto brokerage</div>
+                </div>
+            </div>
         </footer>
     );
 }
@@ -108,7 +407,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-elegant-bg font-sans selection:bg-gold selection:text-black">
+        <div className="min-h-screen bg-elegant-bg font-sans selection:bg-gold/30 selection:text-ink">
             <SiteNav isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
             {children}
         </div>

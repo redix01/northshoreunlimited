@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dealing Desk Address
+    |--------------------------------------------------------------------------
+    |
+    | Trade and broker requests raised from the site and the client dashboard
+    | are forwarded to this mailbox.
+    |
+    */
+
+    'desk_address' => env('MAIL_DESK_ADDRESS', 'trade@northshoreunlimited.com'),
+
 ];
