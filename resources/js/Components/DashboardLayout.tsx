@@ -3,6 +3,7 @@ import {
     ArrowDownCircle,
     ArrowUpCircle,
     ChevronRight,
+    ExternalLink,
     LayoutDashboard,
     LogOut,
     Menu,
@@ -236,6 +237,24 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
                         {isActive(item) && <ChevronRight size={14} className="ml-auto" />}
                     </Link>
                 ))}
+
+                {isAdminSection && (
+                    <div className="pt-5">
+                        <p className="px-3 mb-2 text-[10px] uppercase tracking-wider text-[var(--color-dash-muted)] font-medium">Preview</p>
+                        {/* A plain anchor rather than an Inertia Link: this opens
+                            its own tab, so the admin panel stays where it is. */}
+                        <a
+                            href="/user/dashboard"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)] hover:bg-[var(--color-dash-surface-2)] transition-all"
+                        >
+                            <User size={18} />
+                            User Dashboard
+                            <ExternalLink size={13} className="ml-auto opacity-70" />
+                        </a>
+                    </div>
+                )}
             </div>
 
             {/* User section */}
