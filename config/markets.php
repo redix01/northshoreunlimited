@@ -47,10 +47,10 @@ return [
     |---------------------------------------------------------------------------
     | Managed yield
     |---------------------------------------------------------------------------
-    | Daily return applied to a client's deposited principal. Drives the daily
-    | / weekly figures on the balance hero and the portfolio performance curve.
+    | Deliberately not configured here. The daily growth shown to a client is
+    | whatever the top-up run will actually credit, so it comes from the admin
+    | settings (Settings > Daily Top-up) by way of TopupService. A second rate
+    | in config would only let the displayed figure drift from the paid one.
     */
-
-    'daily_yield_rate' => (float) env('PORTFOLIO_DAILY_YIELD', 0.045),
 
 ];

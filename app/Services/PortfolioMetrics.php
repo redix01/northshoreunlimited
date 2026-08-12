@@ -12,14 +12,15 @@ use Illuminate\Support\Collection;
 /**
  * Derives every figure shown on the client dashboard from three inputs: the
  * balance an admin manages, the client's approved deposits/withdrawals, and
- * the configured daily yield.
+ * the daily top-up this account is actually enrolled in.
  *
- *   daily change    = approved deposits x daily yield rate
+ *   daily change    = the amount tonight's top-up run will credit
  *   weekly change   = daily change x 7
  *   all-time change = balance - deposits + withdrawals
  *
- * Because the yield accrues on principal rather than on the whole book, the
- * portfolio curve is linear — the same shape the snapshot table records.
+ * The rate comes from TopupService rather than a separate config value, so the
+ * growth quoted here is the growth the client will really be paid — zero when
+ * top-ups are switched off or the account is not eligible for them.
  */
 class PortfolioMetrics
 {
@@ -48,11 +49,17 @@ class PortfolioMetrics
     /** @var Collection<int, array{at: CarbonImmutable, value: float}> */
     private Collection $snapshots;
 
-    public function __construct(private User $user, private MarketData $market)
+    /** The amount tonight's run will credit; drives every growth figure here. */
+    private float $daily;
+
+    public function __construct(private User $user, private MarketData $market, ?TopupService $topups = null)
     {
+        $topups = $topups ?? app(TopupService::class);
+
         $this->now     = CarbonImmutable::now();
-        $this->rate    = (float) config('markets.daily_yield_rate', 0.045);
         $this->balance = (float) $user->balance;
+        $this->rate    = $topups->activeRateFor($user) / 100;
+        $this->daily   = $topups->projectedAmountFor($user);
 
         $this->deposited = (float) Deposit::where('user_id', $user->id)
             ->where('status', 'approved')
@@ -103,7 +110,7 @@ class PortfolioMetrics
                 $this->deposited,
             ),
 
-            // The 24h badge quotes the yield itself rather than a share of book.
+            // The 24h badge quotes the top-up rate itself rather than a share of book.
             'headline'         => [
                 'value'   => round($daily, 2),
                 'percent' => round($this->rate * 100, 2),
@@ -262,7 +269,7 @@ class PortfolioMetrics
 
     private function dailyChange(): float
     {
-        return $this->deposited * $this->rate;
+        return $this->daily;
     }
 
     private function daysBetween(CarbonImmutable $from, CarbonImmutable $to): float

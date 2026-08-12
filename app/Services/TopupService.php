@@ -59,12 +59,7 @@ class TopupService
 
         $rate = $user->effectiveTopupPercent();
         $balanceBefore = (float) $user->balance;
-        $amount = round($balanceBefore * $rate / 100, 2);
-
-        $cap = (float) Setting::get('topup_max_daily_amount');
-        if ($cap > 0 && $amount > $cap) {
-            $amount = $cap;
-        }
+        $amount = $this->capped(round($balanceBefore * $rate / 100, 2));
 
         if ($amount <= 0) {
             return null;
@@ -133,7 +128,43 @@ class TopupService
         });
     }
 
-    protected function isEligible(User $user, bool $force): bool
+    /**
+     * The rate this client will actually be credited at, as a percentage, or
+     * zero when no top-up is coming. The client portal quotes this, so what is
+     * displayed as daily growth is the figure this service will really pay.
+     */
+    public function activeRateFor(User $user): float
+    {
+        if (!Setting::get('topup_enabled') || !$this->isEnrolled($user)) {
+            return 0.0;
+        }
+
+        return $user->effectiveTopupPercent();
+    }
+
+    /**
+     * What a run would credit this client right now, honouring the daily cap.
+     * Ignores the once-a-day guard: this is the daily rate, not what is left
+     * to pay today.
+     */
+    public function projectedAmountFor(User $user): float
+    {
+        return $this->capped(round((float) $user->balance * $this->activeRateFor($user) / 100, 2));
+    }
+
+    /** Applies the platform's per-client daily ceiling, when one is set. */
+    protected function capped(float $amount): float
+    {
+        $cap = (float) Setting::get('topup_max_daily_amount');
+
+        return $cap > 0 ? min($amount, $cap) : $amount;
+    }
+
+    /**
+     * Whether this client is in scope for top-ups — every rule the nightly run
+     * applies except the once-a-day guard and the platform master switch.
+     */
+    public function isEnrolled(User $user): bool
     {
         if ($user->role !== 'user' || $user->isSuspended() || !$user->topup_enabled) {
             return false;
@@ -144,6 +175,15 @@ class TopupService
         }
 
         if ((float) $user->balance < (float) Setting::get('topup_min_balance')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function isEligible(User $user, bool $force): bool
+    {
+        if (!$this->isEnrolled($user)) {
             return false;
         }
 

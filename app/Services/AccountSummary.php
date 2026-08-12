@@ -16,9 +16,17 @@ class AccountSummary
 {
     private float $rate;
 
-    public function __construct(private User $user, private MarketData $market)
+    /** The amount tonight's top-up run will credit this client. */
+    private float $daily;
+
+    public function __construct(private User $user, private MarketData $market, ?TopupService $topups = null)
     {
-        $this->rate = (float) config('markets.daily_yield_rate', 0.045);
+        $topups = $topups ?? app(TopupService::class);
+
+        // Quoted from the top-up settings, so the wallet card and the nightly
+        // run never disagree about what the client earns.
+        $this->rate  = $topups->activeRateFor($user);
+        $this->daily = $topups->projectedAmountFor($user);
     }
 
     /** Balance card: totals in the settlement asset plus the accrual rate. */
@@ -28,7 +36,7 @@ class AccountSummary
         $balance   = (float) $this->user->balance;
         $deposited = $this->sum(Deposit::class, ['approved']);
         $pending   = $this->sum(Deposit::class, ['pending']);
-        $daily     = $deposited * $this->rate;
+        $daily     = $this->daily;
 
         return [
             'base_symbol'    => config('markets.base', 'BTC'),
@@ -47,7 +55,7 @@ class AccountSummary
 
             // Accrual rate, and how much of today's accrual has been earned so
             // far. The client ticks the latter forward from this figure.
-            'daily_rate'     => round($this->rate * 100, 2),
+            'daily_rate'     => round($this->rate, 2),
             'daily'          => round($daily, 2),
             'daily_base'     => $this->toBase($daily),
             'profit_today'   => round($daily * $this->fractionOfDayElapsed(), 2),

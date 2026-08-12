@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Deposit;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\UserDocument;
 use App\Services\AccountSummary;
@@ -20,10 +21,13 @@ class ProfileTest extends TestCase
     {
         parent::setUp();
 
+        // The wallet card quotes the top-up run's rate, set here rather than
+        // through config so display and payout cannot drift apart.
+        Setting::put('daily_topup_percent', 1.5);
+
         config([
             'markets.live'             => false,
             'markets.base'             => 'BTC',
-            'markets.daily_yield_rate' => 0.045,
             'markets.assets'           => [
                 ['symbol' => 'BTC', 'name' => 'Bitcoin', 'id' => 'bitcoin', 'price' => 66400.00, 'change' => 0.0],
             ],
@@ -210,10 +214,10 @@ class ProfileTest extends TestCase
     {
         $wallet = (new AccountSummary($this->client(), app(MarketData::class)))->wallet();
 
-        $this->assertSame(4.5, $wallet['daily_rate']);
-        $this->assertSame(182268.0, $wallet['daily']);
-        // 61 BTC of principal at 4.5% a day.
-        $this->assertSame(2.745, $wallet['daily_base']);
+        $this->assertSame(1.5, $wallet['daily_rate']);
+        $this->assertSame(394751.27, $wallet['daily']);
+        // 396.34 BTC of balance at 1.5% a day.
+        $this->assertSame(5.94504925, $wallet['daily_base']);
         $this->assertSame(61.0, $wallet['deposited_base']);
     }
 

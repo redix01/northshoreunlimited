@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Deposit;
 use App\Models\PortfolioSnapshot;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Withdrawal;
@@ -21,10 +22,13 @@ class DashboardTest extends TestCase
         parent::setUp();
 
         // Pin prices so the assertions do not depend on the upstream feed.
+        // Growth shown to a client is whatever the top-up run will credit, so
+        // the rate is pinned through the settings rather than through config.
+        Setting::put('daily_topup_percent', 1.5);
+
         config([
             'markets.live'             => false,
             'markets.base'             => 'BTC',
-            'markets.daily_yield_rate' => 0.045,
             'markets.assets'           => [
                 ['symbol' => 'BTC', 'name' => 'Bitcoin',  'id' => 'bitcoin',  'price' => 66400.00, 'change' => 0.0],
                 ['symbol' => 'ETH', 'name' => 'Ethereum', 'id' => 'ethereum', 'price' => 1872.00,  'change' => -2.90],
@@ -74,20 +78,21 @@ class DashboardTest extends TestCase
         $this->get('/user/dashboard')->assertRedirect('/login');
     }
 
-    public function test_period_changes_derive_from_deposits_and_the_daily_yield(): void
+    public function test_period_changes_derive_from_the_balance_and_the_daily_topup(): void
     {
         $summary = $this->metrics($this->client())->summary();
 
-        // 4,050,400 principal x 4.5% a day.
-        $this->assertSame(182268.0, $summary['daily']['value']);
-        $this->assertSame(1275876.0, $summary['weekly']['value']);
+        // 26,316,751.09 balance x 1.5% a day — the amount the nightly top-up
+        // run credits, so the quoted growth matches what is actually paid.
+        $this->assertSame(394751.27, $summary['daily']['value']);
+        $this->assertSame(2763258.89, $summary['weekly']['value']);
 
         // Balance less principal, expressed against what was paid in.
         $this->assertSame(22266351.09, $summary['all_time']['value']);
         $this->assertSame(549.73, $summary['all_time']['percent']);
 
-        // The 24h badge quotes the yield itself.
-        $this->assertSame(4.5, $summary['headline']['percent']);
+        // The 24h badge quotes the top-up rate itself.
+        $this->assertSame(1.5, $summary['headline']['percent']);
     }
 
     public function test_balances_are_denominated_in_the_base_asset(): void

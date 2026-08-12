@@ -6,6 +6,9 @@ use App\Models\Earning;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Services\AccountSummary;
+use App\Services\MarketData;
+use App\Services\PortfolioMetrics;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
@@ -24,10 +27,12 @@ class AdminDashboardTest extends TestCase
 
     protected function client(array $attributes = []): User
     {
+        // fresh(): status and topup_enabled come from column defaults, which an
+        // unsaved-side model would not carry.
         return User::create(array_merge([
             'name' => 'Client', 'username' => 'client', 'email' => 'client@example.com',
             'password' => 'password', 'role' => 'user', 'balance' => 1000,
-        ], $attributes));
+        ], $attributes))->fresh();
     }
 
     public function test_admin_pages_are_reachable(): void
@@ -146,6 +151,70 @@ class AdminDashboardTest extends TestCase
 
         $this->assertSame('1250.00', $client->fresh()->balance);
         $this->assertSame('approved', \App\Models\Deposit::where('user_id', $client->id)->firstOrFail()->status);
+    }
+
+    public function test_the_portal_quotes_the_rate_the_topup_run_actually_pays(): void
+    {
+        Setting::put('daily_topup_percent', 2);
+        $client = $this->client(['balance' => 1000]);
+
+        $summary = (new PortfolioMetrics($client, app(MarketData::class)))->summary();
+
+        // Quoted growth …
+        $this->assertSame(2.0, $summary['headline']['percent']);
+        $this->assertSame(20.0, $summary['daily']['value']);
+
+        // … is exactly what the run credits.
+        $this->artisan('balance:topup')->assertSuccessful();
+        $this->assertSame('1020.00', $client->fresh()->balance);
+    }
+
+    public function test_the_portal_quotes_a_per_client_rate_override(): void
+    {
+        Setting::put('daily_topup_percent', 2);
+        $client = $this->client(['balance' => 1000, 'daily_topup_percent' => 7]);
+
+        $summary = (new PortfolioMetrics($client, app(MarketData::class)))->summary();
+
+        $this->assertSame(7.0, $summary['headline']['percent']);
+        $this->assertSame(70.0, $summary['daily']['value']);
+    }
+
+    public function test_the_portal_quotes_no_growth_when_topups_will_not_run(): void
+    {
+        Setting::put('topup_enabled', false);
+        $client = $this->client(['balance' => 1000]);
+
+        $summary = (new PortfolioMetrics($client, app(MarketData::class)))->summary();
+
+        $this->assertSame(0.0, $summary['headline']['percent']);
+        $this->assertSame(0.0, $summary['daily']['value']);
+    }
+
+    public function test_an_excluded_client_is_not_shown_growth_they_will_not_receive(): void
+    {
+        $client = $this->client(['balance' => 1000, 'topup_enabled' => false]);
+
+        $wallet = (new AccountSummary($client, app(MarketData::class)))->wallet();
+
+        $this->assertSame(0.0, $wallet['daily_rate']);
+        $this->assertSame(0.0, $wallet['daily']);
+        $this->assertSame(0.0, $wallet['profit_today']);
+    }
+
+    public function test_the_daily_cap_limits_the_quoted_growth_too(): void
+    {
+        Setting::put('daily_topup_percent', 10);
+        Setting::put('topup_max_daily_amount', 25);
+        $client = $this->client(['balance' => 1000]);
+
+        $summary = (new PortfolioMetrics($client, app(MarketData::class)))->summary();
+
+        // 10% of 1000 is 100, but the cap pays 25 — so 25 is what is shown.
+        $this->assertSame(25.0, $summary['daily']['value']);
+
+        $this->artisan('balance:topup')->assertSuccessful();
+        $this->assertSame('1025.00', $client->fresh()->balance);
     }
 
     public function test_admin_can_credit_and_debit_a_client_balance(): void
