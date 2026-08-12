@@ -27,6 +27,9 @@ class ProfileController extends Controller
             'wallet'         => $account->wallet(),
             'transactions'   => $account->transactions(6),
             'documentTypes'  => UserDocument::TYPES,
+            'identity'       => $account->identitySubmission(),
+            'idTypes'        => UserDocument::ID_TYPES,
+            'idSingleSided'  => UserDocument::SINGLE_SIDED_ID_TYPES,
             'avatarPresets'  => User::AVATAR_PRESETS,
             // The balance card on this screen opens the same deposit/withdraw
             // dialogs as the dashboard, so it needs the wallet list too.

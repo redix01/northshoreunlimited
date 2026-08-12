@@ -21,6 +21,7 @@ import DocumentsCard from '../../Components/portal/DocumentsCard';
 import EditProfileModal from '../../Components/portal/EditProfileModal';
 import Toggle from '../../Components/portal/Toggle';
 import TransactionHistory from '../../Components/portal/TransactionHistory';
+import IdentityCard, { type IdentitySubmission } from '../../Components/portal/IdentityCard';
 import VerificationCard from '../../Components/portal/VerificationCard';
 import WalletBalanceCard from '../../Components/portal/WalletBalanceCard';
 import WithdrawModal from '../../Components/portal/WithdrawModal';
@@ -43,6 +44,9 @@ interface Props extends PageProps {
     wallet: WalletSummary;
     transactions: AccountTransaction[];
     documentTypes: Record<string, string>;
+    identity: IdentitySubmission | null;
+    idTypes: Record<string, string>;
+    idSingleSided: string[];
     avatarPresets: Record<string, string>;
     wallets?: Wallet[];
 }
@@ -84,6 +88,9 @@ export default function ProfilePage() {
         wallet,
         transactions,
         documentTypes,
+        identity,
+        idTypes,
+        idSingleSided,
         avatarPresets,
         wallets = [],
     } = usePage<Props>().props;
@@ -310,6 +317,13 @@ export default function ProfilePage() {
                 </div>
 
                 <VerificationCard verification={verification} />
+
+                <IdentityCard
+                    types={idTypes}
+                    singleSided={idSingleSided}
+                    submission={identity}
+                    isVerified={verification.is_verified}
+                />
 
                 <DocumentsCard documents={documents} types={documentTypes} />
 

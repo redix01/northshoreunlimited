@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowDownCircle,
     ArrowUpCircle,
+    BadgeCheck,
     ChevronRight,
     ExternalLink,
     LayoutDashboard,
@@ -188,6 +189,7 @@ export default function DashboardLayout({ children, title, breadcrumb }: Props) 
         { label: 'Users',       href: '/admin/users',        icon: <Users size={18} /> },
         { label: 'Deposits',    href: '/admin/deposits',     icon: <ArrowDownCircle size={18} /> },
         { label: 'Withdrawals', href: '/admin/withdrawals',  icon: <ArrowUpCircle size={18} /> },
+        { label: 'Verifications', href: '/admin/verifications', icon: <BadgeCheck size={18} /> },
         { label: 'Earnings',    href: '/admin/earnings',     icon: <TrendingUp size={18} /> },
         { label: 'Wallets',     href: '/admin/wallets',      icon: <Wallet size={18} /> },
         { label: 'Settings',    href: '/admin/settings',     icon: <Settings size={18} /> },

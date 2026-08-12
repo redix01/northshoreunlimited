@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Deposit;
 use App\Models\Earning;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Models\Withdrawal;
 use App\Services\AccountSummary;
 use App\Services\MarketData;
@@ -43,6 +45,69 @@ class AdminDashboardTest extends TestCase
         foreach (['/admin/dashboard', '/admin/users', '/admin/deposits', '/admin/withdrawals', '/admin/earnings', '/admin/settings'] as $url) {
             $this->actingAs($admin)->get($url)->assertOk();
         }
+    }
+
+    /**
+     * Walks every write route in the admin group straight off the router, so a
+     * controller method that goes missing — or a URL the UI posts to that no
+     * longer exists — fails here rather than as a 404 in someone's face.
+     */
+    public function test_every_admin_action_route_resolves(): void
+    {
+        $admin  = $this->admin();
+        $client = $this->client();
+
+        $wallet = Wallet::create([
+            'name' => 'USDT', 'currency' => 'USDT', 'network' => 'TRC-20',
+            'address' => 'T123', 'is_active' => true,
+        ]);
+        $deposit = Deposit::create([
+            'user_id' => $client->id, 'amount' => 100, 'currency' => 'USDT', 'status' => 'pending',
+        ]);
+        $withdrawal = Withdrawal::create([
+            'user_id' => $client->id, 'amount' => 100, 'currency' => 'USDT',
+            'wallet_address' => 'T999', 'status' => 'pending',
+        ]);
+
+        $bindings = [
+            'user'       => $client->id,
+            'wallet'     => $wallet->id,
+            'deposit'    => $deposit->id,
+            'withdrawal' => $withdrawal->id,
+        ];
+
+        $checked = 0;
+
+        foreach (app('router')->getRoutes() as $route) {
+            if (!str_starts_with($route->uri(), 'admin')) {
+                continue;
+            }
+
+            $writes = array_values(array_intersect($route->methods(), ['POST', 'PUT', 'PATCH', 'DELETE']));
+            if (!$writes) {
+                continue;
+            }
+
+            $uri = preg_replace_callback(
+                '/\{(\w+)\??\}/',
+                fn ($match) => $bindings[$match[1]] ?? 1,
+                $route->uri(),
+            );
+
+            $method   = $writes[0];
+            $response = $this->actingAs($admin)->call($method, "/{$uri}");
+            $status   = $response->getStatusCode();
+
+            $this->assertNotSame(404, $status, "{$method} /{$uri} is not routed");
+            $this->assertNotSame(405, $status, "{$method} /{$uri} rejects its own verb");
+            $this->assertLessThan(500, $status, "{$method} /{$uri} blew up with {$status}");
+
+            $checked++;
+        }
+
+        // Guards the loop itself: a matcher that silently matches nothing
+        // would otherwise let this test pass while checking zero routes.
+        $this->assertGreaterThanOrEqual(12, $checked);
     }
 
     public function test_clients_cannot_reach_the_admin_panel(): void

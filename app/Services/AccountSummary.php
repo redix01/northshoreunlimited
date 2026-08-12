@@ -88,6 +88,26 @@ class AccountSummary
     }
 
     /** Verification checklist, progress, and the confirmed identity details. */
+    /**
+     * The client's most recent photo-ID submission, or null when they have
+     * never sent one. Drives the identity card on the profile screen.
+     */
+    public function identitySubmission(): ?array
+    {
+        $document = UserDocument::identity()
+            ->where('user_id', $this->user->id)
+            ->orderByDesc('created_at')
+            ->first();
+
+        return $document ? [
+            'status'       => $document->status,
+            'type_label'   => $document->type_label,
+            'admin_notes'  => $document->admin_notes,
+            'submitted_at' => $document->created_at->toIso8601String(),
+            'reviewed_at'  => optional($document->reviewed_at)->toIso8601String(),
+        ] : null;
+    }
+
     public function verification(): array
     {
         $user = $this->user;
@@ -134,9 +154,11 @@ class AccountSummary
     }
 
     /** Uploaded supporting documents, newest first. */
+    /** Supporting paperwork only — photo ID has its own card and review flow. */
     public function documents(): array
     {
-        return UserDocument::where('user_id', $this->user->id)
+        return UserDocument::supporting()
+            ->where('user_id', $this->user->id)
             ->orderByDesc('created_at')
             ->get()
             ->map(fn ($doc) => [

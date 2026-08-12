@@ -7,6 +7,7 @@ use App\Http\Controllers\ConsultationBookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TradeRequestController;
 use App\Http\Controllers\WalletController;
@@ -63,6 +64,8 @@ Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
     Route::put('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
+    Route::post('/identity', [IdentityController::class, 'store'])->name('identity.store');
+
     Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
     Route::get('/documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
@@ -93,6 +96,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/withdrawals', [Admin\WithdrawalController::class, 'index'])->name('admin.withdrawals');
     Route::post('/withdrawals/{withdrawal}/approve', [Admin\WithdrawalController::class, 'approve'])->name('admin.withdrawals.approve');
     Route::post('/withdrawals/{withdrawal}/reject', [Admin\WithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');
+
+    Route::get('/verifications', [Admin\VerificationController::class, 'index'])->name('admin.verifications');
+    Route::get('/verifications/document/{document}', [Admin\VerificationController::class, 'document'])->name('admin.verifications.document');
+    Route::post('/verifications/{user}/approve', [Admin\VerificationController::class, 'approve'])->name('admin.verifications.approve');
+    Route::post('/verifications/{user}/reject', [Admin\VerificationController::class, 'reject'])->name('admin.verifications.reject');
 
     Route::get('/earnings', [Admin\EarningController::class, 'index'])->name('admin.earnings');
     Route::post('/earnings/run', [Admin\EarningController::class, 'run'])->name('admin.earnings.run');
