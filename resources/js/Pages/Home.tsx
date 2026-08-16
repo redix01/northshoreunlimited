@@ -118,13 +118,13 @@ const reserveStats = [
 
 const testimonialsRowOne = [
     {
-        quote: "I'm very impressed with Northshore Unlimited managed account. I'm not tech-savvy so their option to manage my investment made it an easy choice. The sign-up process was straightforward, just sign a few documents.",
+        quote: "I'm very impressed with Northshore Unlimited Capital managed account. I'm not tech-savvy so their option to manage my investment made it an easy choice. The sign-up process was straightforward, just sign a few documents.",
         initials: 'MG',
         name: 'Maria Gonzalez',
         role: 'Retired Teacher',
     },
     {
-        quote: "I have been considering investing in Crypto for some time. Northshore Unlimited made it easy. I don't have to be the expert and I'm not! Their personalized broker service made it easier for me to become a Bitcoiner. My wife and I are pleased we're now investing in Bitcoin!",
+        quote: "I have been considering investing in Crypto for some time. Northshore Unlimited Capital made it easy. I don't have to be the expert and I'm not! Their personalized broker service made it easier for me to become a Bitcoiner. My wife and I are pleased we're now investing in Bitcoin!",
         initials: 'D&',
         name: 'David & Karen Thompson',
         role: 'Small Business Owners',
@@ -136,7 +136,7 @@ const testimonialsRowOne = [
         role: 'IRA Investor',
     },
     {
-        quote: "As a novice, Northshore Unlimited support team explained in detail how to operate, allowing me to slowly understand and learn about Bitcoin! It's been a good trip so far. Education is a key part with Northshore Unlimited.",
+        quote: "As a novice, Northshore Unlimited Capital support team explained in detail how to operate, allowing me to slowly understand and learn about Bitcoin! It's been a good trip so far. Education is a key part with Northshore Unlimited Capital.",
         initials: 'PP',
         name: 'Priya Patel',
         role: 'First-Time Investor',
@@ -151,19 +151,19 @@ const testimonialsRowOne = [
 
 const testimonialsRowTwo = [
     {
-        quote: 'Northshore Unlimited take the time to understand you and your goals, helping you construct a portfolio that fulfills your needs.',
+        quote: 'Northshore Unlimited Capital take the time to understand you and your goals, helping you construct a portfolio that fulfills your needs.',
         initials: 'LC',
         name: 'Linda Chen',
         role: 'Retirement Planner',
     },
     {
-        quote: 'The technology Northshore Unlimited uses is beyond impressive. It analyzes market trends in ways I could never manage on my own. Knowing my portfolio is optimized around the clock has given me a whole new level of confidence in my retirement planning.',
+        quote: 'The technology Northshore Unlimited Capital uses is beyond impressive. It analyzes market trends in ways I could never manage on my own. Knowing my portfolio is optimized around the clock has given me a whole new level of confidence in my retirement planning.',
         initials: 'RC',
         name: 'Robert Crawford',
         role: 'Tech Professional',
     },
     {
-        quote: "Northshore Unlimited brokerage account is a top tier retirement platform. I have recommended them to family and friends and it's the only place I would recommend to invest in Bitcoin for your IRA or 401k. Try their managed accounts and thank me later.",
+        quote: "Northshore Unlimited Capital brokerage account is a top tier retirement platform. I have recommended them to family and friends and it's the only place I would recommend to invest in Bitcoin for your IRA or 401k. Try their managed accounts and thank me later.",
         initials: 'BM',
         name: 'Barbara Mitchell',
         role: 'Roth IRA Client',
@@ -175,7 +175,7 @@ const testimonialsRowTwo = [
         role: 'Long-Term Investor',
     },
     {
-        quote: "The Best Crypto IRA Platform. I've tried other investment platforms but nothing compares to Northshore Unlimited. Their customer service is the best I've experienced and the growth in my Crypto IRA has exceeded all expectations.",
+        quote: "The Best Crypto IRA Platform. I've tried other investment platforms but nothing compares to Northshore Unlimited Capital. Their customer service is the best I've experienced and the growth in my Crypto IRA has exceeded all expectations.",
         initials: 'SH',
         name: 'Sandra Hayes',
         role: 'Crypto IRA Client',
@@ -192,7 +192,7 @@ const socialPosts = [
     {
         name: 'Michael Harrison',
         handle: '@mikeharrison_',
-        body: "My SMSF needed a reliable crypto broker. Northshore's compliance-first approach and 24/7 human support made it an easy choice. Portfolio is up 34% since switching.",
+        body: "My SMSF needed a reliable crypto broker. Northshore Unlimited Capital's compliance-first approach and 24/7 human support made it an easy choice. Portfolio is up 34% since switching.",
         date: 'Feb 2, 2026',
     },
 ];
@@ -548,7 +548,7 @@ export default function HomePage() {
                                 variants={fadeIn}
                                 className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-[11px] uppercase tracking-[0.2em] text-ink/60"
                             >
-                                <span>+10,000 investors trust Northshore</span>
+                                <span>+10,000 investors trust Northshore Unlimited Capital</span>
                                 <span className="hidden h-3 w-px bg-ink/15 sm:block" />
                                 <span className="text-gold-ink">$2,000 bonus &mdash; no deposit required</span>
                             </motion.div>
@@ -634,7 +634,7 @@ export default function HomePage() {
                 <section id="why-us" className="mx-auto max-w-7xl px-6 py-24 md:px-12">
                     <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                         <h3 className="max-w-2xl font-serif text-4xl italic text-ink">
-                            Why Investors Choose Northshore
+                            Why Investors Choose Northshore Unlimited Capital
                         </h3>
                         <a
                             href="#contact"
@@ -675,7 +675,7 @@ export default function HomePage() {
                                         Other Brokers
                                     </th>
                                     <th className="px-8 py-6 text-[10px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
-                                        Northshore
+                                        Northshore Unlimited Capital
                                     </th>
                                 </tr>
                             </thead>
@@ -756,7 +756,7 @@ export default function HomePage() {
                             Where Custom Wealth Management Feels Effortless
                         </h3>
                         <p className="text-lg leading-relaxed text-ink/62">
-                            Your legacy deserves a personal touch. Discover how Northshore&rsquo;s customized asset
+                            Your legacy deserves a personal touch. Discover how Northshore Unlimited Capital&rsquo;s customized asset
                             management can protect and grow your capital for the years ahead.
                         </p>
                     </div>
@@ -790,7 +790,7 @@ export default function HomePage() {
                             Every Dollar Accounted For. <br /> Verified On-Chain.
                         </h3>
                         <p className="mb-16 max-w-2xl text-lg leading-relaxed text-ink/62">
-                            All assets on Northshore are backed 1:1 and beyond &mdash; audited quarterly by an
+                            All assets on Northshore Unlimited Capital are backed 1:1 and beyond &mdash; audited quarterly by an
                             independent third-party accounting firm, cryptographically proven, and verifiable by
                             anyone.
                         </p>
@@ -822,7 +822,7 @@ export default function HomePage() {
                     <div className="mx-auto mb-16 max-w-7xl px-6 md:px-12">
                         <h3 className="mb-4 font-serif text-4xl italic text-ink">What Our Clients Say</h3>
                         <p className="text-lg text-ink/62">
-                            Real stories from investors who trust Northshore with their capital.
+                            Real stories from investors who trust us with their portfolios.
                         </p>
                     </div>
 
@@ -1110,10 +1110,10 @@ export default function HomePage() {
                             Get Started
                         </p>
                         <h3 className="mx-auto mb-8 max-w-3xl font-serif text-4xl italic leading-[1.15] text-ink md:text-5xl">
-                            Ready to Grow Your Capital <br /> With Northshore?
+                            Ready to Grow Your Portfolio <br /> With Northshore Unlimited Capital?
                         </h3>
                         <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-ink/62">
-                            At Northshore Unlimited, we believe every financial strategy needs a Bitcoin plan. Every
+                            At Northshore Unlimited Capital, we believe every financial strategy needs a Bitcoin plan. Every
                             Bitcoin strategy needs a financial plan. Get in touch today to learn about this dominant
                             digital monetary network.
                         </p>

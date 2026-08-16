@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Deposit;
+use App\Models\Earning;
 use App\Models\User;
 use App\Models\UserDocument;
 use App\Models\Withdrawal;
@@ -34,7 +35,9 @@ class AccountSummary
     {
         $price     = $this->basePrice();
         $balance   = (float) $this->user->balance;
-        $deposited = $this->sum(Deposit::class, ['approved']);
+        // Client deposits plus admin credits — see PortfolioMetrics, which the
+        // dashboard reads; the two screens must not disagree.
+        $deposited = $this->sum(Deposit::class, ['approved']) + Earning::creditedTo($this->user->id);
         $pending   = $this->sum(Deposit::class, ['pending']);
         $daily     = $this->daily;
 
@@ -51,7 +54,10 @@ class AccountSummary
             'pending'        => round($pending, 2),
             'pending_base'   => $this->toBase($pending),
 
-            'withdrawn'      => round($this->sum(Withdrawal::class, ['approved', 'completed']), 2),
+            'withdrawn'      => round(
+                $this->sum(Withdrawal::class, ['approved', 'completed']) + Earning::debitedFrom($this->user->id),
+                2,
+            ),
 
             // Accrual rate, and how much of today's accrual has been earned so
             // far. The client ticks the latter forward from this figure.
@@ -144,12 +150,17 @@ class AccountSummary
 
         return [
             'is_verified'    => (bool) $user->is_verified,
+            'account_status' => $user->accountStatus(),
             'steps'          => $steps,
             'progress'       => (int) round($done / max(count($steps), 1) * 100),
             'document_type'  => $user->id_document_type,
-            'tax_id_last4'   => $user->tax_id ? substr(preg_replace('/\D/', '', $user->tax_id), -4) : null,
+            'tax_id_last4'   => $user->taxIdLast4(),
             'verified_at'    => optional($user->verified_at)->toIso8601String(),
             'name_match'     => (bool) $user->name_match_confirmed,
+            // The details an approval confirmed, for display back to the client.
+            'verified_name'      => $user->verifiedName(),
+            'tax_id_verified'    => (bool) $user->tax_id_verified_at,
+            'tax_id_verified_at' => optional($user->tax_id_verified_at)->toIso8601String(),
         ];
     }
 

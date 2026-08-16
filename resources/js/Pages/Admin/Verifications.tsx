@@ -2,7 +2,6 @@ import { Link, router, useForm } from '@inertiajs/react';
 import { BadgeCheck, ExternalLink, IdCard, ShieldX } from 'lucide-react';
 import { useState } from 'react';
 import DashboardLayout, { StatusBadge, formatDateTime } from '../../Components/DashboardLayout';
-import type { AuthUser } from '../../types';
 
 interface SubmissionFile {
     id: number;
@@ -12,9 +11,24 @@ interface SubmissionFile {
     url: string;
 }
 
+interface SubmissionClient {
+    id: number;
+    name: string;
+    username: string | null;
+    email: string;
+    member_id: string | null;
+    phone: string | null;
+    address: string | null;
+    date_of_birth: string | null;
+    is_verified: boolean;
+    account_status: string;
+    tax_id_last4: string | null;
+    verified_name: string | null;
+}
+
 interface Submission {
     submission_id: string | null;
-    user: AuthUser & { date_of_birth?: string | null };
+    user: SubmissionClient;
     type: string;
     type_label: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -88,13 +102,21 @@ export default function AdminVerifications({ submissions, filters, counts }: Pro
 
 function SubmissionCard({ submission }: { submission: Submission }) {
     const [rejecting, setRejecting] = useState(false);
-    const approveForm = useForm({ notes: '' });
+    const approveForm = useForm({
+        notes: '',
+        // What the client sees as their verified name once this is approved.
+        verified_name: submission.user.name,
+        tax_id_match: Boolean(submission.user.tax_id_last4),
+    });
     const rejectForm = useForm({ notes: '' });
 
     const pending = submission.status === 'pending';
 
-    function approve() {
-        if (!window.confirm(`Verify ${submission.user.name}? This marks the account as identity-verified.`)) return;
+    function approve(event: React.FormEvent) {
+        event.preventDefault();
+
+        const name = approveForm.data.verified_name.trim() || submission.user.name;
+        if (!window.confirm(`Verify ${name}? This marks the account as identity-verified.`)) return;
 
         approveForm.post(`/admin/verifications/${submission.user.id}/approve`, { preserveScroll: true });
     }
@@ -135,6 +157,19 @@ function SubmissionCard({ submission }: { submission: Submission }) {
                 </div>
             </div>
 
+            {/* The details on file, so the reviewer can check them against the
+                document before approving them. */}
+            <dl className="grid gap-x-6 gap-y-2 border-b border-[var(--color-dash-border)] py-4 sm:grid-cols-2 lg:grid-cols-4">
+                <ClientDetail label="Name on account" value={submission.user.name} />
+                <ClientDetail label="Date of birth" value={submission.user.date_of_birth} />
+                <ClientDetail
+                    label="Tax ID (last 4)"
+                    value={submission.user.tax_id_last4 ? `•••• ${submission.user.tax_id_last4}` : null}
+                />
+                <ClientDetail label="Phone" value={submission.user.phone} />
+                <ClientDetail label="Address" value={submission.user.address} className="sm:col-span-2 lg:col-span-4" />
+            </dl>
+
             <div className="grid gap-3 py-4 sm:grid-cols-2">
                 {submission.files.map(file => (
                     <DocumentPreview key={file.id} file={file} />
@@ -149,23 +184,75 @@ function SubmissionCard({ submission }: { submission: Submission }) {
 
             {pending ? (
                 <div className="space-y-3">
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            onClick={approve}
-                            disabled={approveForm.processing}
-                            className="inline-flex items-center gap-2 rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-black disabled:opacity-60"
-                        >
-                            <BadgeCheck size={16} />
-                            Approve &amp; verify
-                        </button>
-                        <button
-                            onClick={() => setRejecting(!rejecting)}
-                            className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-dash-border)] px-4 py-2 text-sm font-medium text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]"
-                        >
-                            <ShieldX size={16} />
-                            Reject
-                        </button>
-                    </div>
+                    <form onSubmit={approve} className="space-y-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <label className="block">
+                                <span className="mb-1.5 block text-xs font-medium text-[var(--color-dash-muted)]">
+                                    Name on the document
+                                </span>
+                                <input
+                                    value={approveForm.data.verified_name}
+                                    onChange={event => approveForm.setData('verified_name', event.target.value)}
+                                    placeholder={submission.user.name}
+                                    className={`h-10 w-full rounded-lg border bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50 ${
+                                        approveForm.errors.verified_name ? 'border-red-500/60' : 'border-[var(--color-dash-border)]'
+                                    }`}
+                                />
+                                <span className="mt-1 block text-xs text-[var(--color-dash-muted)]">
+                                    Shown to the client as their verified name.
+                                </span>
+                            </label>
+
+                            <label className="flex items-start gap-2 pt-6 text-sm text-[var(--color-dash-muted)]">
+                                <input
+                                    type="checkbox"
+                                    checked={approveForm.data.tax_id_match}
+                                    disabled={!submission.user.tax_id_last4}
+                                    onChange={event => approveForm.setData('tax_id_match', event.target.checked)}
+                                    className="mt-0.5 accent-gold disabled:opacity-40"
+                                />
+                                <span>
+                                    Tax ID matches the document
+                                    <span className="mt-0.5 block text-xs">
+                                        {submission.user.tax_id_last4
+                                            ? `On file: •••• ${submission.user.tax_id_last4}`
+                                            : 'The client has not supplied a tax ID.'}
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <label className="block">
+                            <span className="mb-1.5 block text-xs font-medium text-[var(--color-dash-muted)]">
+                                Review note (optional)
+                            </span>
+                            <input
+                                value={approveForm.data.notes}
+                                onChange={event => approveForm.setData('notes', event.target.value)}
+                                placeholder="e.g. Matches the details on file"
+                                className="h-10 w-full rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50"
+                            />
+                        </label>
+
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                type="submit"
+                                disabled={approveForm.processing}
+                                className="inline-flex items-center gap-2 rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-black disabled:opacity-60"
+                            >
+                                <BadgeCheck size={16} />
+                                Approve &amp; verify
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRejecting(!rejecting)}
+                                className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-dash-border)] px-4 py-2 text-sm font-medium text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]"
+                            >
+                                <ShieldX size={16} />
+                                Reject
+                            </button>
+                        </div>
+                    </form>
 
                     {rejecting && (
                         <form onSubmit={reject} className="flex flex-col gap-2 sm:flex-row">
@@ -189,9 +276,23 @@ function SubmissionCard({ submission }: { submission: Submission }) {
             ) : (
                 <p className="text-xs text-[var(--color-dash-muted)]">
                     Reviewed {formatDateTime(submission.reviewed_at)}
+                    {submission.status === 'approved' && submission.user.verified_name && (
+                        <> · verified as <span className="font-medium text-[var(--color-dash-text)]">{submission.user.verified_name}</span></>
+                    )}
                 </p>
             )}
         </section>
+    );
+}
+
+function ClientDetail({ label, value, className = '' }: { label: string; value: string | null; className?: string }) {
+    return (
+        <div className={className}>
+            <dt className="text-[11px] uppercase tracking-wide text-[var(--color-dash-muted)]">{label}</dt>
+            <dd className="mt-0.5 text-sm text-[var(--color-dash-text)]">
+                {value || <span className="text-[var(--color-dash-muted)]">Not provided</span>}
+            </dd>
+        </div>
     );
 }
 

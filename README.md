@@ -1,4 +1,4 @@
-# Northshore Unlimited
+# Northshore Unlimited Capital
 
 Laravel 12 + Inertia + React migration of the existing front pages.
 

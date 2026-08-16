@@ -39,6 +39,7 @@ const statusColors: Record<string, string> = {
     processing: 'bg-blue-500/15 text-blue-700 border border-blue-500/25',
     completed:  'bg-emerald-500/15 text-emerald-700 border border-emerald-500/25',
     active:     'bg-emerald-500/15 text-emerald-700 border border-emerald-500/25',
+    verified:   'bg-gold/15 text-gold-ink border border-gold/25',
     suspended:  'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 

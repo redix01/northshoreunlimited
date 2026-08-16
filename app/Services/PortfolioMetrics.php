@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Deposit;
+use App\Models\Earning;
 use App\Models\PortfolioSnapshot;
 use App\Models\User;
 use App\Models\Withdrawal;
@@ -61,13 +62,17 @@ class PortfolioMetrics
         $this->rate    = $topups->activeRateFor($user) / 100;
         $this->daily   = $topups->projectedAmountFor($user);
 
+        // Deposits the client made, plus anything an admin credited by hand —
+        // both are money that landed in the account.
         $this->deposited = (float) Deposit::where('user_id', $user->id)
             ->where('status', 'approved')
-            ->sum('amount');
+            ->sum('amount')
+            + Earning::creditedTo($user->id);
 
         $this->withdrawn = (float) Withdrawal::where('user_id', $user->id)
             ->whereIn('status', ['approved', 'completed'])
-            ->sum('amount');
+            ->sum('amount')
+            + Earning::debitedFrom($user->id);
 
         $this->snapshots = PortfolioSnapshot::where('user_id', $user->id)
             ->orderBy('created_at')

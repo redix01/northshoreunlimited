@@ -6,7 +6,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 createInertiaApp({
-    title: (title) => `${title} · Northshore Unlimited`,
+    title: (title) => `${title} · Northshore Unlimited Capital`,
     resolve: (name) =>
         resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
     setup({ el, App, props }) {

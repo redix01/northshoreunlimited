@@ -7,6 +7,7 @@ import BalanceHero from '../../Components/portal/BalanceHero';
 import BalanceStrip from '../../Components/portal/BalanceStrip';
 import DepositModal from '../../Components/portal/DepositModal';
 import DepositPanel from '../../Components/portal/DepositPanel';
+import IdentityStatusCard from '../../Components/portal/IdentityStatusCard';
 import MarketTicker from '../../Components/portal/MarketTicker';
 import PortfolioChart from '../../Components/portal/PortfolioChart';
 import WithdrawModal from '../../Components/portal/WithdrawModal';
@@ -21,12 +22,14 @@ import type {
     PortfolioSeries,
     PortfolioSummary,
     Quote,
+    Verification,
     Wallet,
     Withdrawal,
 } from '../../types';
 
 interface Props extends PageProps {
     dashUser: DashboardUser;
+    verification: Verification;
     summary: PortfolioSummary;
     highlights: PortfolioHighlights;
     assets: HoldingAsset[];
@@ -71,6 +74,7 @@ function StatusPill({ status }: { status: string }) {
 export default function DashboardIndex() {
     const {
         dashUser,
+        verification,
         summary,
         highlights,
         assets,
@@ -244,7 +248,10 @@ export default function DashboardIndex() {
                         </section>
                     </div>
 
-                    <DepositPanel wallets={wallets} />
+                    <div className="space-y-5">
+                        <IdentityStatusCard verification={verification} />
+                        <DepositPanel wallets={wallets} />
+                    </div>
                 </div>
             </div>
 

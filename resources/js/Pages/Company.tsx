@@ -44,37 +44,37 @@ const clientStories = [
         role: 'Private Investor',
     },
     {
-        quote: 'Fast transactions, transparent fees, and a team that genuinely cares about my financial goals. Northshore is the real deal.',
+        quote: 'Fast transactions, transparent fees, and a team that genuinely cares about my financial goals. Northshore Unlimited Capital is the real deal.',
         name: 'Robert Okafor',
         role: 'Business Owner',
     },
     {
-        quote: "As a retiree, security was my top concern. Northshore's fully audited approach gave me the confidence to invest in crypto.",
+        quote: "As a retiree, security was my top concern. Northshore Unlimited Capital's fully audited approach gave me the confidence to invest in crypto.",
         name: 'Patricia Williams',
         role: 'Retiree',
     },
     {
-        quote: 'Switched from a major exchange to Northshore for the personal touch. The difference in support quality is night and day.',
+        quote: 'Switched from a major exchange to Northshore Unlimited Capital for the personal touch. The difference in support quality is night and day.',
         name: 'James Nakamura',
         role: 'Financial Advisor',
     },
     {
-        quote: 'Same-day transactions and zero hidden fees. Northshore makes crypto investing feel as simple as traditional banking.',
+        quote: 'Same-day transactions and zero hidden fees. Northshore Unlimited Capital makes crypto investing feel as simple as traditional banking.',
         name: 'Dorothy Mensah',
         role: 'Nurse Practitioner',
     },
     {
-        quote: "Our corporate treasury needed a reliable crypto partner. Northshore's compliance-first approach ticked every box.",
+        quote: "Our corporate treasury needed a reliable crypto partner. Northshore Unlimited Capital's compliance-first approach ticked every box.",
         name: 'Harold Fischer',
         role: 'Corporate Treasurer',
     },
     {
-        quote: "I was nervous about crypto until my Northshore advisor walked me through every step. Now I'm seeing real returns.",
+        quote: "I was nervous about crypto until my Northshore Unlimited Capital advisor walked me through every step. Now I'm seeing real returns.",
         name: 'Linda Gutierrez',
         role: 'Librarian',
     },
     {
-        quote: 'Managing my SMSF crypto allocation used to be a headache. Northshore made it seamless with their dedicated support team.',
+        quote: 'Managing my SMSF crypto allocation used to be a headache. Northshore Unlimited Capital made it seamless with their dedicated support team.',
         name: 'Thomas Adesanya',
         role: 'School Principal',
     },
@@ -106,7 +106,7 @@ export default function CompanyPage() {
                             Built on Trust, Driven by Discipline.
                         </motion.h2>
                         <motion.p variants={fadeIn} className="text-lg leading-relaxed text-ink/70">
-                            Northshore Unlimited was founded on a simple principle: every financial strategy needs a
+                            Northshore Unlimited Capital was founded on a simple principle: every financial strategy needs a
                             Bitcoin plan. Every Bitcoin strategy needs a financial plan.
                         </motion.p>
                     </motion.div>
@@ -139,7 +139,7 @@ export default function CompanyPage() {
                                 A Small-Town Kid with a Big Dream
                             </h3>
                             <p className="text-base leading-relaxed text-ink/65">
-                                Northshore Unlimited emerged from observing how hardworking individuals&mdash;grandparents,
+                                Northshore Unlimited Capital emerged from observing how hardworking individuals&mdash;grandparents,
                                 neighbors, corner store owners&mdash;were excluded from wealth-building opportunities
                                 reserved for Wall Street insiders. When Bitcoin appeared as a new wealth preservation
                                 tool, the same gatekeeping pattern emerged, with complex jargon and intimidating
@@ -155,7 +155,7 @@ export default function CompanyPage() {
                                 Guiding Real People Through a Complex World
                             </h3>
                             <p className="mb-10 text-base leading-relaxed text-ink/65">
-                                Northshore Unlimited serves as the financial guide families wish they had, specializing
+                                Northshore Unlimited Capital serves as the financial guide families wish they had, specializing
                                 in assisting everyday people&mdash;particularly seniors, retirees, and those without
                                 formal finance training&mdash;to navigate Bitcoin and digital assets confidently. With
                                 regulatory changes enabling Roth IRAs and retirement accounts to hold Bitcoin, the
@@ -174,7 +174,7 @@ export default function CompanyPage() {
                 <section className="border-y border-elegant-border bg-gold/[0.04]">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12">
                         <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-ink">
-                            The Northshore Team
+                            The Northshore Unlimited Capital Team
                         </p>
                         <h3 className="mb-4 font-serif text-4xl italic text-ink">What We Stand For</h3>
                         <p className="mb-16 text-lg text-ink/62">Values that guide every conversation</p>

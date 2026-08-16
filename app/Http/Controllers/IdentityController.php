@@ -66,8 +66,12 @@ class IdentityController extends Controller
             }
 
             // Records that an ID has been supplied — the checklist step. Being
-            // verified stays an admin decision.
-            $user->forceFill(['id_document_type' => UserDocument::ID_TYPES[$validated['type']]])->save();
+            // verified stays an admin decision, so the account only moves as
+            // far as "pending review".
+            $user->forceFill(array_filter([
+                'id_document_type' => UserDocument::ID_TYPES[$validated['type']],
+                'status'           => $user->isSuspended() ? null : 'pending',
+            ]))->save();
         });
 
         return back()->with('success', 'Identity document submitted. Our compliance team will review it shortly.');

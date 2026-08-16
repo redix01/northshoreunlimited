@@ -18,6 +18,12 @@ class User extends Authenticatable
     /** Avatar values with this prefix name a built-in preset, not an upload. */
     public const AVATAR_PRESET_PREFIX = 'preset:';
 
+    /**
+     * Account standing, in the order the admin picker lists it. `pending` means
+     * an ID is with compliance, `verified` that compliance approved it.
+     */
+    public const STATUSES = ['active', 'pending', 'verified', 'suspended'];
+
     /** Monogram presets offered in the profile editor. */
     public const AVATAR_PRESETS = [
         'slate'   => '#4b5563',
@@ -35,10 +41,14 @@ class User extends Authenticatable
         'country', 'date_of_birth', 'employment_status', 'occupation',
         'source_of_funds', 'pep_status', 'tax_id', 'is_verified', 'avatar',
         'member_id', 'id_document_type', 'verified_at', 'name_match_confirmed',
+        'verified_name', 'tax_id_verified_at',
         'is_vip', 'notifications_enabled', 'referred_by', 'terms_accepted_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
+
+    /** Admin screens read the reconciled standing, never the raw column. */
+    protected $appends = ['account_status'];
 
     protected function casts(): array
     {
@@ -55,6 +65,7 @@ class User extends Authenticatable
             'daily_topup_percent'   => 'decimal:4',
             'date_of_birth'         => 'date',
             'verified_at'           => 'datetime',
+            'tax_id_verified_at'    => 'datetime',
             'terms_accepted_at'     => 'datetime',
             'last_topup_at'         => 'datetime',
         ];
@@ -68,6 +79,84 @@ class User extends Authenticatable
     public function isSuspended(): bool
     {
         return $this->status === 'suspended';
+    }
+
+    /**
+     * The standing the admin screens display. The stored column and the KYC
+     * flag are reconciled here so the picker can never show "Verified" for an
+     * account that is not, or hide a verification that was granted elsewhere.
+     */
+    public function accountStatus(): string
+    {
+        if ($this->status === 'suspended') {
+            return 'suspended';
+        }
+
+        if ($this->is_verified) {
+            return 'verified';
+        }
+
+        // Stored as verified but the flag is off: the account is back in the queue.
+        return $this->status === 'verified' ? 'pending' : ($this->status ?: 'active');
+    }
+
+    public function getAccountStatusAttribute(): string
+    {
+        return $this->accountStatus();
+    }
+
+    /** Last four digits of the tax ID — the only part ever shown. */
+    public function taxIdLast4(): ?string
+    {
+        return $this->tax_id ? substr(preg_replace('/\D/', '', $this->tax_id), -4) : null;
+    }
+
+    /** The name matched against the photo ID, once compliance confirmed it. */
+    public function verifiedName(): ?string
+    {
+        return $this->name_match_confirmed ? ($this->verified_name ?: $this->name) : null;
+    }
+
+    /**
+     * Stamp the account verified and record what was matched. Passing null for
+     * $taxIdMatches leaves any existing tax-ID confirmation alone, so saving
+     * unrelated account settings never quietly revokes it.
+     */
+    public function markVerified(?string $verifiedName = null, ?bool $taxIdMatches = null): void
+    {
+        $attributes = [
+            'is_verified'          => true,
+            'verified_at'          => $this->verified_at ?? now(),
+            'name_match_confirmed' => true,
+            'verified_name'        => trim((string) $verifiedName) ?: ($this->verified_name ?: $this->name),
+        ];
+
+        if ($taxIdMatches !== null) {
+            $attributes['tax_id_verified_at'] = $taxIdMatches && $this->tax_id ? now() : null;
+        }
+
+        // A suspended account keeps its standing; verification is separate.
+        if (! $this->isSuspended()) {
+            $attributes['status'] = 'verified';
+        }
+
+        $this->forceFill($attributes)->save();
+    }
+
+    /**
+     * Undo verification, e.g. when an admin puts the account back in review.
+     * Standing is left to the caller, which knows whether the client is going
+     * back to the queue or simply being un-verified.
+     */
+    public function clearVerification(): void
+    {
+        $this->forceFill([
+            'is_verified'          => false,
+            'verified_at'          => null,
+            'name_match_confirmed' => false,
+            'verified_name'        => null,
+            'tax_id_verified_at'   => null,
+        ])->save();
     }
 
     /**

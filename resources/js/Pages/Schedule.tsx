@@ -191,7 +191,7 @@ export default function SchedulePage() {
                             Schedule Your Consultation
                         </h2>
                         <p className="mx-auto max-w-2xl text-base leading-relaxed text-ink/70">
-                            Speak with one of our advisors about your goals and how Northshore Unlimited can help you
+                            Speak with one of our advisors about your goals and how Northshore Unlimited Capital can help you
                             build long-term wealth through bitcoin. Sessions run {sessionMinutes} minutes and there is
                             no obligation.
                         </p>

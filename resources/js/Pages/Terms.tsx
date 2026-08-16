@@ -26,7 +26,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
         blocks: [
             {
                 kind: 'p',
-                text: 'These Terms of Service ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") and Northshore Unlimited, a Wyoming corporation ("Northshore Unlimited," "we," "us," or "our"), governing your access to and use of the Northshore Unlimited platform, including our website, mobile applications, APIs, and all related services (collectively, the "Services").',
+                text: 'These Terms of Service ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") and Northshore Unlimited Capital, a Wyoming corporation ("Northshore Unlimited Capital," "we," "us," or "our"), governing your access to and use of the Northshore Unlimited Capital platform, including our website, mobile applications, APIs, and all related services (collectively, the "Services").',
             },
             {
                 kind: 'p',
@@ -85,11 +85,11 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
         number: '04',
         title: 'Description of Services',
         blocks: [
-            { kind: 'p', text: 'Northshore Unlimited provides a crypto investment platform that includes:' },
+            { kind: 'p', text: 'Northshore Unlimited Capital provides a crypto investment platform that includes:' },
             {
                 kind: 'sub',
                 title: 'Advisory Services & Advisor Qualifications',
-                text: 'Northshore Unlimited is a SEC-registered Investment Adviser (RIA) and FINRA-registered Broker-Dealer. All advisors on the platform are licensed, credentialed professionals who operate under a fiduciary duty to act in the best interest of each client. At minimum, every advisor holds a Series 65 or Series 66 license, the Certified Financial Planner (CFP®) designation, the Certified Digital Asset Advisor (CDAA™) credential, and the Certified Blockchain Expert (CBE) certification. Advisors serving California clients maintain active registration with the California Department of Financial Protection and Innovation (DFPI). Full details of our advisor professional standards are available on our Compliance page.',
+                text: 'Northshore Unlimited Capital is a SEC-registered Investment Adviser (RIA) and FINRA-registered Broker-Dealer. All advisors on the platform are licensed, credentialed professionals who operate under a fiduciary duty to act in the best interest of each client. At minimum, every advisor holds a Series 65 or Series 66 license, the Certified Financial Planner (CFP®) designation, the Certified Digital Asset Advisor (CDAA™) credential, and the Certified Blockchain Expert (CBE) certification. Advisors serving California clients maintain active registration with the California Department of Financial Protection and Innovation (DFPI). Full details of our advisor professional standards are available on our Compliance page.',
             },
             {
                 kind: 'sub',
@@ -99,7 +99,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'sub',
                 title: 'Custodial Services',
-                text: 'Northshore Unlimited may offer custodial wallet services that allow you to store, manage, and interact with supported digital assets. All custodial assets are held in segregated accounts and backed 1:1 as verified through our Proof of Reserves program.',
+                text: 'Northshore Unlimited Capital may offer custodial wallet services that allow you to store, manage, and interact with supported digital assets. All custodial assets are held in segregated accounts and backed 1:1 as verified through our Proof of Reserves program.',
             },
             {
                 kind: 'sub',
@@ -115,22 +115,22 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
         blocks: [
             {
                 kind: 'p',
-                text: 'Northshore Unlimited offers a Points & Rewards Program (the "Program") to incentivize user engagement and learning. By participating in the Program, you agree to the following terms:',
+                text: 'Northshore Unlimited Capital offers a Points & Rewards Program (the "Program") to incentivize user engagement and learning. By participating in the Program, you agree to the following terms:',
             },
             {
                 kind: 'sub',
                 title: 'Nature of Points',
-                text: 'Points earned through the Program are NOT securities, NOT digital assets or cryptocurrency, and carry NO cash value. Points are non-transferable between users and cannot be sold, traded, or exchanged for cash or cash equivalents outside the Northshore Unlimited platform.',
+                text: 'Points earned through the Program are NOT securities, NOT digital assets or cryptocurrency, and carry NO cash value. Points are non-transferable between users and cannot be sold, traded, or exchanged for cash or cash equivalents outside the Northshore Unlimited Capital platform.',
             },
             {
                 kind: 'sub',
                 title: 'Earning & Redemption',
-                text: 'Points may be earned by completing courses, quizzes, challenges, and other platform activities as designated by Northshore Unlimited. Redemption options, rates, and availability are determined solely by Northshore Unlimited and may be modified at any time. We reserve the right to set minimum redemption thresholds and expiration periods for points.',
+                text: 'Points may be earned by completing courses, quizzes, challenges, and other platform activities as designated by Northshore Unlimited Capital. Redemption options, rates, and availability are determined solely by Northshore Unlimited Capital and may be modified at any time. We reserve the right to set minimum redemption thresholds and expiration periods for points.',
             },
             {
                 kind: 'sub',
                 title: 'Program Modification',
-                text: 'Northshore Unlimited reserves the right to modify, suspend, or terminate the Program, or any aspect thereof, at any time and for any reason, with or without notice. This includes the right to adjust point values, expiration policies, earning rates, and redemption options. In the event of Program termination, we will provide 90 days’ notice and a reasonable period for redemption of accumulated points.',
+                text: 'Northshore Unlimited Capital reserves the right to modify, suspend, or terminate the Program, or any aspect thereof, at any time and for any reason, with or without notice. This includes the right to adjust point values, expiration policies, earning rates, and redemption options. In the event of Program termination, we will provide 90 days’ notice and a reasonable period for redemption of accumulated points.',
             },
             {
                 kind: 'sub',
@@ -140,7 +140,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'notice',
                 title: 'Important Notice',
-                text: 'Points earned through the Northshore Unlimited Rewards Program are NOT securities, do NOT constitute digital assets or cryptocurrency, and carry NO cash value. Points are non-transferable and cannot be sold or exchanged outside the platform.',
+                text: 'Points earned through the Northshore Unlimited Capital Rewards Program are NOT securities, do NOT constitute digital assets or cryptocurrency, and carry NO cash value. Points are non-transferable and cannot be sold or exchanged outside the platform.',
             },
         ],
     },
@@ -151,22 +151,22 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
         blocks: [
             {
                 kind: 'p',
-                text: 'Northshore Unlimited may from time to time advertise, promote, or market certain offers, incentives, rates, programs, investment packages, or other benefits (collectively, "Promotional Offers") through its website, social media channels, email campaigns, or other marketing materials. You acknowledge and agree to the following:',
+                text: 'Northshore Unlimited Capital may from time to time advertise, promote, or market certain offers, incentives, rates, programs, investment packages, or other benefits (collectively, "Promotional Offers") through its website, social media channels, email campaigns, or other marketing materials. You acknowledge and agree to the following:',
             },
             {
                 kind: 'sub',
                 title: 'Select Eligibility',
-                text: 'NOT ALL PROMOTIONAL OFFERS ARE AVAILABLE TO ALL USERS. Promotional Offers are select, discretionary, and may be extended only to certain users based on criteria determined solely by Northshore Unlimited, including but not limited to account status, verification level, account history, jurisdiction, portfolio size, or other eligibility requirements. The presence of a Promotional Offer in general marketing materials does not constitute a guarantee, promise, or entitlement that you will receive or qualify for that offer.',
+                text: 'NOT ALL PROMOTIONAL OFFERS ARE AVAILABLE TO ALL USERS. Promotional Offers are select, discretionary, and may be extended only to certain users based on criteria determined solely by Northshore Unlimited Capital, including but not limited to account status, verification level, account history, jurisdiction, portfolio size, or other eligibility requirements. The presence of a Promotional Offer in general marketing materials does not constitute a guarantee, promise, or entitlement that you will receive or qualify for that offer.',
             },
             {
                 kind: 'sub',
                 title: 'Offer Confirmation',
-                text: 'A Promotional Offer is only applicable to you if it is: (a) displayed directly within your personal dashboard after you have logged into your account; or (b) communicated to you directly by Northshore Unlimited via email to your registered email address, explicitly identifying you as an eligible recipient. Any Promotional Offer that does not appear in your dashboard or was not sent directly to you should not be considered available to you.',
+                text: 'A Promotional Offer is only applicable to you if it is: (a) displayed directly within your personal dashboard after you have logged into your account; or (b) communicated to you directly by Northshore Unlimited Capital via email to your registered email address, explicitly identifying you as an eligible recipient. Any Promotional Offer that does not appear in your dashboard or was not sent directly to you should not be considered available to you.',
             },
             {
                 kind: 'sub',
                 title: 'No Guarantee of Offers',
-                text: 'Northshore Unlimited makes no guarantee that any Promotional Offer will be made available to any particular user. Promotional Offers may be limited in quantity, duration, or geographic availability. We reserve the right to modify, suspend, or withdraw any Promotional Offer at any time and for any reason, with or without notice. Viewing an advertisement or marketing material for a Promotional Offer does not create any right, entitlement, or obligation on our part to extend that offer to you.',
+                text: 'Northshore Unlimited Capital makes no guarantee that any Promotional Offer will be made available to any particular user. Promotional Offers may be limited in quantity, duration, or geographic availability. We reserve the right to modify, suspend, or withdraw any Promotional Offer at any time and for any reason, with or without notice. Viewing an advertisement or marketing material for a Promotional Offer does not create any right, entitlement, or obligation on our part to extend that offer to you.',
             },
             {
                 kind: 'sub',
@@ -176,7 +176,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'notice',
                 title: 'Important Notice',
-                text: 'Not all promotional offers, rates, or incentives advertised by Northshore Unlimited are available to all users. An offer applies to you only if it is displayed in your personal dashboard or communicated to you directly via email. Viewing an advertisement or marketing material does not guarantee eligibility.',
+                text: 'Not all promotional offers, rates, or incentives advertised by Northshore Unlimited Capital are available to all users. An offer applies to you only if it is displayed in your personal dashboard or communicated to you directly via email. Viewing an advertisement or marketing material does not guarantee eligibility.',
             },
         ],
     },
@@ -189,17 +189,17 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'sub',
                 title: '1:1 Reserve Backing',
-                text: 'All user assets held in custody by Northshore Unlimited are backed on a 1:1 basis. We do not lend, stake, or otherwise encumber user assets without explicit user consent. Our reserve backing is independently verified through our Proof of Reserves program.',
+                text: 'All user assets held in custody by Northshore Unlimited Capital are backed on a 1:1 basis. We do not lend, stake, or otherwise encumber user assets without explicit user consent. Our reserve backing is independently verified through our Proof of Reserves program.',
             },
             {
                 kind: 'sub',
                 title: 'Withdrawal Rights',
-                text: 'You have the right to withdraw your assets at any time, subject to reasonable processing times, applicable network fees, and any regulatory holds required by law. Northshore Unlimited will not unreasonably delay or deny withdrawal requests.',
+                text: 'You have the right to withdraw your assets at any time, subject to reasonable processing times, applicable network fees, and any regulatory holds required by law. Northshore Unlimited Capital will not unreasonably delay or deny withdrawal requests.',
             },
             {
                 kind: 'sub',
                 title: 'Asset Segregation',
-                text: 'User assets are held in segregated accounts separate from Northshore Unlimited’s corporate funds. In the event of insolvency, user assets will be treated as customer property and not as assets of the estate, to the fullest extent permitted by applicable law.',
+                text: 'User assets are held in segregated accounts separate from Northshore Unlimited Capital’s corporate funds. In the event of insolvency, user assets will be treated as customer property and not as assets of the estate, to the fullest extent permitted by applicable law.',
             },
         ],
     },
@@ -210,7 +210,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
         blocks: [
             {
                 kind: 'p',
-                text: 'All content, features, and functionality of the Services — including but not limited to text, graphics, logos, icons, images, audio clips, video clips, data compilations, software, and course materials — are owned by Northshore Unlimited or its licensors and are protected by United States and international intellectual property laws.',
+                text: 'All content, features, and functionality of the Services — including but not limited to text, graphics, logos, icons, images, audio clips, video clips, data compilations, software, and course materials — are owned by Northshore Unlimited Capital or its licensors and are protected by United States and international intellectual property laws.',
             },
             {
                 kind: 'p',
@@ -244,7 +244,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             },
             {
                 kind: 'p',
-                text: 'Northshore Unlimited reserves the right to investigate and take appropriate legal action against anyone who, in our sole discretion, violates these provisions.',
+                text: 'Northshore Unlimited Capital reserves the right to investigate and take appropriate legal action against anyone who, in our sole discretion, violates these provisions.',
             },
         ],
     },
@@ -272,7 +272,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'notice',
                 title: 'Not Financial Advice',
-                text: 'Northshore Unlimited provides educational content only. Nothing on this platform constitutes investment, financial, tax, or legal advice. Always consult qualified professionals before making financial decisions.',
+                text: 'Northshore Unlimited Capital provides educational content only. Nothing on this platform constitutes investment, financial, tax, or legal advice. Always consult qualified professionals before making financial decisions.',
             },
         ],
     },
@@ -306,7 +306,7 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'sub',
                 title: 'Entire Agreement',
-                text: 'These Terms, together with our Privacy Policy and any other policies referenced herein, constitute the entire agreement between you and Northshore Unlimited regarding the Services.',
+                text: 'These Terms, together with our Privacy Policy and any other policies referenced herein, constitute the entire agreement between you and Northshore Unlimited Capital regarding the Services.',
             },
             {
                 kind: 'sub',
@@ -316,12 +316,12 @@ const sections: { id: string; number: string; title: string; blocks: Block[] }[]
             {
                 kind: 'sub',
                 title: 'Waiver',
-                text: 'The failure of Northshore Unlimited to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision.',
+                text: 'The failure of Northshore Unlimited Capital to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision.',
             },
             {
                 kind: 'sub',
                 title: 'Assignment',
-                text: 'You may not assign or transfer your rights under these Terms without our prior written consent. Northshore Unlimited may assign its rights and obligations under these Terms without restriction.',
+                text: 'You may not assign or transfer your rights under these Terms without our prior written consent. Northshore Unlimited Capital may assign its rights and obligations under these Terms without restriction.',
             },
         ],
     },
@@ -385,7 +385,7 @@ export default function TermsPage() {
                             Terms of Service
                         </motion.h2>
                         <motion.p variants={fadeIn} className="mb-8 text-lg leading-relaxed text-ink/70">
-                            Please read these Terms of Service carefully before using Northshore Unlimited. By accessing
+                            Please read these Terms of Service carefully before using Northshore Unlimited Capital. By accessing
                             or using our platform, you agree to be bound by these terms.
                         </motion.p>
                         <motion.div
@@ -466,7 +466,7 @@ export default function TermsPage() {
                         <h3 className="mb-6 font-serif text-3xl italic text-ink">Questions about these Terms?</h3>
                         <p className="mb-10 text-base leading-relaxed text-ink/65">
                             For questions about these Terms, please contact us at legal@northshore.com or write to us
-                            at: Northshore Unlimited, {contactDetails.officeLine1} {contactDetails.officeLine2}
+                            at: Northshore Unlimited Capital, {contactDetails.officeLine1} {contactDetails.officeLine2}
                         </p>
                         <div className="flex flex-wrap gap-5">
                             <Link

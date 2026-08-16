@@ -133,6 +133,158 @@ class IdentityVerificationTest extends TestCase
         );
     }
 
+    public function test_approving_records_the_name_and_tax_id_the_reviewer_confirmed(): void
+    {
+        $client = $this->client();
+        $client->forceFill(['tax_id' => '8554'])->save();
+        $this->submit($client->fresh());
+
+        $this->actingAs($this->admin())
+            ->post("/admin/verifications/{$client->id}/approve", [
+                'verified_name' => 'Clientina J. Client',
+                'tax_id_match'  => true,
+            ])
+            ->assertRedirect();
+
+        $client = $client->fresh();
+
+        $this->assertSame('Clientina J. Client', $client->verified_name);
+        $this->assertSame('Clientina J. Client', $client->verifiedName());
+        $this->assertNotNull($client->tax_id_verified_at);
+        $this->assertSame('verified', $client->accountStatus());
+    }
+
+    public function test_approving_falls_back_to_the_account_name_and_leaves_the_tax_id_unconfirmed(): void
+    {
+        $client = $this->client();
+        $client->forceFill(['tax_id' => '8554'])->save();
+        $this->submit($client->fresh());
+
+        $this->actingAs($this->admin())
+            ->post("/admin/verifications/{$client->id}/approve", ['verified_name' => '  '])
+            ->assertRedirect();
+
+        $client = $client->fresh();
+
+        $this->assertSame('Client', $client->verified_name);
+        $this->assertNull($client->tax_id_verified_at);
+    }
+
+    public function test_a_tax_id_cannot_be_confirmed_when_the_client_never_supplied_one(): void
+    {
+        $client = $this->client();
+        $this->submit($client);
+
+        $this->actingAs($this->admin())
+            ->post("/admin/verifications/{$client->id}/approve", ['tax_id_match' => true])
+            ->assertRedirect();
+
+        $this->assertNull($client->fresh()->tax_id_verified_at);
+    }
+
+    public function test_the_verified_details_reach_the_client_dashboard_and_profile(): void
+    {
+        $client = $this->client();
+        $client->forceFill(['tax_id' => '8554'])->save();
+        $this->submit($client->fresh());
+
+        $this->actingAs($this->admin())
+            ->post("/admin/verifications/{$client->id}/approve", [
+                'verified_name' => 'Clientina J. Client',
+                'tax_id_match'  => true,
+            ]);
+
+        $expect = fn ($page) => $page
+            ->where('verification.is_verified', true)
+            ->where('verification.name_match', true)
+            ->where('verification.verified_name', 'Clientina J. Client')
+            ->where('verification.tax_id_last4', '8554')
+            ->where('verification.tax_id_verified', true)
+            ->where('verification.document_type', "Driver's Licence");
+
+        $this->actingAs($client->fresh())->get('/user/dashboard')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $expect($page->component('Dashboard/Index')));
+
+        $this->actingAs($client->fresh())->get('/user/profile')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $expect($page->component('Dashboard/Profile')));
+    }
+
+    public function test_submitting_an_id_moves_the_account_into_pending_review(): void
+    {
+        $client = $this->client();
+
+        $this->assertSame('active', $client->accountStatus());
+
+        $this->submit($client);
+
+        $this->assertSame('pending', $client->fresh()->accountStatus());
+    }
+
+    public function test_an_admin_verifies_a_client_from_the_account_settings_form(): void
+    {
+        $client = $this->client();
+        $client->forceFill(['tax_id' => '8554'])->save();
+
+        $this->actingAs($this->admin())
+            ->put("/admin/users/{$client->id}/settings", [
+                'status'        => 'verified',
+                'verified_name' => 'Clientina J. Client',
+                'tax_id_match'  => true,
+                'topup_enabled' => true,
+                'daily_topup_percent' => null,
+            ])
+            ->assertRedirect();
+
+        $client = $client->fresh();
+
+        $this->assertTrue((bool) $client->is_verified);
+        $this->assertSame('Clientina J. Client', $client->verified_name);
+        $this->assertNotNull($client->verified_at);
+        $this->assertNotNull($client->tax_id_verified_at);
+        $this->assertSame('verified', $client->accountStatus());
+    }
+
+    public function test_putting_a_client_back_in_review_withdraws_the_verified_details(): void
+    {
+        $client = $this->client();
+        $client->markVerified('Clientina J. Client');
+
+        $this->actingAs($this->admin())
+            ->put("/admin/users/{$client->id}/settings", [
+                'status' => 'pending', 'topup_enabled' => true, 'daily_topup_percent' => null,
+            ])
+            ->assertRedirect();
+
+        $client = $client->fresh();
+
+        $this->assertFalse((bool) $client->is_verified);
+        $this->assertNull($client->verified_name);
+        $this->assertNull($client->verified_at);
+        $this->assertFalse((bool) $client->name_match_confirmed);
+        $this->assertSame('pending', $client->accountStatus());
+    }
+
+    public function test_a_suspended_client_keeps_the_verification_already_on_file(): void
+    {
+        $client = $this->client();
+        $client->markVerified('Clientina J. Client');
+
+        $this->actingAs($this->admin())
+            ->put("/admin/users/{$client->id}/settings", [
+                'status' => 'suspended', 'topup_enabled' => true, 'daily_topup_percent' => null,
+            ])
+            ->assertRedirect();
+
+        $client = $client->fresh();
+
+        $this->assertTrue((bool) $client->is_verified);
+        $this->assertSame('Clientina J. Client', $client->verified_name);
+        // Standing wins in the picker, so it cannot read "verified" here.
+        $this->assertSame('suspended', $client->accountStatus());
+    }
+
     public function test_rejecting_records_a_reason_and_leaves_the_client_unverified(): void
     {
         $client = $this->client();

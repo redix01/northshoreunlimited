@@ -20,7 +20,7 @@ class Setting extends Model
     public const DEFINITIONS = [
         // ── General ──────────────────────────────────────────────────────
         'site_name' => [
-            'type' => 'string', 'group' => 'general', 'default' => 'Northshore Unlimited',
+            'type' => 'string', 'group' => 'general', 'default' => 'Northshore Unlimited Capital',
             'label' => 'Platform name', 'help' => 'Shown to clients across the portal.',
         ],
         'support_email' => [

@@ -63,11 +63,11 @@ const sectionNav = [
 const regulatoryBody = [
     {
         lead: null,
-        text: 'Northshore Unlimited is a registered Money Services Business (MSB) with the Financial Crimes Enforcement Network (FinCEN), a SEC-registered Investment Adviser (RIA), and a FINRA-registered Broker-Dealer. We hold active money transmitter licenses in 48 states and territories, with remaining jurisdictions pending.',
+        text: 'Northshore Unlimited Capital is a registered Money Services Business (MSB) with the Financial Crimes Enforcement Network (FinCEN), a SEC-registered Investment Adviser (RIA), and a FINRA-registered Broker-Dealer. We hold active money transmitter licenses in 48 states and territories, with remaining jurisdictions pending.',
     },
     {
         lead: null,
-        text: 'We believe in proactive compliance. Our regulatory affairs team of 14 professionals — including licensed attorneys, compliance analysts, and former regulators — continuously monitors the evolving legal landscape across federal and state jurisdictions to ensure Northshore Unlimited meets or exceeds all applicable requirements.',
+        text: 'We believe in proactive compliance. Our regulatory affairs team of 14 professionals — including licensed attorneys, compliance analysts, and former regulators — continuously monitors the evolving legal landscape across federal and state jurisdictions to ensure Northshore Unlimited Capital meets or exceeds all applicable requirements.',
     },
     {
         lead: null,
@@ -75,11 +75,11 @@ const regulatoryBody = [
     },
     {
         lead: 'California Operations:',
-        text: 'Northshore Unlimited is fully registered with the California Department of Financial Protection and Innovation (DFPI) as both a licensed money transmitter and registered investment adviser. We hold an active Finance Lenders License and comply with the California Consumer Financial Protection Law (SB 1235), the California Financing Law, and the California Investment Adviser Law. All advisors serving California clients hold the required Series 65 or Series 66 licenses and maintain active California-specific registrations.',
+        text: 'Northshore Unlimited Capital is fully registered with the California Department of Financial Protection and Innovation (DFPI) as both a licensed money transmitter and registered investment adviser. We hold an active Finance Lenders License and comply with the California Consumer Financial Protection Law (SB 1235), the California Financing Law, and the California Investment Adviser Law. All advisors serving California clients hold the required Series 65 or Series 66 licenses and maintain active California-specific registrations.',
     },
     {
         lead: 'Multi-State Compliance:',
-        text: 'Beyond California, Northshore Unlimited holds active money transmitter licenses in all required U.S. states and territories. Each state license is subject to ongoing examination by the respective state banking department, including annual financial audits, surety bond requirements, and permissible investment reviews. We participate in the Nationwide Multistate Licensing System (NMLS) for streamlined multi-state compliance.',
+        text: 'Beyond California, Northshore Unlimited Capital holds active money transmitter licenses in all required U.S. states and territories. Each state license is subject to ongoing examination by the respective state banking department, including annual financial audits, surety bond requirements, and permissible investment reviews. We participate in the Nationwide Multistate Licensing System (NMLS) for streamlined multi-state compliance.',
     },
     {
         lead: null,
@@ -151,11 +151,11 @@ const licences: { jurisdiction: string; licence: string; status: 'Active' | 'Pen
 const advisorBody = [
     {
         lead: null,
-        text: 'Every Northshore Unlimited advisor is rigorously vetted, credentialed, and held to the highest professional standards. We require industry-leading certifications and enforce a strict fiduciary duty on all client interactions.',
+        text: 'Every Northshore Unlimited Capital advisor is rigorously vetted, credentialed, and held to the highest professional standards. We require industry-leading certifications and enforce a strict fiduciary duty on all client interactions.',
     },
     {
         lead: 'Fiduciary Duty:',
-        text: 'All Northshore Unlimited advisors operate under a fiduciary standard, meaning they are legally and ethically obligated to act in the best interest of the client at all times. This goes beyond the suitability standard required of broker-dealers and ensures that all recommendations prioritize client welfare above company profits.',
+        text: 'All Northshore Unlimited Capital advisors operate under a fiduciary standard, meaning they are legally and ethically obligated to act in the best interest of the client at all times. This goes beyond the suitability standard required of broker-dealers and ensures that all recommendations prioritize client welfare above company profits.',
     },
     {
         lead: 'Licensing Requirements:',
@@ -183,7 +183,7 @@ const advisorBody = [
     },
     {
         lead: 'Errors & Omissions (E&O) Insurance:',
-        text: 'Northshore Unlimited maintains comprehensive professional liability insurance covering all advisory activities, with per-claim and aggregate limits that meet or exceed the requirements of all states in which we operate.',
+        text: 'Northshore Unlimited Capital maintains comprehensive professional liability insurance covering all advisory activities, with per-claim and aggregate limits that meet or exceed the requirements of all states in which we operate.',
     },
 ];
 
@@ -275,7 +275,7 @@ const credentials = [
         title: 'Accredited Investment Fiduciary',
         issuer: 'Fi360 / Broadridge',
         description:
-            'Demonstrates knowledge and competency in the fiduciary standard of care as applied to the investment management process. All Northshore Unlimited advisors adhere to fiduciary duty principles.',
+            'Demonstrates knowledge and competency in the fiduciary standard of care as applied to the investment management process. All Northshore Unlimited Capital advisors adhere to fiduciary duty principles.',
         renewal: '6 CE hours annually',
     },
     {
@@ -302,7 +302,7 @@ const credentials = [
         title: 'California Department of Financial Protection and Innovation Registration',
         issuer: 'California DFPI',
         description:
-            'State registration required to operate as an investment adviser or money transmitter in California. Northshore Unlimited and all California-based advisors maintain active registration with the DFPI under the California Finance Lenders Law and the California Financing Law.',
+            'State registration required to operate as an investment adviser or money transmitter in California. Northshore Unlimited Capital and all California-based advisors maintain active registration with the DFPI under the California Finance Lenders Law and the California Financing Law.',
         renewal: 'Annual renewal & compliance reporting',
     },
     {
@@ -346,7 +346,7 @@ const securityCertifications = [
 const amlBody = [
     {
         lead: null,
-        text: 'Northshore Unlimited maintains a comprehensive Anti-Money Laundering (AML) and Know Your Customer (KYC) compliance program that meets or exceeds the requirements of the Bank Secrecy Act (BSA), USA PATRIOT Act, and FinCEN guidance on virtual currency businesses.',
+        text: 'Northshore Unlimited Capital maintains a comprehensive Anti-Money Laundering (AML) and Know Your Customer (KYC) compliance program that meets or exceeds the requirements of the Bank Secrecy Act (BSA), USA PATRIOT Act, and FinCEN guidance on virtual currency businesses.',
     },
     {
         lead: 'Customer Identification Program (CIP):',
@@ -417,7 +417,7 @@ const dataProtectionBody = [
     },
     {
         lead: 'GLBA Safeguards Rule Compliance:',
-        text: 'As a financial institution, Northshore Unlimited maintains a comprehensive information security program in compliance with the FTC Safeguards Rule (16 CFR Part 314), including a designated Qualified Individual responsible for overseeing cybersecurity, written risk assessments, and continuous monitoring of third-party service providers.',
+        text: 'As a financial institution, Northshore Unlimited Capital maintains a comprehensive information security program in compliance with the FTC Safeguards Rule (16 CFR Part 314), including a designated Qualified Individual responsible for overseeing cybersecurity, written risk assessments, and continuous monitoring of third-party service providers.',
     },
     {
         lead: 'California-Specific Data Rights:',
@@ -428,11 +428,11 @@ const dataProtectionBody = [
 const assetProtectionBody = [
     {
         lead: null,
-        text: 'Northshore Unlimited maintains a 1:1 reserve backing for all user assets, independently verified through our Proof of Reserves program. Our custody framework is designed to protect client assets under all scenarios, including company insolvency.',
+        text: 'Northshore Unlimited Capital maintains a 1:1 reserve backing for all user assets, independently verified through our Proof of Reserves program. Our custody framework is designed to protect client assets under all scenarios, including company insolvency.',
     },
     {
         lead: null,
-        text: 'All user assets are held in segregated accounts, completely separate from Northshore Unlimited’s corporate treasury. Under our custodial framework, user assets are treated as customer property — not company assets — and are protected from creditor claims in any insolvency scenario, to the fullest extent permitted by Wyoming’s Special Purpose Depository Institution (SPDI) framework and applicable federal law.',
+        text: 'All user assets are held in segregated accounts, completely separate from Northshore Unlimited Capital’s corporate treasury. Under our custodial framework, user assets are treated as customer property — not company assets — and are protected from creditor claims in any insolvency scenario, to the fullest extent permitted by Wyoming’s Special Purpose Depository Institution (SPDI) framework and applicable federal law.',
     },
     {
         lead: null,
@@ -448,11 +448,11 @@ const assetProtectionBody = [
     },
     {
         lead: 'Insurance Coverage:',
-        text: 'Northshore Unlimited maintains comprehensive insurance coverage including a digital asset crime policy (covering theft, hacking, and insider fraud), professional liability / E&O insurance, cyber liability insurance, and commercial general liability insurance. Total coverage limits and policy details are available to qualified institutional clients upon request.',
+        text: 'Northshore Unlimited Capital maintains comprehensive insurance coverage including a digital asset crime policy (covering theft, hacking, and insider fraud), professional liability / E&O insurance, cyber liability insurance, and commercial general liability insurance. Total coverage limits and policy details are available to qualified institutional clients upon request.',
     },
     {
         lead: 'Surety Bonds:',
-        text: 'Northshore Unlimited maintains surety bonds in every state where required for money transmitter licensure. Bond amounts meet or exceed the minimum requirements established by each state’s banking regulator, with California requiring a $500,000 surety bond and total bond coverage exceeding $14 million across all jurisdictions.',
+        text: 'Northshore Unlimited Capital maintains surety bonds in every state where required for money transmitter licensure. Bond amounts meet or exceed the minimum requirements established by each state’s banking regulator, with California requiring a $500,000 surety bond and total bond coverage exceeding $14 million across all jurisdictions.',
     },
 ];
 
@@ -515,7 +515,7 @@ export default function CompliancePage() {
                             Built on Trust. <br /> Regulated by Design.
                         </motion.h2>
                         <motion.p variants={fadeIn} className="text-lg leading-relaxed text-ink/70">
-                            Northshore Unlimited is committed to operating with the highest standards of regulatory
+                            Northshore Unlimited Capital is committed to operating with the highest standards of regulatory
                             compliance, security, and transparency.
                         </motion.p>
                     </motion.div>
@@ -743,11 +743,11 @@ export default function CompliancePage() {
                     <div className="mt-12 max-w-3xl space-y-6">
                         <p className="text-base leading-relaxed text-ink/65">
                             <span className="font-medium text-ink/85">Mailing Address: </span>
-                            Northshore Unlimited, {contactDetails.officeLine1} {contactDetails.officeLine2}
+                            Northshore Unlimited Capital, {contactDetails.officeLine1} {contactDetails.officeLine2}
                         </p>
                         <p className="text-base leading-relaxed text-ink/65">
                             <span className="font-medium text-ink/85">Regulatory Inquiries: </span>
-                            Northshore Unlimited’s regulatory filings, including our Form ADV (Parts 1 and 2A) and
+                            Northshore Unlimited Capital’s regulatory filings, including our Form ADV (Parts 1 and 2A) and
                             BrokerCheck record, are publicly available through the SEC’s IAPD database and FINRA’s
                             BrokerCheck.
                         </p>

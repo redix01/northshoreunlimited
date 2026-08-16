@@ -105,6 +105,49 @@ class DashboardTest extends TestCase
         $this->assertSame(396.3366128, $summary['available_base']);
     }
 
+    public function test_funds_an_admin_credits_count_as_deposited(): void
+    {
+        $user   = $this->client(balance: 5000.00, deposited: 0);
+        $topups = app(\App\Services\TopupService::class);
+
+        $topups->recordAdjustment($user, 5000.00, 'manual_credit', 'Opening credit', null);
+        // Yield is not a deposit, however it reached the balance.
+        \App\Models\Earning::create([
+            'user_id' => $user->id, 'type' => 'daily_topup', 'rate' => 1.5, 'amount' => 75.00,
+            'balance_before' => 5000.00, 'balance_after' => 5075.00,
+        ]);
+
+        $summary = $this->metrics($user->fresh())->summary();
+
+        $this->assertSame(5000.0, $summary['deposited']);
+        $this->assertSame(0.0, $summary['withdrawn']);
+    }
+
+    public function test_funds_an_admin_debits_count_as_withdrawn(): void
+    {
+        $user   = $this->client(balance: 10000.00, deposited: 10000.00);
+        $topups = app(\App\Services\TopupService::class);
+
+        $topups->recordAdjustment($user, -2500.00, 'manual_debit', 'Correction', null);
+
+        $summary = $this->metrics($user->fresh())->summary();
+
+        $this->assertSame(10000.0, $summary['deposited']);
+        $this->assertSame(2500.0, $summary['withdrawn']);
+    }
+
+    public function test_the_wallet_card_and_the_dashboard_agree_on_deposits(): void
+    {
+        $user = $this->client(balance: 5000.00, deposited: 1000.00);
+        app(\App\Services\TopupService::class)->recordAdjustment($user, 4000.00, 'manual_credit', null, null);
+
+        $summary = $this->metrics($user->fresh())->summary();
+        $wallet  = (new \App\Services\AccountSummary($user->fresh(), app(MarketData::class)))->wallet();
+
+        $this->assertSame(5000.0, $summary['deposited']);
+        $this->assertSame($summary['deposited'], $wallet['deposited']);
+    }
+
     public function test_withdrawals_count_toward_the_all_time_figure(): void
     {
         $user = $this->client();

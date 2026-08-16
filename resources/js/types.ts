@@ -4,7 +4,9 @@ export interface AuthUser {
   username: string | null;
   email: string;
   role: 'admin' | 'user';
-  status?: 'active' | 'suspended';
+  status?: AccountStatus;
+  /** Standing reconciled with the KYC flag; prefer this for display. */
+  account_status?: AccountStatus;
   balance: number;
   topup_enabled?: boolean;
   daily_topup_percent?: string | null;
@@ -199,6 +201,8 @@ export interface ProfileUser {
   tax_id_last4: string | null;
   member_id: string | null;
   is_verified: boolean;
+  verified_name: string | null;
+  account_status: AccountStatus;
   is_vip: boolean;
   notifications_enabled: boolean;
   avatar_url: string | null;
@@ -214,14 +218,21 @@ export interface VerificationStep {
   done: boolean;
 }
 
+export type AccountStatus = 'active' | 'pending' | 'verified' | 'suspended';
+
 export interface Verification {
   is_verified: boolean;
+  account_status: AccountStatus;
   steps: VerificationStep[];
   progress: number;
   document_type: string | null;
   tax_id_last4: string | null;
   verified_at: string | null;
   name_match: boolean;
+  /** The legal name compliance matched against the ID, once approved. */
+  verified_name: string | null;
+  tax_id_verified: boolean;
+  tax_id_verified_at: string | null;
 }
 
 export interface UserDocumentItem {

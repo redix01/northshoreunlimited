@@ -24,7 +24,7 @@ class VerificationController extends Controller
         $status = $request->input('status', 'pending');
 
         $documents = UserDocument::identity()
-            ->with('user:id,name,username,email,is_verified,date_of_birth,phone,address,member_id')
+            ->with('user')
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
             ->orderBy('created_at', 'desc')
             ->get();
@@ -37,7 +37,9 @@ class VerificationController extends Controller
 
                 return [
                     'submission_id' => $first->submission_id,
-                    'user'          => $first->user,
+                    // Shaped by hand: the reviewer needs the details to compare
+                    // against the document, but never the full tax ID.
+                    'user'          => $this->client($first->user),
                     'type'          => $first->type,
                     'type_label'    => $first->type_label,
                     'status'        => $first->status,
@@ -71,6 +73,10 @@ class VerificationController extends Controller
     {
         $validated = $request->validate([
             'notes' => ['nullable', 'string', 'max:255'],
+            // The name exactly as it reads on the document. Left blank it falls
+            // back to the name on the account.
+            'verified_name' => ['nullable', 'string', 'max:255'],
+            'tax_id_match'  => ['boolean'],
         ]);
 
         $documents = $this->pendingFor($user);
@@ -89,15 +95,15 @@ class VerificationController extends Controller
                 ]);
             }
 
-            $user->forceFill([
-                'is_verified'          => true,
-                'verified_at'          => now(),
-                'name_match_confirmed' => true,
-                'id_document_type'     => $documents->first()->type_label,
-            ])->save();
+            $user->forceFill(['id_document_type' => $documents->first()->type_label])->save();
+
+            $user->markVerified(
+                $validated['verified_name'] ?? null,
+                (bool) ($validated['tax_id_match'] ?? false),
+            );
         });
 
-        return back()->with('success', "{$user->name} is now verified.");
+        return back()->with('success', "{$user->fresh()->verifiedName()} is now verified.");
     }
 
     public function reject(Request $request, User $user)
@@ -121,6 +127,12 @@ class VerificationController extends Controller
             ]);
         }
 
+        // The client is asked for a new document, so the account sits in review
+        // rather than claiming any verified detail.
+        if (! $user->isSuspended()) {
+            $user->forceFill(['status' => 'pending'])->save();
+        }
+
         return back()->with('success', "Identity document rejected for {$user->name}.");
     }
 
@@ -135,6 +147,25 @@ class VerificationController extends Controller
         return Storage::disk('local')->response($document->path, $document->original_name, [
             'Content-Type' => $document->mime_type,
         ]);
+    }
+
+    /** The client details a reviewer checks the document against. */
+    protected function client(User $user): array
+    {
+        return [
+            'id'             => $user->id,
+            'name'           => $user->name,
+            'username'       => $user->username,
+            'email'          => $user->email,
+            'member_id'      => $user->member_id,
+            'phone'          => $user->phone,
+            'address'        => $user->formattedAddress(),
+            'date_of_birth'  => optional($user->date_of_birth)->toDateString(),
+            'is_verified'    => (bool) $user->is_verified,
+            'account_status' => $user->accountStatus(),
+            'tax_id_last4'   => $user->taxIdLast4(),
+            'verified_name'  => $user->verifiedName(),
+        ];
     }
 
     /** @return \Illuminate\Database\Eloquent\Collection<int, UserDocument> */

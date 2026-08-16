@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" href="data:,">
 
-        <title inertia>{{ config('app.name', 'Northshore Unlimited') }}</title>
+        <title inertia>{{ config('app.name', 'Northshore Unlimited Capital') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.tsx'])
         @inertiaHead

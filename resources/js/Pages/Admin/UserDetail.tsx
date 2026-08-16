@@ -17,6 +17,13 @@ interface Props {
         source_of_funds?: string | null;
         pep_status?: boolean;
         tax_id?: string | null;
+        /** Standing reconciled with the KYC flag — what the picker shows. */
+        account_status?: string;
+        verified_name?: string | null;
+        verified_at?: string | null;
+        name_match_confirmed?: boolean;
+        tax_id_verified_at?: string | null;
+        id_document_type?: string | null;
     };
     deposits: Deposit[];
     withdrawals: Withdrawal[];
@@ -37,6 +44,14 @@ interface Props {
     };
 }
 
+/** What each standing means, shown under the picker as it changes. */
+const STATUS_HINTS: Record<string, string> = {
+    active:    'Signed up and trading, with no identity check on file.',
+    pending:   'An ID is with compliance — the client is not verified yet.',
+    verified:  'Identity approved. The client sees these details on their dashboard.',
+    suspended: 'Suspended clients cannot sign in and never receive top-ups.',
+};
+
 export default function AdminUserDetail({ profileUser, deposits, withdrawals, earnings, stats, topup }: Props) {
     const profileForm = useForm({
         name: profileUser.name,
@@ -46,12 +61,14 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
         occupation: profileUser.occupation ?? '',
         source_of_funds: profileUser.source_of_funds ?? '',
         pep_status: Boolean(profileUser.pep_status),
-        is_verified: Boolean(profileUser.is_verified),
     });
 
     const settingsForm = useForm({
-        status: profileUser.status ?? 'active',
-        is_verified: Boolean(profileUser.is_verified),
+        // account_status is the reconciled value, so the picker always opens on
+        // the standing that is actually true right now.
+        status: profileUser.account_status ?? profileUser.status ?? 'active',
+        verified_name: profileUser.verified_name ?? profileUser.name,
+        tax_id_match: Boolean(profileUser.tax_id_verified_at),
         topup_enabled: profileUser.topup_enabled ?? true,
         daily_topup_percent: profileUser.daily_topup_percent != null ? String(Number(profileUser.daily_topup_percent)) : '',
     });
@@ -106,9 +123,11 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
                             <h1 className="text-xl font-semibold text-[var(--color-dash-text)]">{profileUser.name}</h1>
-                            <StatusBadge status={profileUser.status ?? 'active'} />
-                            {profileUser.is_verified && (
-                                <span className="rounded border border-gold/25 bg-gold/10 px-2 py-0.5 text-xs text-gold">Verified</span>
+                            <StatusBadge status={profileUser.account_status ?? profileUser.status ?? 'active'} />
+                            {profileUser.is_verified && profileUser.verified_name && (
+                                <span className="rounded border border-gold/25 bg-gold/10 px-2 py-0.5 text-xs text-gold-ink">
+                                    Verified as {profileUser.verified_name}
+                                </span>
                             )}
                         </div>
                         <p className="mt-1 text-sm text-[var(--color-dash-muted)]">@{profileUser.username ?? 'no-username'} · {profileUser.email}</p>
@@ -144,10 +163,12 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                                         className="h-10 w-full rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50"
                                     >
                                         <option value="active">Active</option>
+                                        <option value="pending">Pending review</option>
+                                        <option value="verified">Verified</option>
                                         <option value="suspended">Suspended</option>
                                     </select>
                                     <span className="mt-1 block text-xs text-[var(--color-dash-muted)]">
-                                        Suspended clients cannot sign in and never receive top-ups.
+                                        {STATUS_HINTS[settingsForm.data.status] ?? STATUS_HINTS.active}
                                     </span>
                                 </label>
 
@@ -164,13 +185,31 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                                 />
                             </div>
 
+                            {/* Approving the client's details lives with the
+                                status: picking Verified is what confirms them. */}
+                            {settingsForm.data.status === 'verified' && (
+                                <div className="grid gap-4 rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] p-3 sm:grid-cols-2">
+                                    <Input
+                                        label="Verified name"
+                                        hint="Shown to the client under Name Match."
+                                        error={settingsForm.errors.verified_name}
+                                        value={settingsForm.data.verified_name}
+                                        onChange={value => settingsForm.setData('verified_name', value)}
+                                    />
+                                    <Toggle
+                                        label="Tax ID confirmed"
+                                        hint={
+                                            profileUser.tax_id
+                                                ? `Matches the ID on file (•••• ${String(profileUser.tax_id).slice(-4)}).`
+                                                : 'This client has not supplied a tax ID.'
+                                        }
+                                        checked={settingsForm.data.tax_id_match}
+                                        onChange={checked => settingsForm.setData('tax_id_match', checked)}
+                                    />
+                                </div>
+                            )}
+
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <Toggle
-                                    label="Verified client"
-                                    hint="Marks KYC as complete."
-                                    checked={settingsForm.data.is_verified}
-                                    onChange={checked => settingsForm.setData('is_verified', checked)}
-                                />
                                 <Toggle
                                     label="Daily top-up enabled"
                                     hint="Turn off to exclude this client from top-up runs."
@@ -178,6 +217,16 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                                     onChange={checked => settingsForm.setData('topup_enabled', checked)}
                                 />
                             </div>
+
+                            {/* What the client currently sees on their dashboard. */}
+                            {profileUser.is_verified && (
+                                <div className="grid gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-xs text-[var(--color-dash-text)] sm:grid-cols-2">
+                                    <p>Verified name: <span className="font-medium">{profileUser.verified_name ?? profileUser.name}</span></p>
+                                    <p>Document: <span className="font-medium">{profileUser.id_document_type ?? 'Not recorded'}</span></p>
+                                    <p>Verified on: <span className="font-medium">{formatDateTime(profileUser.verified_at ?? null)}</span></p>
+                                    <p>Tax ID: <span className="font-medium">{profileUser.tax_id_verified_at ? 'Confirmed' : 'Not confirmed'}</span></p>
+                                </div>
+                            )}
 
                             <div className="rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] px-3 py-2.5 text-xs text-[var(--color-dash-muted)]">
                                 <p>

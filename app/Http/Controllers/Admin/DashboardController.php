@@ -16,13 +16,19 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_users'         => User::where('role', 'user')->count(),
-            'active_users'        => User::where('role', 'user')->where('status', 'active')->count(),
+            // Anything that is not suspended is a live account, whether it is
+            // still pending review or already verified.
+            'active_users'        => User::where('role', 'user')->where('status', '!=', 'suspended')->count(),
             'suspended_users'     => User::where('role', 'user')->where('status', 'suspended')->count(),
             'total_balance'       => (float) User::where('role', 'user')->sum('balance'),
             'pending_deposits'    => Deposit::where('status', 'pending')->count(),
             'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),
-            'total_deposited'     => (float) Deposit::where('status', 'approved')->sum('amount'),
-            'total_withdrawn'     => (float) Withdrawal::whereIn('status', ['approved', 'completed'])->sum('amount'),
+            // Client deposits plus manual admin credits, so the platform total
+            // reconciles with what each client sees.
+            'total_deposited'     => (float) Deposit::where('status', 'approved')->sum('amount')
+                + (float) Earning::adjustments()->where('amount', '>', 0)->sum('amount'),
+            'total_withdrawn'     => (float) Withdrawal::whereIn('status', ['approved', 'completed'])->sum('amount')
+                + abs((float) Earning::adjustments()->where('amount', '<', 0)->sum('amount')),
             'earnings_paid'       => (float) Earning::where('type', 'daily_topup')->sum('amount'),
             'earnings_today'      => (float) Earning::where('type', 'daily_topup')->whereDate('created_at', today())->sum('amount'),
             'credited_today'      => Earning::where('type', 'daily_topup')->whereDate('created_at', today())->count(),

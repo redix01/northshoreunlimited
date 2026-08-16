@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Deposit;
 use App\Models\Wallet;
 use App\Models\Withdrawal;
+use App\Services\AccountSummary;
 use App\Services\MarketData;
 use App\Services\PortfolioMetrics;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ class DashboardController extends Controller
         $user    = Auth::user();
         $metrics = new PortfolioMetrics($user, $market);
         $summary = $metrics->summary();
+        $account = new AccountSummary($user, $market);
 
         $recentDeposits = Deposit::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -45,6 +47,9 @@ class DashboardController extends Controller
                 'avatar'      => $user->avatar,
                 'created_at'  => optional($user->created_at)->toIso8601String(),
             ],
+            // Same shape the profile screen uses, so the verified details read
+            // identically on both.
+            'verification'      => $account->verification(),
             'summary'           => $summary,
             'highlights'        => $metrics->highlights(),
             'assets'            => $metrics->assets(),

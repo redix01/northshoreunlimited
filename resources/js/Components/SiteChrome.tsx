@@ -406,7 +406,7 @@ export function SiteFooter() {
 
                 <div className="flex flex-col items-center justify-between gap-4 border-t border-elegant-border py-8 text-[10px] uppercase tracking-[0.2em] text-ink/55 md:flex-row">
                     <div className="text-center md:text-left">
-                        &copy; 2026 Northshore Unlimited. All rights reserved.
+                        &copy; 2026 Northshore Unlimited Capital. All rights reserved.
                     </div>
                     <div className="text-center md:text-right">Personalized crypto brokerage</div>
                 </div>

@@ -7,7 +7,7 @@ const sectionNav = [
     { id: 'regulatory-shift', label: 'The Shift' },
     { id: 'understanding-bitcoin', label: 'Understanding Bitcoin' },
     { id: 'tax-advantaged', label: 'Tax-Advantaged Growth' },
-    { id: 'why-northshore', label: 'Why Northshore' },
+    { id: 'why-northshore', label: 'Why Northshore Unlimited Capital' },
     { id: 'security', label: 'Security' },
     { id: 'faq', label: 'FAQ' },
     { id: 'guide-contact', label: 'Talk to Us' },
@@ -134,7 +134,7 @@ const faqs = [
         answer: 'There is no single correct figure, and anyone who gives you one without knowing your circumstances is guessing. It depends on your time horizon, your other holdings, and how much of a decline you can hold through without selling. This is a conversation to have with a qualified adviser who knows your full position.',
     },
     {
-        question: 'What protects my holdings if something happens to Northshore?',
+        question: 'What protects my holdings if something happens to Northshore Unlimited Capital?',
         answer: 'Client assets are held with a qualified custodian and segregated from company operating funds, so they are not company property and are not available to company creditors. Ask us for the current custodian’s attestation before you fund an account.',
     },
     {
@@ -283,10 +283,10 @@ export default function GuidePage() {
                     </div>
                 </section>
 
-                {/* Why Northshore */}
+                {/* Why Northshore Unlimited Capital */}
                 <section id="why-northshore" className="border-y border-elegant-border bg-gold/[0.04]">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12">
-                        <SectionHeading eyebrow="Why Northshore" title="How We Work" />
+                        <SectionHeading eyebrow="Why Northshore Unlimited Capital" title="How We Work" />
                         <div className="grid gap-8 md:grid-cols-2">
                             {differentiators.map((item) => (
                                 <div
@@ -384,7 +384,7 @@ export default function GuidePage() {
 
                     <div className="mt-20 border-t border-elegant-border pt-10">
                         <p className="max-w-4xl text-xs leading-relaxed text-ink/62">
-                            This guide is educational and is not investment, financial, tax, or legal advice. Northshore
+                            This guide is educational and is not investment, financial, tax, or legal advice. Northshore Unlimited Capital
                             Unlimited does not provide individualised recommendations through this page. Digital assets
                             are volatile and you may lose money, including your entire investment. Tax treatment depends
                             on your personal circumstances and on rules that change. Consult a qualified tax or

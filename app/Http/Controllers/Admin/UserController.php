@@ -29,7 +29,12 @@ class UserController extends Controller
                 ->orWhere('username', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
             ))
-            ->when($status !== 'all', fn ($q) => $q->where('status', $status))
+            // Verified and pending are read off the KYC flag rather than the
+            // stored column, so legacy rows filter correctly too.
+            ->when($status === 'verified', fn ($q) => $q->where('status', '!=', 'suspended')->where('is_verified', true))
+            ->when($status === 'pending', fn ($q) => $q->where('status', 'pending')->where('is_verified', false))
+            ->when($status === 'active', fn ($q) => $q->where('status', 'active')->where('is_verified', false))
+            ->when($status === 'suspended', fn ($q) => $q->where('status', 'suspended'))
             ->withCount(['deposits', 'withdrawals'])
             ->orderBy('created_at', 'desc')
             ->paginate(20)
@@ -64,8 +69,12 @@ class UserController extends Controller
             ->get();
 
         $stats = [
-            'total_deposited'     => (float) Deposit::where('user_id', $user->id)->where('status', 'approved')->sum('amount'),
-            'total_withdrawn'     => (float) Withdrawal::where('user_id', $user->id)->whereIn('status', ['approved', 'completed'])->sum('amount'),
+            // Matches the client's own dashboard: their deposits plus whatever
+            // an admin credited by hand.
+            'total_deposited'     => (float) Deposit::where('user_id', $user->id)->where('status', 'approved')->sum('amount')
+                + Earning::creditedTo($user->id),
+            'total_withdrawn'     => (float) Withdrawal::where('user_id', $user->id)->whereIn('status', ['approved', 'completed'])->sum('amount')
+                + Earning::debitedFrom($user->id),
             'total_earned'        => (float) Earning::where('user_id', $user->id)->where('type', 'daily_topup')->sum('amount'),
             'pending_deposits'    => Deposit::where('user_id', $user->id)->where('status', 'pending')->count(),
             'pending_withdrawals' => Withdrawal::where('user_id', $user->id)->where('status', 'pending')->count(),
@@ -125,7 +134,6 @@ class UserController extends Controller
             'occupation'        => ['nullable', 'string', 'max:100'],
             'source_of_funds'   => ['nullable', 'string', 'max:100'],
             'pep_status'        => ['boolean'],
-            'is_verified'       => ['boolean'],
         ]);
 
         $user->update($validated);
@@ -135,28 +143,41 @@ class UserController extends Controller
 
     /**
      * Account-level controls: standing, verification and the client's own
-     * daily top-up rate.
+     * daily top-up rate. Standing is the single control for verification —
+     * picking "verified" approves the client's details, "pending" puts them
+     * back in the review queue.
      */
     public function updateSettings(Request $request, User $user)
     {
         abort_if($user->role === 'admin', 403);
 
         $validated = $request->validate([
-            'status'              => ['required', Rule::in(['active', 'suspended'])],
-            'is_verified'         => ['boolean'],
+            'status'              => ['required', Rule::in(User::STATUSES)],
+            'verified_name'       => ['nullable', 'string', 'max:255'],
+            'tax_id_match'        => ['boolean'],
             'topup_enabled'       => ['boolean'],
             'daily_topup_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $user->update([
             'status'              => $validated['status'],
-            'is_verified'         => $validated['is_verified'] ?? false,
             'topup_enabled'       => $validated['topup_enabled'] ?? false,
             // An empty override means "follow the platform default".
             'daily_topup_percent' => $validated['daily_topup_percent'] === null || $validated['daily_topup_percent'] === ''
                 ? null
                 : $validated['daily_topup_percent'],
         ]);
+
+        if ($validated['status'] === 'verified') {
+            $user->markVerified(
+                $validated['verified_name'] ?? null,
+                array_key_exists('tax_id_match', $validated) ? (bool) $validated['tax_id_match'] : null,
+            );
+        } elseif (in_array($validated['status'], ['pending', 'active'], true)) {
+            // Moving off "verified" withdraws the claim; suspending does not,
+            // so a blocked client keeps the KYC record already on file.
+            $user->clearVerification();
+        }
 
         return back()->with('success', 'Account settings updated.');
     }

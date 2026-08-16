@@ -12,6 +12,8 @@ interface Props {
 const statusFilters = [
     { value: 'all', label: 'All' },
     { value: 'active', label: 'Active' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'verified', label: 'Verified' },
     { value: 'suspended', label: 'Suspended' },
 ];
 
@@ -103,7 +105,7 @@ export default function AdminUsers({ users, filters, defaults }: Props) {
                                             <p className="text-xs text-[var(--color-dash-muted)]">@{user.username ?? 'no-username'} · {user.email}</p>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <StatusBadge status={user.status ?? 'active'} />
+                                            <StatusBadge status={user.account_status ?? user.status ?? 'active'} />
                                         </td>
                                         <td className="px-4 py-3 font-semibold text-gold-ink">{formatCurrency(user.balance)}</td>
                                         <td className="px-4 py-3 text-[var(--color-dash-muted)]">

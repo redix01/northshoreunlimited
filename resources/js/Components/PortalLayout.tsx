@@ -46,27 +46,6 @@ const DOCK = [
     { label: 'Account', href: '/user/profile', icon: User },
 ];
 
-function BrandMark() {
-    return (
-        <svg viewBox="0 0 40 40" className="h-9 w-9 shrink-0" aria-hidden>
-            <path
-                d="M20 3 34 9v12c0 8-5.8 14.2-14 17-8.2-2.8-14-9-14-17V9L20 3Z"
-                fill="none"
-                stroke="var(--portal-accent)"
-                strokeWidth="2"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M25 15.5a6 6 0 1 0 0 9"
-                fill="none"
-                stroke="var(--portal-accent)"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-            />
-        </svg>
-    );
-}
-
 function FlashToasts() {
     const { flash } = usePage<PageProps>().props;
     const [dismissed, setDismissed] = useState<Record<string, boolean>>({});
@@ -201,12 +180,18 @@ export default function PortalLayout({
 
             <header className="sticky top-0 z-50 border-b border-[var(--portal-border)] bg-[var(--portal-surface)]/90 backdrop-blur">
                 <div className="mx-auto flex h-[68px] max-w-[1160px] items-center gap-6 px-4 sm:px-6">
-                    <Link href="/user/dashboard" className="flex shrink-0 items-center gap-2.5">
-                        <BrandMark />
-                        <span className="hidden text-[17px] leading-none sm:block">
-                            <span className="font-semibold text-[var(--portal-text)]">Northshore</span>{' '}
-                            <span className="text-[var(--portal-muted)]">Unlimited</span>
-                        </span>
+                    <Link
+                        href="/user/dashboard"
+                        className="flex shrink-0 items-center"
+                        aria-label="Northshore Unlimited Capital — dashboard"
+                    >
+                        <img
+                            src="/img/logo.png"
+                            alt="Northshore Unlimited Capital"
+                            width={800}
+                            height={211}
+                            className="brand-logo h-8 w-auto sm:h-9"
+                        />
                     </Link>
 
                     <nav className="hidden flex-1 items-center justify-center gap-7 md:flex">

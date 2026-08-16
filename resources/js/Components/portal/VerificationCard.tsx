@@ -87,14 +87,31 @@ export default function VerificationCard({ verification }: { verification: Verif
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <Detail label="Document Type" icon={<CreditCard size={14} className="text-[var(--portal-muted)]" />}>
-                    {verification.document_type ?? (
+                    {verification.document_type ? (
+                        <span className="flex items-center gap-1">
+                            {verification.document_type}
+                            {verified && <CheckCircle2 size={13} style={{ color: 'var(--portal-pos)' }} />}
+                        </span>
+                    ) : (
                         <span className="text-[var(--portal-muted)]">Not provided</span>
                     )}
                 </Detail>
 
+                {/* Once compliance confirms the tax ID against the document it
+                    reads as verified, the same way the name does. */}
                 <Detail label="Tax ID (Last 4)">
                     {verification.tax_id_last4 ? (
-                        <span className="tabular-nums">•••• {verification.tax_id_last4}</span>
+                        verification.tax_id_verified ? (
+                            <span className="flex items-center gap-1.5" style={{ color: 'var(--portal-pos)' }}>
+                                <CheckCircle2 size={14} />
+                                <span className="tabular-nums">•••• {verification.tax_id_last4}</span>
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1.5">
+                                <span className="tabular-nums">•••• {verification.tax_id_last4}</span>
+                                <span className="text-xs text-[var(--portal-muted)]">Awaiting review</span>
+                            </span>
+                        )
                     ) : (
                         <span className="text-[var(--portal-muted)]">Not provided</span>
                     )}
@@ -108,11 +125,15 @@ export default function VerificationCard({ verification }: { verification: Verif
                     )}
                 </Detail>
 
+                {/* After approval this shows the name that was actually matched
+                    against the photo ID, not just that a match happened. */}
                 <Detail label="Name Match">
                     {verification.name_match ? (
-                        <span className="flex items-center gap-1" style={{ color: 'var(--portal-pos)' }}>
-                            <CheckCircle2 size={14} />
-                            Confirmed
+                        <span className="flex items-center gap-1.5" style={{ color: 'var(--portal-pos)' }}>
+                            <CheckCircle2 size={14} className="shrink-0" />
+                            <span className="truncate" title={verification.verified_name ?? undefined}>
+                                {verification.verified_name ?? 'Confirmed'}
+                            </span>
                         </span>
                     ) : (
                         <span className="text-[var(--portal-muted)]">Awaiting review</span>
