@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PortfolioSnapshot;
 use App\Models\Withdrawal;
+use App\Services\TopupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -27,7 +28,7 @@ class WithdrawalController extends Controller
         ]);
     }
 
-    public function approve(Request $request, Withdrawal $withdrawal)
+    public function approve(Request $request, Withdrawal $withdrawal, TopupService $topups)
     {
         if ($withdrawal->status !== 'pending') {
             return back()->withErrors(['error' => 'This withdrawal has already been processed.']);
@@ -38,6 +39,11 @@ class WithdrawalController extends Controller
         ]);
 
         $debit = $withdrawal->totalDebit();
+
+        // Accrual earned since the last sweep is the client's money, so bank it
+        // before deciding whether they can cover this.
+        $topups->settle($withdrawal->user);
+        $withdrawal->user->refresh();
 
         if ((float) $withdrawal->user->balance < $debit) {
             return back()->withErrors(['error' => 'User has insufficient balance to process this withdrawal.']);

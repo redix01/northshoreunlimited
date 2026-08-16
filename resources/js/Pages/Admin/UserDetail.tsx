@@ -41,6 +41,9 @@ interface Props {
         platform_enabled: boolean;
         projected_amount: number;
         last_topup_at: string | null;
+        /** Earned since the last settlement — the client already sees it. */
+        accrued: number;
+        effective_balance: number;
     };
 }
 
@@ -136,7 +139,11 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                    <Stat label="Balance" value={formatCurrency(profileUser.balance)} />
+                    <Stat
+                        label="Balance"
+                        value={formatCurrency(topup.effective_balance)}
+                        note={topup.accrued > 0 ? `${formatCurrency(profileUser.balance)} banked + ${formatCurrency(topup.accrued)} accrued` : undefined}
+                    />
                     <Stat label="Total Deposited" value={formatCurrency(stats.total_deposited)} />
                     <Stat label="Total Withdrawn" value={formatCurrency(stats.total_withdrawn)} />
                     <Stat label="Top-ups Earned" value={formatCurrency(stats.total_earned)} />
@@ -387,11 +394,12 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
     );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
     return (
         <div className="rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-surface)] p-4">
             <p className="text-xs uppercase tracking-wide text-[var(--color-dash-muted)]">{label}</p>
             <p className="mt-1 text-xl font-semibold text-[var(--color-dash-text)]">{value}</p>
+            {note && <p className="mt-1 text-[11px] text-[var(--color-dash-muted)]">{note}</p>}
         </div>
     );
 }

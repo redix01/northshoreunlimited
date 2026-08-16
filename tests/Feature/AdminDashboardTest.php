@@ -132,27 +132,79 @@ class AdminDashboardTest extends TestCase
         $this->assertSame(50.0, Setting::get('deposit_min'));
     }
 
-    public function test_daily_topup_credits_the_configured_percentage_once_per_day(): void
+    public function test_a_full_day_of_accrual_credits_the_configured_percentage(): void
     {
         $client = $this->client(['balance' => 2000]);
 
+        $this->travel(1)->days();
         $this->artisan('balance:topup')->assertSuccessful();
 
         $client->refresh();
         $this->assertSame('2030.00', $client->balance);          // 1.5% of 2000
         $this->assertSame(1, Earning::where('user_id', $client->id)->count());
 
-        // A second run on the same day must not credit again.
+        // Immediately re-running settles nothing: the clock, not the calendar,
+        // decides what is owed.
         $this->artisan('balance:topup')->assertSuccessful();
 
         $this->assertSame('2030.00', $client->fresh()->balance);
         $this->assertSame(1, Earning::where('user_id', $client->id)->count());
     }
 
+    public function test_accrual_is_proportional_to_the_time_elapsed(): void
+    {
+        $client = $this->client(['balance' => 2000]);
+
+        $this->travel(12)->hours();
+        $this->artisan('balance:topup')->assertSuccessful();
+
+        // Half a day at 1.5% is 0.75%.
+        $this->assertSame('2015.00', $client->fresh()->balance);
+    }
+
+    public function test_a_missed_run_is_caught_up_rather_than_lost(): void
+    {
+        $client = $this->client(['balance' => 1000]);
+
+        // Three days pass with the scheduler down.
+        $this->travel(3)->days();
+        $this->artisan('balance:topup')->assertSuccessful();
+
+        // 3 × 1.5% of 1000, credited in one settlement.
+        $this->assertSame('1045.00', $client->fresh()->balance);
+        $this->assertSame(1, Earning::where('user_id', $client->id)->count());
+    }
+
+    public function test_a_long_outage_cannot_pay_out_more_than_the_catch_up_ceiling(): void
+    {
+        $client = $this->client(['balance' => 1000]);
+
+        $this->travel(400)->days();
+        $this->artisan('balance:topup')->assertSuccessful();
+
+        // Capped at 30 days: 30 × 1.5% of 1000 = 450.
+        $this->assertSame('1450.00', $client->fresh()->balance);
+    }
+
+    public function test_the_balance_a_client_sees_grows_without_anyone_signing_in(): void
+    {
+        $client  = $this->client(['balance' => 1000]);
+        $topups  = app(\App\Services\TopupService::class);
+        $opening = $topups->effectiveBalance($client);
+
+        $this->travel(6)->hours();
+
+        // No request, no settlement — only time has passed.
+        $this->assertSame(1000.0, $opening);
+        $this->assertSame(1003.75, $topups->effectiveBalance($client->fresh()));
+        $this->assertSame('1000.00', $client->fresh()->balance);
+    }
+
     public function test_per_client_rate_overrides_the_platform_default(): void
     {
         $client = $this->client(['balance' => 1000, 'daily_topup_percent' => 5]);
 
+        $this->travel(1)->days();
         $this->artisan('balance:topup')->assertSuccessful();
 
         $this->assertSame('1050.00', $client->fresh()->balance);
@@ -182,6 +234,7 @@ class AdminDashboardTest extends TestCase
     public function test_admin_can_trigger_a_topup_run_from_the_panel(): void
     {
         $client = $this->client(['balance' => 1000]);
+        $this->travel(1)->days();
 
         $this->actingAs($this->admin())
             ->post('/admin/earnings/run', ['force' => false])
@@ -229,7 +282,8 @@ class AdminDashboardTest extends TestCase
         $this->assertSame(2.0, $summary['headline']['percent']);
         $this->assertSame(20.0, $summary['daily']['value']);
 
-        // … is exactly what the run credits.
+        // … is exactly what a day of accrual credits.
+        $this->travel(1)->days();
         $this->artisan('balance:topup')->assertSuccessful();
         $this->assertSame('1020.00', $client->fresh()->balance);
     }
@@ -278,6 +332,7 @@ class AdminDashboardTest extends TestCase
         // 10% of 1000 is 100, but the cap pays 25 — so 25 is what is shown.
         $this->assertSame(25.0, $summary['daily']['value']);
 
+        $this->travel(1)->days();
         $this->artisan('balance:topup')->assertSuccessful();
         $this->assertSame('1025.00', $client->fresh()->balance);
     }

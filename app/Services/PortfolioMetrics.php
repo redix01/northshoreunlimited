@@ -58,7 +58,10 @@ class PortfolioMetrics
         $topups = $topups ?? app(TopupService::class);
 
         $this->now     = CarbonImmutable::now();
-        $this->balance = (float) $user->balance;
+        // Banked balance plus accrual earned since the last settlement, so the
+        // figure is right whether the client last logged in a minute or a
+        // month ago — the growth is in the clock, not in the page being open.
+        $this->balance = $topups->effectiveBalance($user, $this->now);
         $this->rate    = $topups->activeRateFor($user) / 100;
         $this->daily   = $topups->projectedAmountFor($user);
 

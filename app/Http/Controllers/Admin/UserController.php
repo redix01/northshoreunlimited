@@ -49,7 +49,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function show(User $user)
+    public function show(User $user, TopupService $topups)
     {
         abort_if($user->role === 'admin', 403);
 
@@ -92,6 +92,10 @@ class UserController extends Controller
                 'platform_enabled'  => (bool) Setting::get('topup_enabled'),
                 'projected_amount'  => round((float) $user->balance * $user->effectiveTopupPercent() / 100, 2),
                 'last_topup_at'     => $user->last_topup_at?->toIso8601String(),
+                // Earned since that settlement and already visible to the
+                // client, but not yet banked.
+                'accrued'           => $topups->accruedFor($user),
+                'effective_balance' => $topups->effectiveBalance($user),
             ],
         ]);
     }
@@ -194,6 +198,11 @@ class UserController extends Controller
             'amount'    => ['required', 'numeric', 'min:0.01', 'max:9999999'],
             'notes'     => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Settle first so the ledger's before/after figures — and the debit
+        // check below — read against a banked balance, not a stale one.
+        $topups->settle($user);
+        $user->refresh();
 
         $amount = (float) $validated['amount'];
 

@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use App\Models\Withdrawal;
 use App\Services\AccountSummary;
 use App\Services\MarketData;
+use App\Services\TopupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -29,7 +30,7 @@ class WithdrawalController extends Controller
                 ->orderBy('currency')
                 ->orderBy('network')
                 ->get(),
-            'balance'     => (float) $user->balance,
+            'balance'     => app(TopupService::class)->effectiveBalance($user),
             'limits'      => [
                 'enabled'     => (bool) Setting::get('withdrawals_enabled'),
                 'min'         => (float) Setting::get('withdrawal_min'),
@@ -40,7 +41,7 @@ class WithdrawalController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, TopupService $topups)
     {
         $user = Auth::user();
 
@@ -62,6 +63,11 @@ class WithdrawalController extends Controller
         ]);
 
         $wallet = Wallet::where('is_active', true)->findOrFail($validated['wallet_id']);
+
+        // Bank the accrual first: the client is looking at a figure that
+        // includes it, so it has to be spendable here too.
+        $topups->settle($user);
+        $user->refresh();
 
         $fee = round((float) $validated['amount'] * (float) Setting::get('withdrawal_fee_percent') / 100, 2);
 

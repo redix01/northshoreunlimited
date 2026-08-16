@@ -20,21 +20,25 @@ class AccountSummary
     /** The amount tonight's top-up run will credit this client. */
     private float $daily;
 
+    /** Banked balance plus accrual earned since the last settlement. */
+    private float $balance;
+
     public function __construct(private User $user, private MarketData $market, ?TopupService $topups = null)
     {
         $topups = $topups ?? app(TopupService::class);
 
         // Quoted from the top-up settings, so the wallet card and the nightly
         // run never disagree about what the client earns.
-        $this->rate  = $topups->activeRateFor($user);
-        $this->daily = $topups->projectedAmountFor($user);
+        $this->rate    = $topups->activeRateFor($user);
+        $this->daily   = $topups->projectedAmountFor($user);
+        $this->balance = $topups->effectiveBalance($user);
     }
 
     /** Balance card: totals in the settlement asset plus the accrual rate. */
     public function wallet(): array
     {
         $price     = $this->basePrice();
-        $balance   = (float) $this->user->balance;
+        $balance   = $this->balance;
         // Client deposits plus admin credits — see PortfolioMetrics, which the
         // dashboard reads; the two screens must not disagree.
         $deposited = $this->sum(Deposit::class, ['approved']) + Earning::creditedTo($this->user->id);
