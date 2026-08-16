@@ -17,5 +17,7 @@ Artisan::command('inspire', function () {
  * settles on demand first.
  */
 Schedule::command('balance:topup')->dailyAt('00:05')->withoutOverlapping();
-Schedule::command('portfolio:snapshot')->dailyAt('00:05');
+// After the sweep, so the curve records settled balances rather than the
+// figures they had a moment before being credited.
+Schedule::command('portfolio:snapshot')->dailyAt('00:10');
 Schedule::command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();

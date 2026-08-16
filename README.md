@@ -33,9 +33,36 @@ time — not of anyone being logged in. At any instant a client has earned
 
 A single catch-up is capped at 30 days (`TopupService::MAX_CATCHUP_DAYS`).
 
+### The cron entry
+
 The sweep runs from the Laravel scheduler, which needs one cron entry on the
-server — without it the banked balance lags (displayed figures stay correct):
+server — without it the banked balance lags (displayed figures stay correct).
+On the cPanel host, add this under Cron Jobs set to **every minute**:
 
 ```
-* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
+/usr/local/bin/php /home/norttbfl/public_html/artisan schedule:run >> /dev/null 2>&1
 ```
+
+One entry covers everything scheduled in `routes/console.php`: the top-up
+sweep, the nightly portfolio snapshot, and the queue worker.
+
+If the host will not allow a per-minute cron, settlement is self-healing, so a
+coarser schedule still pays out the full amount — it just banks it later. A
+single daily job works on its own:
+
+```
+5 0 * * * /usr/local/bin/php /home/norttbfl/public_html/artisan balance:topup >> /dev/null 2>&1
+```
+
+Two things to check the first time:
+
+- `artisan` must be at that path — `ls /home/norttbfl/public_html/artisan`. If
+  the app root sits above the web root, point the cron at the app root instead
+  (for example `/home/norttbfl/laravel/artisan`).
+- The CLI PHP must be 8.2+. `/usr/local/bin/php -v` says which one it is; on
+  cPanel the versioned binaries (`/usr/local/bin/ea-php82`) are the reliable
+  choice when the default is older.
+
+To confirm it is working, run the command by hand over SSH — it prints how many
+clients it credited — or watch a client's **Last credited** timestamp on their
+admin page.
