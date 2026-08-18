@@ -7,10 +7,13 @@ use App\Models\Deposit;
 use App\Models\Earning;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\UserDocument;
 use App\Models\Withdrawal;
 use App\Services\TopupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -259,4 +262,51 @@ class UserController extends Controller
 
         return back()->with('success', "Password reset for {$user->name}.");
     }
+
+    /**
+     * Delete a client account for good.
+     *
+     * The database cascades their deposits, withdrawals, earnings, snapshots
+     * and document rows, and nulls them out of the rows they only touched (a
+     * deposit they approved, a client they referred). Files are not the
+     * database's to clean up, so they go here.
+     *
+     * Guarded twice over: admins are never deletable, and the caller has to
+     * echo back the client's username, so a mis-click cannot spend an account.
+     */
+    public function destroy(Request $request, User $user)
+    {
+        abort_if($user->role === 'admin', 403);
+
+        $request->validate([
+            'confirmation' => ['required', 'string'],
+        ]);
+
+        $handle = $user->username ?: $user->email;
+
+        if (trim($request->input('confirmation')) !== $handle) {
+            return back()->withErrors([
+                'confirmation' => "Type {$handle} exactly to confirm this deletion.",
+            ]);
+        }
+
+        $name = $user->name;
+
+        DB::transaction(function () use ($user) {
+            foreach (UserDocument::where('user_id', $user->id)->get() as $document) {
+                Storage::disk('local')->delete($document->path);
+            }
+
+            if ($user->avatar && ! str_starts_with($user->avatar, User::AVATAR_PRESET_PREFIX)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $user->delete();
+        });
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', "{$name}'s account and all of its records were deleted.");
+    }
+
 }

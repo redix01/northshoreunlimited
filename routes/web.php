@@ -84,6 +84,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/users/{user}/adjust-balance', [Admin\UserController::class, 'adjustBalance'])->name('admin.users.adjust-balance');
     Route::post('/users/{user}/topup', [Admin\UserController::class, 'runTopup'])->name('admin.users.topup');
     Route::put('/users/{user}/password', [Admin\UserController::class, 'resetPassword'])->name('admin.users.password');
+    Route::delete('/users/{user}', [Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/wallets', [Admin\WalletController::class, 'index'])->name('admin.wallets');
     Route::post('/wallets', [Admin\WalletController::class, 'store'])->name('admin.wallets.store');

@@ -1,5 +1,6 @@
 import { Link, useForm } from '@inertiajs/react';
-import { KeyRound, Play, SlidersHorizontal, TrendingUp, Wallet } from 'lucide-react';
+import { KeyRound, Play, SlidersHorizontal, Trash2, TrendingUp, TriangleAlert, Wallet } from 'lucide-react';
+import { useState } from 'react';
 import DashboardLayout, {
     Input,
     StatusBadge,
@@ -8,7 +9,7 @@ import DashboardLayout, {
     formatDate,
     formatDateTime,
 } from '../../Components/DashboardLayout';
-import type { AuthUser, Deposit, Earning, Withdrawal } from '../../types';
+import type { AccountStatus, AuthUser, Deposit, Earning, Withdrawal } from '../../types';
 
 interface Props {
     profileUser: AuthUser & {
@@ -17,8 +18,6 @@ interface Props {
         source_of_funds?: string | null;
         pep_status?: boolean;
         tax_id?: string | null;
-        /** Standing reconciled with the KYC flag — what the picker shows. */
-        account_status?: string;
         verified_name?: string | null;
         verified_at?: string | null;
         name_match_confirmed?: boolean;
@@ -79,6 +78,11 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
     const balanceForm = useForm({ direction: 'credit', amount: '', notes: '' });
     const passwordForm = useForm({ password: '', password_confirmation: '' });
     const topupForm = useForm({ force: false });
+    const deleteForm = useForm({ confirmation: '' });
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+    /** What the admin has to type to confirm — the client's own handle. */
+    const deleteHandle = profileUser.username ?? profileUser.email;
 
     const overrideActive = settingsForm.data.daily_topup_percent !== '';
     const previewPercent = overrideActive ? Number(settingsForm.data.daily_topup_percent) : topup.default_percent;
@@ -108,6 +112,11 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
             preserveScroll: true,
             onSuccess: () => passwordForm.reset(),
         });
+    }
+
+    function deleteAccount(event: React.FormEvent) {
+        event.preventDefault();
+        deleteForm.delete(`/admin/users/${profileUser.id}`, { preserveScroll: true });
     }
 
     function runTopup() {
@@ -166,7 +175,7 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                                     <span className="mb-1.5 block text-xs font-medium text-[var(--color-dash-muted)]">Account status</span>
                                     <select
                                         value={settingsForm.data.status}
-                                        onChange={event => settingsForm.setData('status', event.target.value)}
+                                        onChange={event => settingsForm.setData('status', event.target.value as AccountStatus)}
                                         className="h-10 w-full rounded-lg border border-[var(--color-dash-border)] bg-[var(--color-dash-bg)] px-3 text-sm text-[var(--color-dash-text)] outline-none focus:border-gold/50"
                                     >
                                         <option value="active">Active</option>
@@ -389,6 +398,54 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
                     <History title="Recent Deposits" rows={deposits.map(item => ({ id: item.id, amount: item.amount, status: item.status, date: item.created_at }))} />
                     <History title="Recent Withdrawals" rows={withdrawals.map(item => ({ id: item.id, amount: item.amount, status: item.status, date: item.created_at }))} />
                 </div>
+
+                {/* ── Danger zone ──────────────────────────────────────── */}
+                <section className="rounded-lg border border-red-500/30 bg-red-500/[0.04] p-4">
+                    <h2 className="flex items-center gap-2 text-sm font-semibold text-red-600">
+                        <TriangleAlert size={16} /> Delete Account
+                    </h2>
+                    <p className="mt-1 text-xs text-[var(--color-dash-muted)]">
+                        Removes {profileUser.name} along with every deposit, withdrawal, earning and
+                        uploaded document. This cannot be undone — suspend the account instead if you
+                        only need to block access.
+                    </p>
+
+                    {confirmingDelete ? (
+                        <form onSubmit={deleteAccount} className="mt-4 max-w-md space-y-3">
+                            <Input
+                                label={`Type ${deleteHandle} to confirm`}
+                                value={deleteForm.data.confirmation}
+                                onChange={value => deleteForm.setData('confirmation', value)}
+                                error={deleteForm.errors.confirmation}
+                            />
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    disabled={deleteForm.processing || deleteForm.data.confirmation.trim() !== deleteHandle}
+                                    className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                                >
+                                    <Trash2 size={15} />
+                                    {deleteForm.processing ? 'Deleting…' : 'Delete permanently'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setConfirmingDelete(false); deleteForm.reset(); deleteForm.clearErrors(); }}
+                                    className="rounded-lg border border-[var(--color-dash-border)] px-4 py-2 text-sm font-medium text-[var(--color-dash-muted)] hover:text-[var(--color-dash-text)]"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setConfirmingDelete(true)}
+                            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/10"
+                        >
+                            <Trash2 size={15} />
+                            Delete this account
+                        </button>
+                    )}
+                </section>
             </div>
         </DashboardLayout>
     );

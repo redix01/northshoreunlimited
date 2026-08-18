@@ -430,4 +430,91 @@ class AdminDashboardTest extends TestCase
 
         $this->assertSame('898.00', $client->fresh()->balance);   // 1000 - 100 - 2
     }
+
+    public function test_admin_deletes_a_client_account_and_everything_attached_to_it(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+
+        $client = $this->client(['balance' => 500]);
+
+        Deposit::create(['user_id' => $client->id, 'amount' => 100, 'currency' => 'USDT', 'status' => 'approved']);
+        Withdrawal::create([
+            'user_id' => $client->id, 'amount' => 50, 'currency' => 'USDT',
+            'wallet_address' => 'T999', 'status' => 'pending',
+        ]);
+        Earning::create([
+            'user_id' => $client->id, 'type' => 'daily_topup', 'rate' => 1.5, 'amount' => 7.5,
+            'balance_before' => 500, 'balance_after' => 507.5,
+        ]);
+        $document = \App\Models\UserDocument::create([
+            'user_id' => $client->id, 'type' => 'passport', 'side' => 'front',
+            'path' => 'documents/'.$client->id.'/front.png', 'original_name' => 'front.png',
+            'mime_type' => 'image/png', 'size' => 10, 'status' => 'pending',
+        ]);
+        \Illuminate\Support\Facades\Storage::disk('local')->put($document->path, 'x');
+
+        $this->actingAs($this->admin())
+            ->delete("/admin/users/{$client->id}", ['confirmation' => 'client'])
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('success');
+
+        $this->assertNull(User::find($client->id));
+        $this->assertSame(0, Deposit::where('user_id', $client->id)->count());
+        $this->assertSame(0, Withdrawal::where('user_id', $client->id)->count());
+        $this->assertSame(0, Earning::where('user_id', $client->id)->count());
+        $this->assertSame(0, \App\Models\UserDocument::where('user_id', $client->id)->count());
+
+        // The database cannot clean up the private disk, so the controller does.
+        \Illuminate\Support\Facades\Storage::disk('local')->assertMissing($document->path);
+    }
+
+    public function test_a_deletion_without_the_matching_confirmation_is_refused(): void
+    {
+        $client = $this->client();
+
+        $this->actingAs($this->admin())
+            ->delete("/admin/users/{$client->id}", ['confirmation' => 'Client'])
+            ->assertSessionHasErrors('confirmation');
+
+        $this->assertNotNull(User::find($client->id));
+    }
+
+    public function test_a_deletion_must_carry_a_confirmation_at_all(): void
+    {
+        $client = $this->client();
+
+        $this->actingAs($this->admin())
+            ->delete("/admin/users/{$client->id}")
+            ->assertSessionHasErrors('confirmation');
+
+        $this->assertNotNull(User::find($client->id));
+    }
+
+    public function test_an_admin_account_cannot_be_deleted_through_the_panel(): void
+    {
+        $admin = $this->admin();
+        $other = User::create([
+            'name' => 'Second Admin', 'username' => 'admin2', 'email' => 'admin2@example.com',
+            'password' => 'password', 'role' => 'admin',
+        ]);
+
+        $this->actingAs($admin)
+            ->delete("/admin/users/{$other->id}", ['confirmation' => 'admin2'])
+            ->assertForbidden();
+
+        $this->assertNotNull(User::find($other->id));
+    }
+
+    public function test_a_client_cannot_delete_an_account(): void
+    {
+        $client = $this->client();
+        $victim = $this->client(['username' => 'victim', 'email' => 'victim@example.com']);
+
+        $this->actingAs($client)
+            ->delete("/admin/users/{$victim->id}", ['confirmation' => 'victim'])
+            ->assertForbidden();
+
+        $this->assertNotNull(User::find($victim->id));
+    }
+
 }
