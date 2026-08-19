@@ -468,6 +468,18 @@ class AdminDashboardTest extends TestCase
         \Illuminate\Support\Facades\Storage::disk('local')->assertMissing($document->path);
     }
 
+    public function test_deletion_is_accepted_over_post_as_well_as_delete(): void
+    {
+        $client = $this->client();
+
+        // The panel posts, because hosts and WAFs filter the rarer verbs.
+        $this->actingAs($this->admin())
+            ->post("/admin/users/{$client->id}", ['confirmation' => 'client'])
+            ->assertRedirect('/admin/users');
+
+        $this->assertNull(User::find($client->id));
+    }
+
     public function test_a_deletion_without_the_matching_confirmation_is_refused(): void
     {
         $client = $this->client();

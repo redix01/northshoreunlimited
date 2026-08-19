@@ -66,3 +66,20 @@ Two things to check the first time:
 To confirm it is working, run the command by hand over SSH — it prints how many
 clients it credited — or watch a client's **Last credited** timestamp on their
 admin page.
+
+## Deploying
+
+Laravel caches its route table, config and views. If a new route 404s or comes
+back as `MethodNotAllowedHttpException` on the server while it works locally,
+the cached table is stale — pull, then clear it:
+
+```
+cd /home/norttbfl/public_html
+git pull
+/usr/local/bin/php artisan migrate --force
+/usr/local/bin/php artisan optimize:clear
+```
+
+`optimize:clear` drops the route, config, view and event caches in one go. Run
+`npm run build` locally and commit `public/build` (it is tracked), so the server
+never needs Node.

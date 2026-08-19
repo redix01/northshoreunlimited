@@ -116,7 +116,9 @@ export default function AdminUserDetail({ profileUser, deposits, withdrawals, ea
 
     function deleteAccount(event: React.FormEvent) {
         event.preventDefault();
-        deleteForm.delete(`/admin/users/${profileUser.id}`, { preserveScroll: true });
+        // Posts rather than DELETEs: the route accepts both, and POST is the
+        // verb least likely to be filtered between the browser and Laravel.
+        deleteForm.post(`/admin/users/${profileUser.id}`, { preserveScroll: true });
     }
 
     function runTopup() {
